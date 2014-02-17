@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">WildlifePrototype2</string>
+
+    <!-- Latitude, longitude format -->
+    <string name="latitude_longitude">%1$.8f, %2$.8f</string>
+
+    <!-- Sighting Messages -->
+    <string name="dialog_create_sighting_msg">Submit a Sighting at this Location?</string>
+    <string name="dialog_yes">Yes</string>
+    <string name="dialog_no">No</string>
+
+    <!-- Messages -->
+    <string name="connected">Client connected</string>
+    <string name="disconnected">Client disconnected</string>
+    <string name="location_requested">Periodic updates requested</string>
+    <string name="location_updated">Location updated</string>
+    <string name="location_updates_stopped">Periodic updates stopped</string>
+    <string name="resolved">Error resolved. Please re-try operation.</string>
+    <string name="no_resolution">Google Play services: unable to resolve connection error.</string>
+    <string name="play_services_available">Google Play services is available</string>
+    <string name="unable_to_create_maps">Sorry! Unable to create maps</string>
+    <string name="unknown_activity_request_code">
+        Received an unknown activity request code %1$d in onActivityResult.
+    </string>
+
+    <string name="submit_form_latitude">Latitude:</string>
+    <string name="submit_form_longitude">Longitude:</string>
+    <string name="print_date">The Date should be printed here....</string>
+    <string name="print_latitude">Print Latitude</string>
+    <string name="print_longitude">Print Longitude</string>
+
+    <!-- Submit Form -->
+    <string name="submit_form_species">Species:</string>
+    <string name="submit_form_confidence_level">Confidence:</string>
+    <string name="submit_form_date">Date:</string>
+    <string name="submit_form_coordinates">Coordinates:</string>
+    <string name="submit_form_confidence_1">100%</string>
+    <string name="submit_form_confidence_2">50%</string>
+    <string name="submit_form_confidence_3">25%</string>
+    <string name="submit_form_btn">Submit</string>
+
+    <string name="drawer_open">Open navigation drawer</string>
+    <string name="drawer_close">Close navigation drawer</string>
+    <string name="action_websearch">Web search</string>
+    <string name="app_not_available">Sorry, there\'s no web browser available</string>
+
+    <string-array name="menu_items_array">
+        <item>Sightings</item>
+        <item>Field Missions</item>
+        <item>News Feed</item>
+    </string-array>
+
+    <string-array name="species_array">
+        <item>Beluga Whale</item>
+        <item>Blue Whale</item>
+        <item>Bottlenose Dolphin</item>
+        <item>Common Dolphin</item>
+        <item>Cuvier\'s Beaked Whale</item>
+    </string-array>
+</resources>
