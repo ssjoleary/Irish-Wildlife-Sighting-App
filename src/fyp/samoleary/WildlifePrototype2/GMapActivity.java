@@ -9,6 +9,7 @@ import android.content.*;
 import android.location.Location;
 
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -27,6 +28,11 @@ import android.support.v4.app.DialogFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  * Author: Sam O'Leary
@@ -46,8 +52,8 @@ public class GMapActivity extends NavDrawer implements
         LocationListener,
         GoogleMap.OnMapLongClickListener {
 
-    private final static String USER_COORDINATES = "fyp.samoleary.WildlifePrototype2.COORDINATES";
-    private final static int SUBMIT_REQUEST = 1000;
+    //private final static String USER_COORDINATES = "fyp.samoleary.WildlifePrototype2.COORDINATES";
+    //private final static int SUBMIT_REQUEST = 1000;
     LatLng userTouchPoint;
 
     // Object to display an AlertDialog
@@ -118,8 +124,34 @@ public class GMapActivity extends NavDrawer implements
             e.printStackTrace();
         }
 
-       /** DrawerFragment myFrag = new DrawerFragment();
-        myFrag.getFragmentManager().findFragmentById(R.id.left_drawer);*/
+        new HttpHandler() {
+            @Override
+            public HttpUriRequest getHttpRequestMethod() {
+
+                return new HttpGet("http://murmuring-eyrie-6617.herokuapp.com/sightings/getsighting/");
+
+                // return new HttpPost(url)
+            }
+            @Override
+            public void onResponse(String result) {
+                JSONArray json;
+                JSONObject jsonObject;
+                String name = "Name didn't work";
+                String occupation = "Occupation didn't work";
+                try {
+                    json = new JSONArray(result);
+                    jsonObject = json.getJSONObject(0);
+                    name = jsonObject.getString("User");
+                    jsonObject = json.getJSONObject(1);
+                    occupation = jsonObject.getString("Occupation");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                Toast.makeText(getBaseContext(), "User: " + name , Toast.LENGTH_LONG).show();
+                Toast.makeText(getBaseContext(), "Occupation: " + occupation , Toast.LENGTH_LONG).show();
+            }
+        }.execute();
     }
 
     /**
@@ -168,18 +200,18 @@ public class GMapActivity extends NavDrawer implements
                 .position(userTouchPoint)
                 .title("New Marker"));
         Toast.makeText(this, "Positive click", Toast.LENGTH_SHORT).show();
-        gotoSubmitActivity();
+        //gotoSubmitActivity();
     }
 
     public void doNegativeClick() {
         Toast.makeText(this, "Negative click", Toast.LENGTH_SHORT).show();
     }
 
-    private void gotoSubmitActivity() {
-        Intent intent = new Intent(this, SubmitActivity.class);
-        intent.putExtra(USER_COORDINATES, userTouchPoint);
-        startActivityForResult(intent, SUBMIT_REQUEST);
-    }
+    /**    private void gotoSubmitActivity() {
+     Intent intent = new Intent(this, SubmitActivity.class);
+     intent.putExtra(USER_COORDINATES, userTouchPoint);
+     startActivityForResult(intent, SUBMIT_REQUEST);
+     }*/
 
     /*
      * Called when the Activity is no longer visible at all.
@@ -312,18 +344,18 @@ public class GMapActivity extends NavDrawer implements
                         break;
                 }
 
-            case SUBMIT_REQUEST:
-                switch (resultCode) {
-                    case Activity.RESULT_OK:
-                        Sighting userSighting = (Sighting) intent.getSerializableExtra("userSighting");
+                /** case SUBMIT_REQUEST:
+                 switch (resultCode) {
+                 case Activity.RESULT_OK:
+                 Sighting userSighting = (Sighting) intent.getSerializableExtra("userSighting");
 
-                        // Display the result
-                        Toast.makeText(this, R.string.connected, Toast.LENGTH_SHORT).show();
-                        break;
-                    case Activity.RESULT_CANCELED:
+                 // Display the result
+                 Toast.makeText(this, R.string.connected, Toast.LENGTH_SHORT).show();
+                 break;
+                 case Activity.RESULT_CANCELED:
 
-                        break;
-                }
+                 break;
+                 } */
 
 
                 // If any other request code was received
@@ -353,7 +385,7 @@ public class GMapActivity extends NavDrawer implements
 
             // Continue
             return true;
-        // Google Play Services was not available for some reason
+            // Google Play Services was not available for some reason
         } else {
             /* Get the error code
             int errorCode = ConnectionResult.getErrorCode(); */
@@ -584,70 +616,3 @@ public class GMapActivity extends NavDrawer implements
         }
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

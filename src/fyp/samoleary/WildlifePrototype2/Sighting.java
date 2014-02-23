@@ -11,7 +11,7 @@ import java.io.Serializable;
  * 1: 12/02/14
  * Description:
  */
-public class Sighting  implements Serializable {
+public class Sighting implements Serializable {
     private final static long serialVersionUID = 1;
 
     private int speciesID;

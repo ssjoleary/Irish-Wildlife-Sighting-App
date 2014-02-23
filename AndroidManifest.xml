@@ -52,10 +52,10 @@
             </intent-filter>
         </activity>
 
-        <!-- Google API Key AIzaSyB2mHSlC3UWRCTLULP65DQBpiIG-aC21Uc-->
+        <!-- Google API Key -->
         <meta-data
                 android:name="com.google.android.maps.v2.API_KEY"
-                android:value="AIzaSyDjggJL9cwb6WZb6Z1GsiX2zUpIho52U5M" />
+                android:value="AIzaSyABWZiR0Wx4Qlt-BBJ-C4hDKzQ0a9Qy77M" />
         <meta-data
                 android:name="com.google.android.gms.version"
                 android:value="@integer/google_play_services_version" />

@@ -59,7 +59,7 @@ public class NavDrawer extends FragmentActivity {
 
 
         if (savedInstanceState == null) {
-            selectItem(0);
+            selectItem(-1);
         }
     }
 
@@ -159,8 +159,11 @@ public class NavDrawer extends FragmentActivity {
 
     private void selectItem(int position) {
     switch (position) {
-        case 0: gotoGMapActivity();
-                break;
+        case 0:
+            gotoGMapActivity();
+            break;
+        default:
+            break;
     }
     }
 

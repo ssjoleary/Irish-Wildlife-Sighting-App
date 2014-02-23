@@ -48,7 +48,7 @@ public class SubmitActivity extends NavDrawer {
         submit_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                submitSighting();
+                //submitSighting();
             }
         });
 
@@ -81,7 +81,7 @@ public class SubmitActivity extends NavDrawer {
     }
 
     private Sighting createSighting() {
-        int speciesID, confidenceLvl;
+        /**int speciesID, confidenceLvl;
         double sightingLat, sightingLong;
 
         speciesID = spinnerPos;
@@ -91,7 +91,8 @@ public class SubmitActivity extends NavDrawer {
         sightingLat = user_coordinates.latitude;
         sightingLong = user_coordinates.longitude;
 
-        return new Sighting(speciesID, confidenceLvl, dateOut, sightingLat, sightingLong);
+        return new Sighting(speciesID, confidenceLvl, dateOut, sightingLat, sightingLong);*/
+        return null;
     }
 
     public void onRadioButtonClicked(View view) {
