@@ -135,21 +135,32 @@ public class GMapActivity extends NavDrawer implements
             @Override
             public void onResponse(String result) {
                 JSONArray json;
-                JSONObject jsonObject;
-                String name = "Name didn't work";
-                String occupation = "Occupation didn't work";
+
                 try {
                     json = new JSONArray(result);
-                    jsonObject = json.getJSONObject(0);
+
+                    for (int i = 0; i < json.length(); i++) {
+                        JSONObject c = json.getJSONObject(i);
+
+                        JSONObject fields = c.getJSONObject("fields");
+                        int animals = fields.getInt("animals");
+                        String sub_date = fields.getString("sub_date");
+                        double latitude = fields.getDouble("latitude");
+                        double longitude = fields.getDouble("longitude");
+                        String location = fields.getString("location");
+                        int species = fields.getInt("species");
+                        Marker myMarker = googleMap.addMarker(new MarkerOptions()
+                                .position((new LatLng(latitude, longitude))
+                                ));
+                    }
+
+                    /**jsonObject = json.getJSONObject(0);
                     name = jsonObject.getString("User");
                     jsonObject = json.getJSONObject(1);
-                    occupation = jsonObject.getString("Occupation");
+                    occupation = jsonObject.getString("Occupation");*/
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-
-                Toast.makeText(getBaseContext(), "User: " + name , Toast.LENGTH_LONG).show();
-                Toast.makeText(getBaseContext(), "Occupation: " + occupation , Toast.LENGTH_LONG).show();
             }
         }.execute();
     }
