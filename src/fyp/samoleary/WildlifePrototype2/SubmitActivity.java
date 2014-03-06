@@ -1,6 +1,8 @@
 package fyp.samoleary.WildlifePrototype2;
 
 
+import android.app.ActionBar;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -19,7 +21,7 @@ import java.util.Date;
  * 2: 12/02/14
  * Description:
  */
-public class SubmitActivity extends NavDrawer {
+public class SubmitActivity extends Activity {
 
     private Spinner spinner;
     private int spinnerPos;
@@ -37,6 +39,9 @@ public class SubmitActivity extends NavDrawer {
         super.onCreate(savedBundleInstance);
         setContentView(R.layout.submit_sighting);
 
+        ActionBar actionBar = getActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
         date = new Date();
 
         spinner = (Spinner) findViewById(R.id.submit_form_spinner);
@@ -52,10 +57,15 @@ public class SubmitActivity extends NavDrawer {
             }
         });
 
-        spinner.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 spinnerPos = parent.getSelectedItemPosition();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
             }
         });
 

@@ -9,8 +9,10 @@ import android.content.*;
 import android.location.Location;
 
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -52,8 +54,8 @@ public class GMapActivity extends NavDrawer implements
         LocationListener,
         GoogleMap.OnMapLongClickListener {
 
-    //private final static String USER_COORDINATES = "fyp.samoleary.WildlifePrototype2.COORDINATES";
-    //private final static int SUBMIT_REQUEST = 1000;
+    private final static String USER_COORDINATES = "fyp.samoleary.WildlifePrototype2.COORDINATES";
+    private final static int SUBMIT_REQUEST = 1000;
     LatLng userTouchPoint;
 
     // Object to display an AlertDialog
@@ -124,13 +126,16 @@ public class GMapActivity extends NavDrawer implements
             e.printStackTrace();
         }
 
+        getRecentSightings();
+    }
+
+    private void getRecentSightings() {
         new HttpHandler() {
             @Override
             public HttpUriRequest getHttpRequestMethod() {
 
-                return new HttpGet("http://murmuring-eyrie-6617.herokuapp.com/sightings/getsighting/");
+                return new HttpGet("http://fyp-irish-wildlife.herokuapp.com/sightings/getsighting/");
 
-                // return new HttpPost(url)
             }
             @Override
             public void onResponse(String result) {
@@ -139,25 +144,8 @@ public class GMapActivity extends NavDrawer implements
                 try {
                     json = new JSONArray(result);
 
-                    for (int i = 0; i < json.length(); i++) {
-                        JSONObject c = json.getJSONObject(i);
+                    plotMarkers(json);
 
-                        JSONObject fields = c.getJSONObject("fields");
-                        int animals = fields.getInt("animals");
-                        String sub_date = fields.getString("sub_date");
-                        double latitude = fields.getDouble("latitude");
-                        double longitude = fields.getDouble("longitude");
-                        String location = fields.getString("location");
-                        int species = fields.getInt("species");
-                        Marker myMarker = googleMap.addMarker(new MarkerOptions()
-                                .position((new LatLng(latitude, longitude))
-                                ));
-                    }
-
-                    /**jsonObject = json.getJSONObject(0);
-                    name = jsonObject.getString("User");
-                    jsonObject = json.getJSONObject(1);
-                    occupation = jsonObject.getString("Occupation");*/
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -165,6 +153,73 @@ public class GMapActivity extends NavDrawer implements
         }.execute();
     }
 
+    private void plotMarkers(JSONArray json) {
+        for (int i = 0; i < json.length(); i++) {
+            JSONObject c;
+            try {
+                c = json.getJSONObject(i);
+
+                JSONObject fields = c.getJSONObject("fields");
+                int animals = fields.getInt("animals");
+                String sub_date = fields.getString("sub_date");
+                double latitude = fields.getDouble("latitude");
+                double longitude = fields.getDouble("longitude");
+                String location = fields.getString("location");
+                String species = fields.getString("species");
+                Marker myMarker = googleMap.addMarker(new MarkerOptions()
+                        .position((new LatLng(latitude, longitude))
+                        ));
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.gmapcontextmenu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        // If the nav drawer is open, hide action items related to the content view
+        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
+        menu.findItem(R.id.gmap_refresh).setVisible(!drawerOpen);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // The action bar home/up action should open or close the drawer.
+        // ActionBarDrawerToggle will take care of this.
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        // Handle action buttons
+        switch(item.getItemId()) {
+            case R.id.gmap_refresh:
+                googleMap.clear();
+                getRecentSightings();
+                return true;
+            case R.id.gmap_search:
+                gotoSearchActivity();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void selectItem(int position) {
+        switch (position) {
+
+            default:
+                break;
+        }
+    }
     /**
      * Method to create a map.
      */
@@ -182,9 +237,6 @@ public class GMapActivity extends NavDrawer implements
 
     private void initializeMap() {
         googleMap.setMyLocationEnabled(true);
-        Marker myMarker = googleMap.addMarker(new MarkerOptions()
-                .position((new LatLng(53.41608, -7.93396))
-                ));
 
         googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
@@ -199,7 +251,6 @@ public class GMapActivity extends NavDrawer implements
 
     @Override
     public void onMapLongClick(LatLng point) {
-        //Toast.makeText(this, "You clicked: " + point, Toast.LENGTH_SHORT).show();
         userTouchPoint = point;
         sightingAlertDialog = SightingAlertDialogFragment.newInstance(
                 R.string.dialog_create_sighting_msg);
@@ -211,19 +262,23 @@ public class GMapActivity extends NavDrawer implements
                 .position(userTouchPoint)
                 .title("New Marker"));
         Toast.makeText(this, "Positive click", Toast.LENGTH_SHORT).show();
-        //gotoSubmitActivity();
+        gotoSubmitActivity();
     }
 
     public void doNegativeClick() {
         Toast.makeText(this, "Negative click", Toast.LENGTH_SHORT).show();
     }
 
-    /**    private void gotoSubmitActivity() {
+    private void gotoSubmitActivity() {
      Intent intent = new Intent(this, SubmitActivity.class);
      intent.putExtra(USER_COORDINATES, userTouchPoint);
      startActivityForResult(intent, SUBMIT_REQUEST);
-     }*/
+     }
 
+    private void gotoSearchActivity() {
+        Intent intent = new Intent(this, SearchActivity.class);
+        startActivity(intent);
+    }
     /*
      * Called when the Activity is no longer visible at all.
      * Stop updates and disconnect.
@@ -626,4 +681,5 @@ public class GMapActivity extends NavDrawer implements
             return builder.create();
         }
     }
+
 }
