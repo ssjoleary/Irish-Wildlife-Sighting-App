@@ -49,11 +49,31 @@
     </string-array>
 
     <string-array name="species_array">
-        <item>Beluga Whale</item>
-        <item>Blue Whale</item>
-        <item>Bottlenose Dolphin</item>
-        <item>Common Dolphin</item>
-        <item>Cuvier\'s Beaked Whale</item>
+        <item>Any...</item>
+        <item>atlantic white-sided dolphin</item>
+        <item>beluga wha</item>
+        <item>blue whale</item>
+        <item>bottlenose dolphin</item>
+        <item>common dolphin</item>
+        <item>Cuvier\'s beaked whale</item>
+        <item>false killer whale</item>
+        <item>fin whale</item>
+        <item>Gervais\' beaked whale</item>
+        <item>harbour porpoise</item>
+        <item>humpback whale</item>
+        <item>Long-finned pilot whale</item>
+        <item>minke whale</item>
+        <item>northern bottlenose whale</item>
+        <item>northern right whale</item>
+        <item>pygmy sperm whale</item>
+        <item>Risso\'s dolphin</item>
+        <item>sei whale</item>
+        <item>Sowerby\'s beaked whale</item>
+        <item>sperm whale</item>
+        <item>striped dolphin</item>
+        <item>True\'s beaked whale</item>
+        <item>Unidentified Whale or Dolphin</item>
+        <item>white-beaked dolphin</item>
     </string-array>
 
     <string name="gmap_refresh">Refresh</string>
@@ -79,4 +99,6 @@
         <item>Wexford</item>
         <item>Wicklow</item>
     </string-array>
+    <string name="search">Search</string>
+    <string name="cancel">Cancel</string>
 </resources>

@@ -56,6 +56,7 @@ public class GMapActivity extends NavDrawer implements
 
     private final static String USER_COORDINATES = "fyp.samoleary.WildlifePrototype2.COORDINATES";
     private final static int SUBMIT_REQUEST = 1000;
+    private final static int SEARCH_REQUEST = 2000;
     LatLng userTouchPoint;
 
     // Object to display an AlertDialog
@@ -139,42 +140,41 @@ public class GMapActivity extends NavDrawer implements
             }
             @Override
             public void onResponse(String result) {
-                JSONArray json;
+                plotMarkers(result);
+            }
+        }.execute();
+    }
 
+    private void plotMarkers(String result) {
+        googleMap.clear();
+        JSONArray json;
+        try {
+            json = new JSONArray(result);
+            for (int i = 0; i < json.length(); i++) {
+                JSONObject c;
                 try {
-                    json = new JSONArray(result);
+                    c = json.getJSONObject(i);
 
-                    plotMarkers(json);
+                    JSONObject fields = c.getJSONObject("fields");
+                    int animals = fields.getInt("animals");
+                    String sub_date = fields.getString("sub_date");
+                    double latitude = fields.getDouble("latitude");
+                    double longitude = fields.getDouble("longitude");
+                    String location = fields.getString("location");
+                    String species = fields.getString("species");
+                    Marker myMarker = googleMap.addMarker(new MarkerOptions()
+                            .position((new LatLng(latitude, longitude))
+                            ));
 
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
-        }.execute();
-    }
-
-    private void plotMarkers(JSONArray json) {
-        for (int i = 0; i < json.length(); i++) {
-            JSONObject c;
-            try {
-                c = json.getJSONObject(i);
-
-                JSONObject fields = c.getJSONObject("fields");
-                int animals = fields.getInt("animals");
-                String sub_date = fields.getString("sub_date");
-                double latitude = fields.getDouble("latitude");
-                double longitude = fields.getDouble("longitude");
-                String location = fields.getString("location");
-                String species = fields.getString("species");
-                Marker myMarker = googleMap.addMarker(new MarkerOptions()
-                        .position((new LatLng(latitude, longitude))
-                        ));
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
+
+
     }
 
     @Override
@@ -201,7 +201,6 @@ public class GMapActivity extends NavDrawer implements
         // Handle action buttons
         switch(item.getItemId()) {
             case R.id.gmap_refresh:
-                googleMap.clear();
                 getRecentSightings();
                 return true;
             case R.id.gmap_search:
@@ -270,14 +269,14 @@ public class GMapActivity extends NavDrawer implements
     }
 
     private void gotoSubmitActivity() {
-     Intent intent = new Intent(this, SubmitActivity.class);
-     intent.putExtra(USER_COORDINATES, userTouchPoint);
-     startActivityForResult(intent, SUBMIT_REQUEST);
-     }
+        Intent intent = new Intent(this, SubmitActivity.class);
+        intent.putExtra(USER_COORDINATES, userTouchPoint);
+        startActivityForResult(intent, SUBMIT_REQUEST);
+    }
 
     private void gotoSearchActivity() {
         Intent intent = new Intent(this, SearchActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, SEARCH_REQUEST);
     }
     /*
      * Called when the Activity is no longer visible at all.
@@ -410,18 +409,18 @@ public class GMapActivity extends NavDrawer implements
                         break;
                 }
 
-                /** case SUBMIT_REQUEST:
-                 switch (resultCode) {
-                 case Activity.RESULT_OK:
-                 Sighting userSighting = (Sighting) intent.getSerializableExtra("userSighting");
-
-                 // Display the result
-                 Toast.makeText(this, R.string.connected, Toast.LENGTH_SHORT).show();
-                 break;
-                 case Activity.RESULT_CANCELED:
-
-                 break;
-                 } */
+            case SEARCH_REQUEST:
+                switch (resultCode) {
+                    case Activity.RESULT_OK:
+                        String result = intent.getStringExtra("result");
+                        Toast.makeText(getBaseContext(), "Result received!", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getBaseContext(), result, Toast.LENGTH_LONG).show();
+                        plotMarkers(result);
+                        break;
+                    case Activity.RESULT_CANCELED:
+                        Toast.makeText(this,"No result matched your query!" , Toast.LENGTH_SHORT).show();
+                        break;
+                }
 
 
                 // If any other request code was received

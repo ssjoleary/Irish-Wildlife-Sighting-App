@@ -1,11 +1,28 @@
 package fyp.samoleary.WildlifePrototype2;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Spinner;
+import android.widget.*;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 /**
  * Author: Sam O'Leary
@@ -21,13 +38,16 @@ public class SearchActivity extends Activity {
     private Spinner countySpinner;
     private int speciesPos;
     private int countyPos;
+    private Button cancel;
+    private Button search;
+    private SearchParams searchParams;
 
     public void onCreate(Bundle savedBundleInstance) {
         super.onCreate(savedBundleInstance);
         setContentView(R.layout.search_sightings);
-        initSpinners();
+        init();
     }
-    public void initSpinners(){
+    public void init(){
         speciesSpinner = (Spinner) findViewById(R.id.search_species_spinner);
         countySpinner = (Spinner) findViewById(R.id.search_county_spinner);
         speciesSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -62,6 +82,117 @@ public class SearchActivity extends Activity {
                 R.array.counties_array, android.R.layout.simple_spinner_item);
         countyadapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         countySpinner.setAdapter(countyadapter);
+
+        cancel = (Button) findViewById(R.id.search_cancel_btn);
+        cancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SearchActivity.this.finish();
+            }
+        });
+        search = (Button) findViewById(R.id.search_search_btn);
+        search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new HttpAsyncTask().execute("http://fyp-irish-wildlife.herokuapp.com/sightings/getspecificsighting/");
+            }
+        });
+    }
+    public static String POST(String url, SearchParams searchActivity){
+        InputStream inputStream = null;
+        String result = "";
+        try {
+
+            // 1. create HttpClient
+            HttpClient httpclient = new DefaultHttpClient();
+
+            // 2. make POST request to the given URL
+            HttpPost httpPost = new HttpPost(url);
+
+            String json = "";
+
+            // 3. build jsonObject
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.accumulate("species", searchActivity.getSpecies());
+            jsonObject.accumulate("county", searchActivity.getCounty());
+
+            // 4. convert JSONObject to JSON to String
+            json = jsonObject.toString();
+            // ** Alternative way to convert Person object to JSON string usin Jackson Lib
+            // ObjectMapper mapper = new ObjectMapper();
+            // json = mapper.writeValueAsString(searchActivity);
+
+            // 5. set json to StringEntity
+            StringEntity se = new StringEntity(json);
+
+            // 6. set httpPost Entity
+            httpPost.setEntity(se);
+
+            // 7. Set some headers to inform server about the type of the content
+            httpPost.setHeader("Accept", "application/json");
+            httpPost.setHeader("Content-type", "application/json");
+
+            // 8. Execute POST request to the given URL
+            HttpResponse httpResponse = httpclient.execute(httpPost);
+
+            // 9. receive response as inputStream
+            inputStream = httpResponse.getEntity().getContent();
+
+            // 10. convert inputstream to string
+            if(inputStream != null)
+                result = convertInputStreamToString(inputStream);
+            else
+                result = "Did not work!";
+
+        } catch (Exception e) {
+            Log.d("InputStream", e.getLocalizedMessage());
+        }
+
+        // 11. return result
+        return result;
+    }
+    private class HttpAsyncTask extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... urls) {
+
+            searchParams = new SearchParams();
+            searchParams.setCounty(countySpinner.getItemAtPosition(countyPos).toString());
+            searchParams.setSpecies(speciesSpinner.getItemAtPosition(speciesPos).toString());
+            return POST(urls[0],searchParams);
+        }
+        // onPostExecute displays the results of the AsyncTask.
+        @Override
+        protected void onPostExecute(String result) {
+            Toast.makeText(getBaseContext(), "Query Sent!", Toast.LENGTH_LONG).show();
+            validate(result);
+        }
+    }
+
+    private void validate(String result) {
+        Intent returnIntent = new Intent();
+        if (result.equals("[]")) {
+            setResult(RESULT_CANCELED, returnIntent);
+            finish();
+        }
+        else {
+            returnIntent.putExtra("result", result);
+            setResult(RESULT_OK, returnIntent);
+            Toast.makeText(getBaseContext(), "Result is OK!", Toast.LENGTH_LONG).show();
+            finish();
+        }
+    }
+
+    private static String convertInputStreamToString(InputStream inputStream) throws IOException {
+        BufferedReader bufferedReader = new BufferedReader( new InputStreamReader(inputStream));
+        String line = "";
+        StringBuilder result = new StringBuilder();
+        while((line = bufferedReader.readLine()) != null) {
+            result.append(line);
+        }
+
+        inputStream.close();
+        return result.toString();
+
     }
 
 }

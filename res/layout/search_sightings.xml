@@ -35,6 +35,21 @@
                     android:layout_height="wrap_content"
                     android:id="@+id/search_county_spinner"/>
         </TableRow>
+        <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent">
+            <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="@string/cancel"
+                    android:id="@+id/search_cancel_btn" android:layout_weight="1"/>
+            <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:text="@string/search"
+                    android:id="@+id/search_search_btn" android:layout_weight="1"/>
+        </LinearLayout>
+
 
     </TableLayout>
 
