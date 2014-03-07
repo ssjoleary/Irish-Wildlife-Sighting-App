@@ -14,34 +14,28 @@ import java.io.Serializable;
 public class Sighting implements Serializable {
     private final static long serialVersionUID = 1;
 
-    private int speciesID;
-    private int confidenceLvl;
+    private String species;
     private String date;
     private double sightingLat;
     private double sightingLong;
+    private String location;
+    private int animals;
 
-    public Sighting(int speciesID, int confidenceLvl, String date, double sightingLat, double sightingLong) {
-        this.speciesID = speciesID;
-        this.confidenceLvl = confidenceLvl;
+    public Sighting(String species, String date, double sightingLat, double sightingLong, String location, int animals) {
+        this.species = species;
         this.date = date;
         this.sightingLat = sightingLat;
         this.sightingLong = sightingLong;
+        this.location = location;
+        this.animals = animals;
     }
 
-    public int getSpeciesID() {
-        return speciesID;
+    public String getSpecies() {
+        return species;
     }
 
-    public void setSpeciesID(int speciesID) {
-        this.speciesID = speciesID;
-    }
-
-    public int getConfidenceLvl() {
-        return confidenceLvl;
-    }
-
-    public void setConfidenceLvl(int confidenceLvl) {
-        this.confidenceLvl = confidenceLvl;
+    public void setSpecies(String species) {
+        this.species = species;
     }
 
     public String getDate() {
@@ -56,6 +50,10 @@ public class Sighting implements Serializable {
         return sightingLat;
     }
 
+    public String getLatString() {
+        return Double.toString(sightingLat);
+    }
+
     public void setSightingLat(double sightingLat) {
         this.sightingLat = sightingLat;
     }
@@ -64,8 +62,28 @@ public class Sighting implements Serializable {
         return sightingLong;
     }
 
+    public String getLngString() {
+        return Double.toString(sightingLong);
+    }
+
     public void setSightingLong(double sightingLong) {
         this.sightingLong = sightingLong;
+    }
+
+    public int getAnimals() {
+        return animals;
+    }
+
+    public void setAnimals(int animals) {
+        this.animals = animals;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 
 }

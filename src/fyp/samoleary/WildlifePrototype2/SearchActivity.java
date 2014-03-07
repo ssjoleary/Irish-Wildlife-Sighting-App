@@ -7,16 +7,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.*;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -99,7 +94,7 @@ public class SearchActivity extends Activity {
         });
     }
     public static String POST(String url, SearchParams searchActivity){
-        InputStream inputStream = null;
+        InputStream inputStream;
         String result = "";
         try {
 
@@ -109,7 +104,7 @@ public class SearchActivity extends Activity {
             // 2. make POST request to the given URL
             HttpPost httpPost = new HttpPost(url);
 
-            String json = "";
+            String json;
 
             // 3. build jsonObject
             JSONObject jsonObject = new JSONObject();
@@ -163,7 +158,6 @@ public class SearchActivity extends Activity {
         // onPostExecute displays the results of the AsyncTask.
         @Override
         protected void onPostExecute(String result) {
-            Toast.makeText(getBaseContext(), "Query Sent!", Toast.LENGTH_LONG).show();
             validate(result);
         }
     }
@@ -177,14 +171,13 @@ public class SearchActivity extends Activity {
         else {
             returnIntent.putExtra("result", result);
             setResult(RESULT_OK, returnIntent);
-            Toast.makeText(getBaseContext(), "Result is OK!", Toast.LENGTH_LONG).show();
             finish();
         }
     }
 
     private static String convertInputStreamToString(InputStream inputStream) throws IOException {
         BufferedReader bufferedReader = new BufferedReader( new InputStreamReader(inputStream));
-        String line = "";
+        String line;
         StringBuilder result = new StringBuilder();
         while((line = bufferedReader.readLine()) != null) {
             result.append(line);

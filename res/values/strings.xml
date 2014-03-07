@@ -101,4 +101,11 @@
     </string-array>
     <string name="search">Search</string>
     <string name="cancel">Cancel</string>
+
+    <!-- Sighting Dialog -->
+    <string name="sighting_species">Species</string>
+    <string name="sighting_location">Location</string>
+    <string name="sighting_animals">Animals</string>
+    <string name="sighting_date">Date</string>
+    <string name="sighting_coordinates">Co-ordinates</string>
 </resources>
