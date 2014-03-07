@@ -140,7 +140,13 @@ public class GMapActivity extends NavDrawer implements
             e.printStackTrace();
         }
 
-        getRecentSightings();
+        Intent i = getIntent();
+        if (i.getStringExtra("result") == null) {
+            Toast.makeText(this, "Submit Cancelled", Toast.LENGTH_SHORT).show();
+            getRecentSightings();
+        } else {
+            plotMarkers(i.getStringExtra("result"));
+        }
     }
 
     private void getRecentSightings() {

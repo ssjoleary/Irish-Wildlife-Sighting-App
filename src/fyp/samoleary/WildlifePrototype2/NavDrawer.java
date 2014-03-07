@@ -71,6 +71,9 @@ public class NavDrawer extends FragmentActivity {
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
+        View imgView = getLayoutInflater().inflate(R.layout.header, null);
+        mDrawerList.addHeaderView(imgView);
+
         // set a custom shadow that overlays the main content when the drawer opens
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
         // set up the drawer's list view with items and click listener
