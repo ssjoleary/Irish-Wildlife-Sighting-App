@@ -14,6 +14,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -96,10 +97,18 @@ public class GMapActivity extends NavDrawer implements
     private String location;
     private String species;
 
+    public static final String PREFS_NAME = "MyPrefsFile";
+    private TextView imgText;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
+
+        imgText = (TextView) findViewById(R.id.myImageViewText);
+        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        String name = settings.getString("name", "Click to set up Profile");
+        imgText.setText(name);
 
         mkrObjects = new HashMap<String, Sighting>();
         userTouchPoint = new LatLng(0, 0);
@@ -142,7 +151,6 @@ public class GMapActivity extends NavDrawer implements
 
         Intent i = getIntent();
         if (i.getStringExtra("result") == null) {
-            Toast.makeText(this, "Submit Cancelled", Toast.LENGTH_SHORT).show();
             getRecentSightings();
         } else {
             plotMarkers(i.getStringExtra("result"));
@@ -241,11 +249,18 @@ public class GMapActivity extends NavDrawer implements
     @Override
     public void selectItem(int position) {
         switch (position) {
-
+            case 0:
+                gotoProfile();
             default:
                 break;
         }
     }
+
+    private void gotoProfile() {
+        Intent i = new Intent(this, Profile.class);
+        startActivity(i);
+    }
+
     /**
      * Method to create a map.
      */

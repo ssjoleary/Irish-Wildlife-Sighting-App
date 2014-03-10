@@ -1,11 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ImageView
+<RelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/imageView"
-        android:src="@drawable/whale"
-        android:adjustViewBounds="true"
-        >
-</ImageView>
+        android:layout_height="wrap_content">
+    <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageView"
+            android:src="@drawable/whale"
+            android:adjustViewBounds="true"
+            />
+    <TextView
+            android:id="@+id/myImageViewText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@+id/imageView"
+            android:layout_alignBottom="@+id/imageView"
+            android:layout_margin="1dp"
+            android:gravity="center"
+            android:textColor="#000000"/>
+</RelativeLayout>
 

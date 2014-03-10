@@ -108,4 +108,10 @@
     <string name="sighting_animals">Animals</string>
     <string name="sighting_date">Date</string>
     <string name="sighting_coordinates">Co-ordinates</string>
+
+    <!-- Profile -->
+    <string name="profile_name">Name</string>
+    <string name="profile_telephone">Telephone</string>
+    <string name="profile_email">Email</string>
+    <string name="profile_member">Are you a current IWDG member?</string>
 </resources>
