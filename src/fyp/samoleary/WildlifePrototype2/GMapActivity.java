@@ -97,18 +97,10 @@ public class GMapActivity extends NavDrawer implements
     private String location;
     private String species;
 
-    public static final String PREFS_NAME = "MyPrefsFile";
-    private TextView imgText;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
-
-        imgText = (TextView) findViewById(R.id.myImageViewText);
-        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-        String name = settings.getString("name", "Click to set up Profile");
-        imgText.setText(name);
 
         mkrObjects = new HashMap<String, Sighting>();
         userTouchPoint = new LatLng(0, 0);
