@@ -7,14 +7,14 @@ import android.app.Dialog;
 import android.content.*;
 
 import android.location.Location;
-
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -23,6 +23,8 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 
@@ -112,19 +114,15 @@ public class GMapActivity extends NavDrawer implements
          * Set the update interval
          */
         mLocationRequest.setInterval(LocationUtils.UPDATE_INTERVAL_IN_MILLISECONDS);
-
         // Use high accuracy
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
         // Set the interval ceiling to one minute
         mLocationRequest.setFastestInterval(LocationUtils.FAST_INTERVAL_CEILING_IN_MILLISECONDS);
-
         // Note that location updates are off until the user turns them on
         mUpdatesRequested = false;
 
         // Open Shared Preferences
         mPrefs = getSharedPreferences(LocationUtils.SHARED_PREFERENCES, Context.MODE_PRIVATE);
-
         // Get an editor
         mEditor = mPrefs.edit();
 
@@ -165,7 +163,6 @@ public class GMapActivity extends NavDrawer implements
     }
 
     private void plotMarkers(String result) {
-
         googleMap.clear();
         JSONArray json;
         try {
@@ -274,9 +271,42 @@ public class GMapActivity extends NavDrawer implements
         googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                Sighting sighting = mkrObjects.get(marker.getId());
-                gotoDisplaySightingDialog(sighting);
-                return true;
+                if (mkrObjects.containsKey(marker.getId())) {
+                    Sighting sighting = mkrObjects.get(marker.getId());
+                    gotoDisplaySightingDialog(sighting);
+                    return true;
+                } else {
+                    marker.showInfoWindow();
+                    return true;
+                }
+            }
+        });
+
+        googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
+
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                sightingAlertDialog = SightingAlertDialogFragment.newInstance(
+                        R.string.dialog_create_sighting_msg);
+                sightingAlertDialog.show(getSupportFragmentManager(), "dialog");
+            }
+        });
+
+        googleMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
+            @Override
+            public void onMarkerDragStart(Marker marker) {
+
+            }
+
+            @Override
+            public void onMarkerDrag(Marker marker) {
+
+            }
+
+            @Override
+            public void onMarkerDragEnd(Marker marker) {
+                marker.setTitle("Confirm location and begin submission");
+                marker.showInfoWindow();
             }
         });
 
@@ -292,15 +322,14 @@ public class GMapActivity extends NavDrawer implements
     @Override
     public void onMapLongClick(LatLng point) {
         userTouchPoint = point;
-        sightingAlertDialog = SightingAlertDialogFragment.newInstance(
-                R.string.dialog_create_sighting_msg);
-        sightingAlertDialog.show(getSupportFragmentManager(), "dialog");
+        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(point, 11));
+        googleMap.addMarker(new MarkerOptions()
+                .position(userTouchPoint)
+                .title("Drag me or tap to begin submission!")
+                .draggable(true)).showInfoWindow();
     }
 
     public void doPositiveClick() {
-        googleMap.addMarker(new MarkerOptions()
-                .position(userTouchPoint)
-                .title("New Marker"));
         gotoSubmitActivity();
     }
 
