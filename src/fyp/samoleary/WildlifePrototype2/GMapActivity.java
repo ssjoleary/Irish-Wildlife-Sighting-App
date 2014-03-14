@@ -64,9 +64,11 @@ public class GMapActivity extends NavDrawer implements
     private final static int SUBMIT_REQUEST = 1000;
     private final static int SEARCH_REQUEST = 2000;
     LatLng userTouchPoint;
+    String userMarkerID;
 
     // Object to display an AlertDialog
     private SightingAlertDialogFragment sightingAlertDialog;
+    private SightingMKRDialogFragment sightingMKRDialog;
 
     // A request to connect to Location Services
     private LocationRequest mLocationRequest;
@@ -91,6 +93,7 @@ public class GMapActivity extends NavDrawer implements
     private GoogleMap googleMap;
 
     private HashMap<String, Sighting> mkrObjects;
+    private HashMap<String, Marker> sightingMkr;
 
     private int animals;
     private String sub_date;
@@ -105,6 +108,7 @@ public class GMapActivity extends NavDrawer implements
         setContentView(R.layout.main);
 
         mkrObjects = new HashMap<String, Sighting>();
+        sightingMkr = new HashMap<String, Marker>();
         userTouchPoint = new LatLng(0, 0);
 
         // Create a new global location parameters object
@@ -276,8 +280,15 @@ public class GMapActivity extends NavDrawer implements
                     gotoDisplaySightingDialog(sighting);
                     return true;
                 } else {
-                    marker.showInfoWindow();
-                    return true;
+                    if (marker.isInfoWindowShown()){
+                        sightingMKRDialog = SightingMKRDialogFragment.newInstance(
+                                R.string.dialog_remove_marker);
+                        sightingMKRDialog.show(getSupportFragmentManager(), "dialog");
+                        return true;
+                    } else {
+                        marker.showInfoWindow();
+                        return true;
+                    }
                 }
             }
         });
@@ -295,7 +306,9 @@ public class GMapActivity extends NavDrawer implements
         googleMap.setOnMarkerDragListener(new GoogleMap.OnMarkerDragListener() {
             @Override
             public void onMarkerDragStart(Marker marker) {
-
+                if(marker.isInfoWindowShown()){
+                    marker.hideInfoWindow();
+                }
             }
 
             @Override
@@ -323,10 +336,15 @@ public class GMapActivity extends NavDrawer implements
     public void onMapLongClick(LatLng point) {
         userTouchPoint = point;
         googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(point, 11));
-        googleMap.addMarker(new MarkerOptions()
+        Marker mkr = googleMap.addMarker(new MarkerOptions()
                 .position(userTouchPoint)
                 .title("Drag me or tap to begin submission!")
-                .draggable(true)).showInfoWindow();
+                .draggable(true));
+        mkr.showInfoWindow();
+        userMarkerID = mkr.getId();
+        sightingMkr.put(userMarkerID, mkr);
+        mEditor.putString("mkrID", userMarkerID);
+        mEditor.commit();
     }
 
     public void doPositiveClick() {
@@ -485,6 +503,19 @@ public class GMapActivity extends NavDrawer implements
                         break;
                     case Activity.RESULT_CANCELED:
                         Toast.makeText(this,"No result matched your query!" , Toast.LENGTH_SHORT).show();
+                        break;
+                }
+
+            case SUBMIT_REQUEST:
+                switch (resultCode) {
+                    case Activity.RESULT_OK:
+                        Sighting sighting = (Sighting) intent.getSerializableExtra("userSighting");
+                        mkrObjects.put(mPrefs.getString("mkrID", "null"), sighting);
+                        Marker mkr = sightingMkr.get(mPrefs.getString("mkrID", "null"));
+                        mkr.setDraggable(false);
+                        break;
+                    case Activity.RESULT_CANCELED:
+
                         break;
                 }
                 // If any other request code was received
@@ -743,6 +774,50 @@ public class GMapActivity extends NavDrawer implements
             // Create the AlertDialog object and return it
             return builder.create();
         }
+    }
+    public static class SightingMKRDialogFragment extends DialogFragment {
+
+        public static SightingMKRDialogFragment newInstance(int title) {
+            SightingMKRDialogFragment frag = new SightingMKRDialogFragment();
+            Bundle args = new Bundle();
+            args.putInt("title", title);
+            frag.setArguments(args);
+            return frag;
+        }
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            int title = getArguments().getInt("title");
+
+            // Use the Builder class for convenient dialog construction
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+            builder.setTitle(title)
+                    .setPositiveButton(R.string.dialog_yes, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int id) {
+                            ((GMapActivity)getActivity()).doPositiveClickMKR();
+                        }
+                    })
+                    .setNegativeButton(R.string.dialog_no, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int id) {
+                            ((GMapActivity)getActivity()).doNegativeClickMKR();
+                        }
+                    });
+
+            // Create the AlertDialog object and return it
+            return builder.create();
+        }
+    }
+
+    private void doNegativeClickMKR() {
+
+    }
+
+    private void doPositiveClickMKR() {
+        Marker mkr = sightingMkr.get(mPrefs.getString("mkrID", "null"));
+        mkr.remove();
     }
 
 }

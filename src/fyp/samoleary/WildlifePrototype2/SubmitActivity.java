@@ -31,9 +31,11 @@ public class SubmitActivity extends Activity {
     public final static String USER_COORDINATES = "fyp.samoleary.WildlifePrototype2.COORDINATES";
     private TextView lat_view;
     private TextView long_view;
+    private TextView animals_view;
+    private TextView location_view;
     private Button submit_btn;
     private Sighting userSighting;
-    private int confidenceLvl_selected;
+    private String species;
 
     protected void onCreate(Bundle savedBundleInstance) {
         super.onCreate(savedBundleInstance);
@@ -48,16 +50,23 @@ public class SubmitActivity extends Activity {
         date_view = (TextView) findViewById(R.id.submit_form_date_input);
         lat_view = (TextView) findViewById(R.id.submit_form_latitude_input);
         long_view = (TextView) findViewById(R.id.submit_form_longitude_input);
+        animals_view = (TextView) findViewById(R.id.submit_form_animals);
+        location_view = (TextView) findViewById(R.id.submit_form_location);
         submit_btn = (Button) findViewById(R.id.submit_form_btn);
 
         submit_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //submitSighting();
+                submitSighting();
             }
         });
 
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+                R.array.species_array, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(adapter);
+
+    /*    spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 spinnerPos = parent.getSelectedItemPosition();
@@ -67,14 +76,9 @@ public class SubmitActivity extends Activity {
             public void onNothingSelected(AdapterView<?> parent) {
 
             }
-        });
+        });        */
 
         date_view.setText(date.toString());
-
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
-                R.array.species_array, android.R.layout.simple_spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
 
         Intent intent = getIntent();
         user_coordinates = intent.getParcelableExtra(USER_COORDINATES);
@@ -86,29 +90,40 @@ public class SubmitActivity extends Activity {
         userSighting = createSighting();
 
         Intent intent = new Intent(this, GMapActivity.class);
+        setResult(RESULT_OK, intent);
         intent.putExtra("userSighting", userSighting);
-
+        finish();
     }
 
     private Sighting createSighting() {
-        /**int speciesID, confidenceLvl;
         double sightingLat, sightingLong;
+        String location = "default";
+        int animals = 0;
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                species = parent.getItemAtPosition(position).toString();
+            }
 
-        speciesID = spinnerPos;
-        confidenceLvl = confidenceLvl_selected;
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
         String dateOut = date.toString();
         sightingLat = user_coordinates.latitude;
         sightingLong = user_coordinates.longitude;
+        location = location_view.getText().toString();
+        animals = Integer.parseInt(animals_view.getText().toString());
 
-        return new Sighting(speciesID, confidenceLvl, dateOut, sightingLat, sightingLong);*/
-        return null;
+        return new Sighting(species, dateOut, sightingLat, sightingLong, location, animals);
     }
 
     public void onRadioButtonClicked(View view) {
         boolean checked = ((RadioButton) view).isChecked();
 
-        switch (view.getId()) {
+        /*switch (view.getId()) {
             case R.id.submit_form_confidence_1:
                 confidenceLvl_selected = 1;
                 break;
@@ -118,6 +133,6 @@ public class SubmitActivity extends Activity {
             case R.id.submit_form_confidence_3:
                 confidenceLvl_selected = 3;
                 break;
-        }
+        } */
     }
 }

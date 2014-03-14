@@ -26,7 +26,6 @@
                 <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/print_date"
                         android:id="@+id/submit_form_date_input" android:layout_weight="1"/>
             </LinearLayout>
             <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content"
@@ -40,12 +39,10 @@
                 <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/print_latitude"
                         android:id="@+id/submit_form_latitude_input" android:layout_weight="1"/>
                 <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/print_longitude"
                         android:id="@+id/submit_form_longitude_input" android:layout_weight="1"/>
             </LinearLayout>
             <TableLayout
@@ -70,9 +67,11 @@
                         android:layout_height="fill_parent">
                     <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
                               android:textAppearance="?android:attr/textAppearanceLarge"
-                              android:text="@string/submit_form_species" android:id="@+id/textView"/>
-                    <Spinner android:layout_width="wrap_content" android:layout_height="wrap_content"
-                             android:id="@+id/spinner"/>
+                              android:text="@string/submit_form_animals" android:id="@+id/textView"/>
+                    <EditText
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/submit_form_animals"/>
                 </TableRow>
                 <TableRow
                         android:layout_width="fill_parent"
@@ -81,14 +80,14 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:textAppearance="?android:attr/textAppearanceLarge"
-                            android:text="Large Text"
+                            android:text="@string/submit_form_location"
                             android:id="@+id/textView2" android:layout_weight="1"/>
                     <EditText
-                            android:layout_width="fill_parent"
-                            android:layout_height="fill_parent"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
                             android:inputType="textMultiLine"
                             android:ems="10"
-                            android:id="@+id/editText" android:layout_weight="1"/>
+                            android:id="@+id/submit_form_location" android:layout_weight="1"/>
                 </TableRow>
             </TableLayout>
             <Button

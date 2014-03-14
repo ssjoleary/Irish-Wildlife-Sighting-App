@@ -11,7 +11,7 @@ import android.widget.RadioButton;
  * Created by ssjoleary on 10/03/14.
  */
 public class Profile extends Activity {
-    public static final String PREFS_NAME = "MyPrefsFile";
+    //public static final String PREFS_NAME = "MyPrefsFile";
     private EditText nameText;
     private EditText phoneText;
     private EditText emailText;
@@ -28,7 +28,7 @@ public class Profile extends Activity {
         getActionBar().setDisplayHomeAsUpEnabled(true);
 
         // Restore Preferences
-        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        SharedPreferences settings = getSharedPreferences(LocationUtils.SHARED_PREFERENCES, 0);
         name = settings.getString("name", "Name");
         phone = settings.getString("phone", "Phone");
         email = settings.getString("email", "Email");
@@ -52,7 +52,7 @@ public class Profile extends Activity {
     protected void onStop(){
         super.onStop();
 
-        SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+        SharedPreferences settings = getSharedPreferences(LocationUtils.SHARED_PREFERENCES, 0);
         SharedPreferences.Editor editor = settings.edit();
 
         editor.putString("name", nameText.getText().toString().trim());

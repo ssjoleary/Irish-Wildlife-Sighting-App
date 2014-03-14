@@ -48,7 +48,7 @@ public class NavDrawer extends FragmentActivity {
     private CharSequence mTitle;
     private String[] navDrawerMenuItems;
 
-    public static final String PREFS_NAME = "MyPrefsFile";
+    //public static final String PREFS_NAME = "MyPrefsFile";
     private TextView imgText;
 
     @Override
@@ -106,7 +106,7 @@ public class NavDrawer extends FragmentActivity {
             public void onDrawerOpened(View drawerView) {
                 getActionBar().setTitle(mDrawerTitle);
                 imgText = (TextView) findViewById(R.id.myImageViewText);
-                SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+                SharedPreferences settings = getSharedPreferences(LocationUtils.SHARED_PREFERENCES, 0);
                 String name = settings.getString("name", "Click to set up Profile");
                 imgText.setText(name);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()

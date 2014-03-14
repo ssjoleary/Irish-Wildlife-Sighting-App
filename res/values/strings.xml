@@ -9,6 +9,7 @@
     <string name="dialog_create_sighting_msg">Submit a Sighting at this Location?</string>
     <string name="dialog_yes">Yes</string>
     <string name="dialog_no">No</string>
+    <string name="dialog_remove_marker">Remove this marker?</string>
 
     <!-- Messages For Gmap-->
     <string name="connected">Client connected</string>
@@ -28,16 +29,11 @@
     <string name="submit_form_latitude">Latitude:</string>
     <string name="submit_form_longitude">Longitude:</string>
     <string name="submit_form_species">Species:</string>
-    <string name="submit_form_confidence_level">Confidence:</string>
     <string name="submit_form_date">Date:</string>
     <string name="submit_form_coordinates">Coordinates:</string>
-    <string name="submit_form_confidence_1">100%</string>
-    <string name="submit_form_confidence_2">50%</string>
-    <string name="submit_form_confidence_3">25%</string>
+    <string name="submit_form_animals">Animals:</string>
+    <string name="submit_form_location">Location:</string>
     <string name="submit_form_btn">Submit</string>
-    <string name="print_date">The Date should be printed here....</string>
-    <string name="print_latitude">Print Latitude</string>
-    <string name="print_longitude">Print Longitude</string>
 
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
