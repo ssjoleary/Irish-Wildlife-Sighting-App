@@ -42,7 +42,7 @@ public class SightingDialog extends Activity {
         date.setText(sighting.getDate());
         location.setText(sighting.getLocation());
         animal.setText(Integer.toString(sighting.getAnimals()));
-        lat.setText(sighting.getLatString());
-        lng.setText(sighting.getLngString());
+        lat.setText(String.format("%.5f", sighting.getSightingLat()));
+        lng.setText(String.format("%.5f", sighting.getSightingLong()));
     }
 }

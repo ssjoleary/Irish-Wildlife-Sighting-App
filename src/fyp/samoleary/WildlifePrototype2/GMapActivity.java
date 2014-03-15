@@ -6,6 +6,7 @@ import android.app.Dialog;
 
 import android.content.*;
 
+import android.database.Cursor;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -30,9 +31,7 @@ import com.google.android.gms.maps.MapFragment;
 
 import android.support.v4.app.DialogFragment;
 
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.*;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.json.JSONArray;
@@ -68,7 +67,7 @@ public class GMapActivity extends NavDrawer implements
 
     // Object to display an AlertDialog
     private SightingAlertDialogFragment sightingAlertDialog;
-    private SightingMKRDialogFragment sightingMKRDialog;
+    //private SightingMKRDialogFragment sightingMKRDialog;
 
     // A request to connect to Location Services
     private LocationRequest mLocationRequest;
@@ -95,12 +94,7 @@ public class GMapActivity extends NavDrawer implements
     private HashMap<String, Sighting> mkrObjects;
     private HashMap<String, Marker> sightingMkr;
 
-    private int animals;
-    private String sub_date;
-    private double latitude;
-    private double longitude;
-    private String location;
-    private String species;
+    private WildlifeDB wildlifeDB;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -149,6 +143,38 @@ public class GMapActivity extends NavDrawer implements
         } else {
             plotMarkers(i.getStringExtra("result"));
         }
+
+        getLocalSightings();
+    }
+
+    private void getLocalSightings() {
+        wildlifeDB = new WildlifeDB(this);
+        wildlifeDB.open();
+
+        Cursor cursor = wildlifeDB.getInfo();
+        startManagingCursor(cursor);
+        if(cursor.moveToFirst()){
+            do {
+                int animals = cursor.getInt(cursor.getColumnIndex(Constants.SIGHTING_ANIMALS));
+                String sub_date = cursor.getString(cursor.getColumnIndex(Constants.SIGHTING_DATE));
+                double latitude  = cursor.getDouble(cursor.getColumnIndex(Constants.SIGHTING_LAT));
+                double longitude = cursor.getDouble(cursor.getColumnIndex(Constants.SIGHTING_LNG));
+                String location = cursor.getString(cursor.getColumnIndex(Constants.SIGHTING_LOCATION));
+                String species = cursor.getString(cursor.getColumnIndex(Constants.SIGHTING_SPECIES));
+
+                MarkerOptions mo = new MarkerOptions()
+                        .position(new LatLng(latitude, longitude))
+                        .flat(true)
+                        .snippet("Click here for details")
+                        .rotation(0)
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+
+                Marker myMarker = googleMap.addMarker(mo);
+                Sighting mySighting = new Sighting(species, sub_date, latitude, longitude, location, animals);
+                mkrObjects.put(myMarker.getId(), mySighting);
+
+            } while(cursor.moveToNext());
+        }
     }
 
     private void getRecentSightings() {
@@ -177,15 +203,15 @@ public class GMapActivity extends NavDrawer implements
                     c = json.getJSONObject(i);
 
                     JSONObject fields = c.getJSONObject("fields");
-                    animals = fields.getInt("animals");
-                    sub_date = fields.getString("sub_date");
-                    latitude = fields.getDouble("latitude");
-                    longitude = fields.getDouble("longitude");
-                    location = fields.getString("location");
-                    species = fields.getString("species");
+                    int animals = fields.getInt("animals");
+                    String sub_date = fields.getString("sub_date");
+                    double latitude = fields.getDouble("latitude");
+                    double longitude = fields.getDouble("longitude");
+                    String location = fields.getString("location");
+                    String species = fields.getString("species");
 
                     MarkerOptions mo = new MarkerOptions()
-                            .position(new LatLng(latitude,longitude))
+                            .position(new LatLng(latitude, longitude))
                             .flat(true)
                             .snippet("Click here for details")
                             .rotation(0);
@@ -280,15 +306,8 @@ public class GMapActivity extends NavDrawer implements
                     gotoDisplaySightingDialog(sighting);
                     return true;
                 } else {
-                    if (marker.isInfoWindowShown()){
-                        sightingMKRDialog = SightingMKRDialogFragment.newInstance(
-                                R.string.dialog_remove_marker);
-                        sightingMKRDialog.show(getSupportFragmentManager(), "dialog");
-                        return true;
-                    } else {
-                        marker.showInfoWindow();
-                        return true;
-                    }
+                    marker.showInfoWindow();
+                    return true;
                 }
             }
         });
@@ -334,12 +353,20 @@ public class GMapActivity extends NavDrawer implements
 
     @Override
     public void onMapLongClick(LatLng point) {
+        Marker mkrOld = sightingMkr.get(mPrefs.getString("mkrID", "null"));
+        if (mkrOld==null){
+            Log.d("Placing Marker: ", "No Previous Markers Set");
+        } else {
+            mkrOld.remove();
+            sightingMkr.remove(mPrefs.getString("mkrID", "null"));
+        }
         userTouchPoint = point;
         googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(point, 11));
         Marker mkr = googleMap.addMarker(new MarkerOptions()
                 .position(userTouchPoint)
                 .title("Drag me or tap to begin submission!")
-                .draggable(true));
+                .draggable(true)
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
         mkr.showInfoWindow();
         userMarkerID = mkr.getId();
         sightingMkr.put(userMarkerID, mkr);
@@ -513,6 +540,8 @@ public class GMapActivity extends NavDrawer implements
                         mkrObjects.put(mPrefs.getString("mkrID", "null"), sighting);
                         Marker mkr = sightingMkr.get(mPrefs.getString("mkrID", "null"));
                         mkr.setDraggable(false);
+                        mkr.hideInfoWindow();
+                        sightingMkr.remove(mPrefs.getString("mkrID", "null"));
                         break;
                     case Activity.RESULT_CANCELED:
 
@@ -769,40 +798,11 @@ public class GMapActivity extends NavDrawer implements
                         public void onClick(DialogInterface dialog, int id) {
                             ((GMapActivity)getActivity()).doNegativeClick();
                         }
-                    });
-
-            // Create the AlertDialog object and return it
-            return builder.create();
-        }
-    }
-    public static class SightingMKRDialogFragment extends DialogFragment {
-
-        public static SightingMKRDialogFragment newInstance(int title) {
-            SightingMKRDialogFragment frag = new SightingMKRDialogFragment();
-            Bundle args = new Bundle();
-            args.putInt("title", title);
-            frag.setArguments(args);
-            return frag;
-        }
-
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            int title = getArguments().getInt("title");
-
-            // Use the Builder class for convenient dialog construction
-            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-
-            builder.setTitle(title)
-                    .setPositiveButton(R.string.dialog_yes, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int id) {
-                            ((GMapActivity)getActivity()).doPositiveClickMKR();
-                        }
                     })
-                    .setNegativeButton(R.string.dialog_no, new DialogInterface.OnClickListener() {
+                    .setNeutralButton(R.string.dialog_remove_marker, new DialogInterface.OnClickListener() {
                         @Override
-                        public void onClick(DialogInterface dialog, int id) {
-                            ((GMapActivity)getActivity()).doNegativeClickMKR();
+                        public void onClick(DialogInterface dialog, int which) {
+                            ((GMapActivity)getActivity()).doNeutralClick();
                         }
                     });
 
@@ -811,13 +811,54 @@ public class GMapActivity extends NavDrawer implements
         }
     }
 
-    private void doNegativeClickMKR() {
-
-    }
-
-    private void doPositiveClickMKR() {
+    private void doNeutralClick() {
         Marker mkr = sightingMkr.get(mPrefs.getString("mkrID", "null"));
         mkr.remove();
     }
 
+    /**public static class SightingMKRDialogFragment extends DialogFragment {
+
+     public static SightingMKRDialogFragment newInstance(int title) {
+     SightingMKRDialogFragment frag = new SightingMKRDialogFragment();
+     Bundle args = new Bundle();
+     args.putInt("title", title);
+     frag.setArguments(args);
+     return frag;
+     }
+
+     @Override
+     public Dialog onCreateDialog(Bundle savedInstanceState) {
+     int title = getArguments().getInt("title");
+
+     // Use the Builder class for convenient dialog construction
+     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+     builder.setTitle(title)
+     .setPositiveButton(R.string.dialog_yes, new DialogInterface.OnClickListener() {
+     @Override
+     public void onClick(DialogInterface dialog, int id) {
+     ((GMapActivity)getActivity()).doPositiveClickMKR();
+     }
+     })
+     .setNegativeButton(R.string.dialog_no, new DialogInterface.OnClickListener() {
+     @Override
+     public void onClick(DialogInterface dialog, int id) {
+     ((GMapActivity)getActivity()).doNegativeClickMKR();
+     }
+     });
+
+     // Create the AlertDialog object and return it
+     return builder.create();
+     }
+     }
+
+     private void doNegativeClickMKR() {
+
+     }
+
+     private void doPositiveClickMKR() {
+     Marker mkr = sightingMkr.get(mPrefs.getString("mkrID", "null"));
+     mkr.remove();
+     }
+     */
 }

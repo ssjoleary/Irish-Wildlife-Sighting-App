@@ -3,15 +3,15 @@
     <string name="app_name">Irish Wildlife</string>
 
     <!-- Latitude, longitude format -->
-    <string name="latitude_longitude">%1$.8f, %2$.8f</string>
+    <string name="latitude_longitude">%1$.5f, %2$.5f</string>
 
     <!-- Sighting Messages -->
     <string name="dialog_create_sighting_msg">Submit a Sighting at this Location?</string>
     <string name="dialog_yes">Yes</string>
     <string name="dialog_no">No</string>
-    <string name="dialog_remove_marker">Remove this marker?</string>
+    <string name="dialog_remove_marker">Remove marker?</string>
 
-    <!-- Messages For Gmap-->
+    <!-- Messages For Gmap -->
     <string name="connected">Client connected</string>
     <string name="disconnected">Client disconnected</string>
     <string name="location_requested">Periodic updates requested</string>
@@ -30,10 +30,12 @@
     <string name="submit_form_longitude">Longitude:</string>
     <string name="submit_form_species">Species:</string>
     <string name="submit_form_date">Date:</string>
-    <string name="submit_form_coordinates">Coordinates:</string>
-    <string name="submit_form_animals">Animals:</string>
-    <string name="submit_form_location">Location:</string>
+    <string name="submit_form_coordinates">Co-ordinates:</string>
+    <string name="submit_form_animals">Number of Animals Seen</string>
+    <string name="submit_form_location">Location</string>
+    <string name="submit_form_county">County:</string>
     <string name="submit_form_btn">Submit</string>
+    <string name="submit_form_inclphoto">Incl. Photo</string>
 
     <string name="drawer_open">Open navigation drawer</string>
     <string name="drawer_close">Close navigation drawer</string>
@@ -47,7 +49,7 @@
     <string-array name="species_array">
         <item>Any...</item>
         <item>atlantic white-sided dolphin</item>
-        <item>beluga wha</item>
+        <item>beluga whale</item>
         <item>blue whale</item>
         <item>bottlenose dolphin</item>
         <item>common dolphin</item>
@@ -110,4 +112,5 @@
     <string name="profile_telephone">Telephone</string>
     <string name="profile_email">Email</string>
     <string name="profile_member">Are you a current IWDG member?</string>
+    <string name="profile_dropTable">Clear all User Sightings?</string>
 </resources>
