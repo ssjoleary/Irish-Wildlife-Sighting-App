@@ -141,9 +141,9 @@ public class GMapActivity extends NavDrawer implements
             getRecentSightings();
         } else {
             plotMarkers(i.getStringExtra("result"));
+            getLocalSightings();
         }
 
-        getLocalSightings();
     }
 
     private void getLocalSightings() {
@@ -187,6 +187,7 @@ public class GMapActivity extends NavDrawer implements
             @Override
             public void onResponse(String result) {
                 plotMarkers(result);
+                getLocalSightings();
             }
         }.execute();
     }
@@ -538,9 +539,11 @@ public class GMapActivity extends NavDrawer implements
                         Sighting sighting = (Sighting) intent.getSerializableExtra("userSighting");
                         mkrObjects.put(mPrefs.getString("mkrID", "null"), sighting);
                         Marker mkr = sightingMkr.get(mPrefs.getString("mkrID", "null"));
-                        mkr.setDraggable(false);
-                        mkr.hideInfoWindow();
-                        sightingMkr.remove(mPrefs.getString("mkrID", "null"));
+                        if (mkr != null) {
+                            mkr.setDraggable(false);
+                            mkr.hideInfoWindow();
+                            sightingMkr.remove(mPrefs.getString("mkrID", "null"));
+                        }
                         break;
                     case Activity.RESULT_CANCELED:
 

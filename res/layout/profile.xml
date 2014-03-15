@@ -9,7 +9,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:inputType="textPersonName"
-            android:text="@string/profile_name"
+            android:hint="@string/profile_name"
             android:ems="10"
             android:id="@+id/profile_name"/>
     <EditText
@@ -17,13 +17,13 @@
             android:layout_height="wrap_content"
             android:inputType="phone"
             android:ems="10"
-            android:id="@+id/profile_telephone" android:text="@string/profile_telephone"/>
+            android:id="@+id/profile_telephone" android:hint="@string/profile_telephone"/>
     <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:inputType="textEmailAddress"
             android:ems="10"
-            android:id="@+id/profile_email" android:text="@string/profile_email"/>
+            android:id="@+id/profile_email" android:hint="@string/profile_email"/>
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

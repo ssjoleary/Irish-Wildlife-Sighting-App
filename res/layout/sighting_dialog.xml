@@ -5,64 +5,80 @@
               android:layout_width="match_parent"
               android:layout_height="match_parent">
 
-    <TableLayout
+    <ScrollView
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent">
-        <TableRow
+            android:layout_height="fill_parent"
+            android:id="@+id/scrollView">
+        <TableLayout
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent">
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:text="@string/sighting_species"
-                    android:id="@+id/textview"/>
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceMedium"
-                    android:id="@+id/sighting_species" android:layout_weight="6" android:gravity="end"/>
-        </TableRow>
-        <TableRow android:layout_width="fill_parent" android:layout_height="fill_parent" android:id="@+id/tableRow">
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                      android:textAppearance="?android:attr/textAppearanceLarge" android:text="@string/sighting_date"
-                      android:id="@+id/textview1"/>
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                      android:textAppearance="?android:attr/textAppearanceMedium"
-                      android:id="@+id/sighting_date" android:layout_weight="6" android:gravity="end"/>
-        </TableRow>
-        <TableRow android:layout_width="fill_parent" android:layout_height="fill_parent" android:id="@+id/tableRow2">
-            <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:text="@string/sighting_location"
-                    android:id="@+id/textView"/>
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                      android:textAppearance="?android:attr/textAppearanceMedium"
-                      android:id="@+id/sighting_location" android:layout_weight="6"
-                      android:gravity="end"/>
-        </TableRow>
-        <TableRow android:layout_width="fill_parent" android:layout_height="fill_parent" android:id="@+id/tableRow3">
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                      android:textAppearance="?android:attr/textAppearanceLarge" android:text="@string/sighting_animals"
-                      android:id="@+id/textView3"/>
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                      android:textAppearance="?android:attr/textAppearanceMedium"
-                      android:id="@+id/sighting_animal" android:layout_weight="6" android:gravity="end"/>
-        </TableRow>
-        <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content"
-                      android:id="@+id/linearLayout">
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                      android:textAppearance="?android:attr/textAppearanceLarge"
-                      android:text="@string/sighting_coordinates" android:id="@+id/textview4"
-                      android:layout_weight="1"/>
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                      android:id="@+id/sighting_lat"
-                      android:layout_weight="1"/>
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
-                      android:id="@+id/sighting_lng"
-                      android:layout_weight="1"/>
-        </LinearLayout>
-    </TableLayout>
+            <TableRow
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent">
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:text="@string/sighting_species"
+                        android:id="@+id/textview"/>
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceMedium"
+                        android:id="@+id/sighting_species" android:layout_weight="6" android:gravity="end"/>
+            </TableRow>
+            <TableRow android:layout_width="fill_parent" android:layout_height="fill_parent" android:id="@+id/tableRow">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                          android:textAppearance="?android:attr/textAppearanceLarge" android:text="@string/sighting_date"
+                          android:id="@+id/textview1"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                          android:textAppearance="?android:attr/textAppearanceMedium"
+                          android:id="@+id/sighting_date" android:layout_weight="6" android:gravity="end"/>
+            </TableRow>
+            <TableRow android:layout_width="fill_parent" android:layout_height="fill_parent" android:id="@+id/tableRow2">
+                <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:text="@string/sighting_location"
+                        android:id="@+id/textView"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                          android:textAppearance="?android:attr/textAppearanceMedium"
+                          android:id="@+id/sighting_location" android:layout_weight="6"
+                          android:gravity="end"/>
+            </TableRow>
+            <TableRow android:layout_width="fill_parent" android:layout_height="fill_parent" android:id="@+id/tableRow3">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                          android:textAppearance="?android:attr/textAppearanceLarge" android:text="@string/sighting_animals"
+                          android:id="@+id/textView3"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                          android:textAppearance="?android:attr/textAppearanceMedium"
+                          android:id="@+id/sighting_animal" android:layout_weight="6" android:gravity="end"/>
+            </TableRow>
+            <LinearLayout android:layout_width="fill_parent" android:layout_height="wrap_content"
+                          android:id="@+id/linearLayout">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                          android:textAppearance="?android:attr/textAppearanceLarge"
+                          android:text="@string/sighting_coordinates" android:id="@+id/textview4"
+                          android:layout_weight="1"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                          android:id="@+id/sighting_lat"
+                          android:layout_weight="1"/>
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+                          android:id="@+id/sighting_lng"
+                          android:layout_weight="1"/>
+            </LinearLayout>
+            <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent">
+                <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/imageViewSightingDialog"
+                        android:adjustViewBounds="true"
+                        />
+            </LinearLayout>
+        </TableLayout>
+    </ScrollView>
 </LinearLayout>
