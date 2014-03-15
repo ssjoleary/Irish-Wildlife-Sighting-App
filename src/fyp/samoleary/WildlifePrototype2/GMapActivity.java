@@ -67,7 +67,6 @@ public class GMapActivity extends NavDrawer implements
 
     // Object to display an AlertDialog
     private SightingAlertDialogFragment sightingAlertDialog;
-    //private SightingMKRDialogFragment sightingMKRDialog;
 
     // A request to connect to Location Services
     private LocationRequest mLocationRequest;
@@ -815,50 +814,4 @@ public class GMapActivity extends NavDrawer implements
         Marker mkr = sightingMkr.get(mPrefs.getString("mkrID", "null"));
         mkr.remove();
     }
-
-    /**public static class SightingMKRDialogFragment extends DialogFragment {
-
-     public static SightingMKRDialogFragment newInstance(int title) {
-     SightingMKRDialogFragment frag = new SightingMKRDialogFragment();
-     Bundle args = new Bundle();
-     args.putInt("title", title);
-     frag.setArguments(args);
-     return frag;
-     }
-
-     @Override
-     public Dialog onCreateDialog(Bundle savedInstanceState) {
-     int title = getArguments().getInt("title");
-
-     // Use the Builder class for convenient dialog construction
-     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-
-     builder.setTitle(title)
-     .setPositiveButton(R.string.dialog_yes, new DialogInterface.OnClickListener() {
-     @Override
-     public void onClick(DialogInterface dialog, int id) {
-     ((GMapActivity)getActivity()).doPositiveClickMKR();
-     }
-     })
-     .setNegativeButton(R.string.dialog_no, new DialogInterface.OnClickListener() {
-     @Override
-     public void onClick(DialogInterface dialog, int id) {
-     ((GMapActivity)getActivity()).doNegativeClickMKR();
-     }
-     });
-
-     // Create the AlertDialog object and return it
-     return builder.create();
-     }
-     }
-
-     private void doNegativeClickMKR() {
-
-     }
-
-     private void doPositiveClickMKR() {
-     Marker mkr = sightingMkr.get(mPrefs.getString("mkrID", "null"));
-     mkr.remove();
-     }
-     */
 }
