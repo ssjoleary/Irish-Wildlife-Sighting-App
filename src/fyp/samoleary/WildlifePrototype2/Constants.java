@@ -1,7 +1,7 @@
 package fyp.samoleary.WildlifePrototype2;
 
 /**
- * Created by ssjoleary on 10/03/14.
+ * Created by ssjoleary on 10/03/14
  */
 public class Constants {
     public static final String DATABASE_NAME="wildlifedb";
@@ -15,4 +15,5 @@ public class Constants {
     public static final String SIGHTING_ANIMALS = "sighting_animals";
     public static final String SIGHTING_LAT = "sighting_lat";
     public static final String SIGHTING_LNG = "sighting_lng";
+    public static final String SIGHTING_IMGURI = "sighting_imguri";
 }

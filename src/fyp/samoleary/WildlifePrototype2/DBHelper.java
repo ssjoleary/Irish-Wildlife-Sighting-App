@@ -26,6 +26,7 @@ public class DBHelper extends SQLiteOpenHelper {
             Constants.SIGHTING_LOCATION+" text not null,"+
             Constants.SIGHTING_LNG+" double not null,"+
             Constants.SIGHTING_LAT+" double not null,"+
+            Constants.SIGHTING_IMGURI+" text not null, "+
             Constants.SIGHTING_ANIMALS+" integer not null);";
 
     /**

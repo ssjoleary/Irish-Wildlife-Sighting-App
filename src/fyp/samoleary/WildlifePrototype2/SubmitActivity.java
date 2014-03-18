@@ -18,7 +18,6 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -67,6 +66,7 @@ public class SubmitActivity extends Activity {
 
     // Handle to a SharedPreferences editor
     SharedPreferences.Editor mEditor;
+    private String imgUri;
 
     protected void onCreate(Bundle savedBundleInstance) {
         super.onCreate(savedBundleInstance);
@@ -142,6 +142,7 @@ public class SubmitActivity extends Activity {
 
         Intent intent = getIntent();
         user_coordinates = intent.getParcelableExtra(USER_COORDINATES);
+        assert user_coordinates != null;
         lat_view.setText(String.format("%.5f", user_coordinates.latitude));
         long_view.setText(String.format("%.5f", user_coordinates.longitude));
 
@@ -200,7 +201,7 @@ public class SubmitActivity extends Activity {
         } else {
             animals = Integer.parseInt(animals_view.getText().toString());
         }
-        return new Sighting(species, dateOut, sightingLat, sightingLong, location, animals);
+        return new Sighting(species, dateOut, sightingLat, sightingLong, location, animals, imgUri);
     }
 
     public void onRadioButtonClicked(View view) {
@@ -263,20 +264,14 @@ public class SubmitActivity extends Activity {
     /* Checks if external storage is available for read and write */
     public static boolean isExternalStorageWritable() {
         String state = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(state)) {
-            return true;
-        }
-        return false;
+        return Environment.MEDIA_MOUNTED.equals(state);
     }
 
     /* Checks if external storage is available to at least read */
     public boolean isExternalStorageReadable() {
         String state = Environment.getExternalStorageState();
-        if (Environment.MEDIA_MOUNTED.equals(state) ||
-                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
-            return true;
-        }
-        return false;
+        return Environment.MEDIA_MOUNTED.equals(state) ||
+                Environment.MEDIA_MOUNTED_READ_ONLY.equals(state);
     }
 
     @Override
@@ -291,9 +286,9 @@ public class SubmitActivity extends Activity {
                     imgView.setImageBitmap(mImgBitmap);
                 } else {
                     Log.d("IrishWildlife", "Data is null: " + mPrefs.getString("imgFileUri", null));
-                    Uri imgUri = Uri.parse(mPrefs.getString("imgFileUri", "default"));
+                    imgUri = mPrefs.getString("imgFileUri", "default");
                     try {
-                        Bitmap mImgBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imgUri);
+                        Bitmap mImgBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), Uri.parse(imgUri));
                         imgView.setImageBitmap(mImgBitmap);
                     } catch (IOException e) {
                         e.printStackTrace();

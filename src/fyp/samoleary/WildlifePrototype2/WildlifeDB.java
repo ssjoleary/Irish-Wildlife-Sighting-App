@@ -68,6 +68,7 @@ public class WildlifeDB {
             newTaskValue.put(Constants.SIGHTING_ANIMALS, sighting.getAnimals());
             newTaskValue.put(Constants.SIGHTING_LAT, sighting.getSightingLat());
             newTaskValue.put(Constants.SIGHTING_LNG, sighting.getSightingLong());
+            newTaskValue.put(Constants.SIGHTING_IMGURI, sighting.getImgUriString());
             return db.insert(Constants.TABLE_NAME, null, newTaskValue);
         }   catch (SQLiteException e) {
             System.out.println("Insert into database exception caught");
@@ -83,8 +84,7 @@ public class WildlifeDB {
      *      Returns the Cursor containing the information retrieved.
      */
     public Cursor getInfo() {
-        Cursor c = db.query(Constants.TABLE_NAME, null, null, null, null, null, null);
-        return c;
+        return db.query(Constants.TABLE_NAME, null, null, null, null, null, null);
     }
 
     /**

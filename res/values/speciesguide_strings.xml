@@ -1,0 +1,248 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="guide_whales">Whales</string>
+
+    <string name="title_atlanticwhitesideddolphin">atlantic white-sided dolphin</string>
+    <string name="classification_atlanticwhitesideddolphin">Class: Mammalia\n
+        Order: Cetacea\n
+        Suborder: Odontoceti\n
+        Family: Delphinidae\n
+        Genus: Lagenorhynchus\n
+        Species: acutus\n
+        Common names: Atlantic white-sided dolphin\n
+        Irish name: Deilf le cliathán bán</string>
+    <string name="snippet_atlanticwhitesideddolphin">Atlantic white-sided dolphins are gregarious and acrobatic.</string>
+
+    <string name="title_belugawhale">Beluga Whale</string>
+    <string name="classification_belugawhale">Class: Mammalia\n
+        Order: Cetecea\n
+        Suborder: Odontoceti\n
+        Family: Monotontidae\n
+        Genus: Delphinapterus\n
+        Species: leucas\n
+        Common names: Beluga, Sea Canary, White Whale\n
+        Irish Name: Míol mór bán</string>
+    <string name="snippet_belugawhale">The Beluga whale is normally a slow swimmer, spending much time at the surface.</string>
+
+    <string name="title_bluewhale">Blue Whale</string>
+    <string name="classification_bluewhale">Class: Mammalia\n
+        Order: Cetecea\n
+        Suborder: Mysticeti\n
+        Family: Balaenopteridae\n
+        Genus: Balaenoptera\n
+        Species: musculus\n
+        Common names: Blue Whale, Sulphur Bottom\n
+        Irish Name: Míol mór gorm.</string>
+    <string name="snippet_bluewhale">Once relatively common in Irish waters, 98 animals were landed between 1908:1914.</string>
+
+    <string name="title_bottlenosedolphin">bottlenose dolphin</string>
+    <string name="classification_bottlenosedolphin">Class: Mammalia
+        Order: Cetecea
+        Suborder: Odontoceti
+        Family: Delphinidae
+        Genus: Tursiops
+        Species: truncatus
+        Common names: bottlenose dolphin
+        Irish Name: Deilf bolgshrónach</string>
+    <string name="snippet_bottlenosedolphin">Bottlenose numbers are unknown but are thought to be common.</string>
+    <string name="title_commondolphin">common dolphin</string>
+    <string name="classification_commondolphin">Class: Mammalia\n
+        Order: Cetecea\n
+        Suborder: Odontoceti\n
+        Family: Delphinidae\n
+        Genus: Delphinus\n
+        Species: delphis\n
+        Common names: Short-beaked common dolphin\n
+        Irish Name: Deilf; Dorád</string>
+    <string name="snippet_commondolphin">Short-beaked common dolphins are gregarious and live in herds ranging from a few tens to several thousands.</string>
+    <string name="title_cuviersbeakedwhale">Cuvier\'s beaked whale</string>
+    <string name="classification_cuviersbeakedwhale">Class: Mammalia\n
+        Order: Cetecea\n
+        Suborder: Odontoceti\n
+        Family: Ziphiidae\n
+        Genus: Ziphius\n
+        Species: cavirostris\n
+        Common names: Cuvier\'s Beaked Whale; Goose-beaked whale\n
+        Irish Name: Míol mór gobach Cuvier</string>
+    <string name="snippet_cuviersbeakedwhale">Although rarely seen, these whales have been known to breach and occasionally approach boats.</string>
+    <string name="title_falsekillerwhale">false killer whale</string>
+    <string name="classification_falsekillerwhale">Class: Mammalia\n
+        Order: Cetecea\n
+        Suborder: Odontoceti\n
+        Family: Delphinidae\n
+        Genus: Peponocephala\n
+        Species: electra\n
+        Common names: False killer whale; Pseudorca; Blackfish\n
+        Irish Name: Cráin dubh bréagach; Grampar bréagach</string>
+    <string name="snippet_falsekillerwhale">Little is known about them in the wild, due to their scarcity.</string>
+    <string name="title_finwhale">fin whale</string>
+    <string name="classification_finwhale">Class: Mammalia\n
+        Order: Cetecea\n
+        Suborder: Mysticeti\n
+        Family: Balaenopteridae\n
+        Genus: Balaenoptera\n
+        Species: physalus\n
+        Common names: Fin whale; Finback; Herring Hog.\n
+        Irish Names: Míol mór eiteach</string>
+    <string name="snippet_finwhale">The Fin whale is the 2nd largest living animal on earth, second only to the blue whale.</string>
+    <string name="title_gervaisbeakedwhale">Gervais\' beaked whale</string>
+    <string name="classification_gervaisbeakedwhale">Class: Mammalia\n
+        Order: Cetecea\n
+        Suborder: Odontoceti\n
+        Family: Ziphiidae\n
+        Genus: Mesoplodon\n
+        Species: europaeus\n
+        Common Name: Gervais\' Beaked Whale.\n
+        Irish Name: Míol mór gobach Gervais</string>
+    <string name="snippet_gervaisbeakedwhale">Scarring suggests that males fight during the breeding season, as with most Mesoplodon species.</string>
+    <string name="title_harbourporpoise">harbour porpoise</string>
+    <string name="classification_harbourporpoise">Class: Mammalia\n
+        Order: Cetecea\n
+        Suborder: Odontoceti\n
+        Family: Phocoenidae\n
+        Genus: Phocoena\n
+        Species: phocoena\n
+        Common names: Harbour porpoise, Common porpoise, Puffing pig, Herring Hog.\n
+        Irish Names: Muc Mhara; Toithín; Peileag.</string>
+    <string name="snippet_harbourporpoise">It would be wrong to assume there are no similar behaviours between porpoises and dolphins.</string>
+    <string name="title_humpbackwhale">humpback whale</string>
+    <string name="classification_humpbackwhale">Class: Mammalia\n
+        Order: Cetecea\n
+        Suborder: Mysticeti\n
+        Family: Balaeonpteridae\n
+        Genus: Megaptera\n
+        Species: novaeangliae\n
+        Common Name: Humpback Whale.\n
+        Irish Name: Míol mór cruiteach; Míol mór dronnach.</string>
+    <string name="snippet_humpbackwhale">Generally seen singally or in pairs in Irish waters, but may form loose feeding groups of 2-6.</string>
+    <string name="title_killerwhale">killer whale</string>
+    <string name="classification_killerwhale">Class: Mammalia\n
+        Order: Cetecea\n
+        Suborder: Odontoceti\n
+        Family: Delphinidae\n
+        Genus: Orcinus\n
+        Species: orca\n
+        Common Names: Killer whale, Orca, Blackfish.\n
+        Irish Name: Cráin dubh; Orc; Grampar</string>
+    <string name="snippet_killerwhale">As one would expect from the largest member of the dolphin family, they are highly intelligent, inquisitive and approachable.</string>
+    <string name="title_longfinnedpilotwhale">Long-finned pilot whale</string>
+    <string name="classification_longfinnedpilotwhale">Class: Mammalia\n
+        Order: Cetecea\n
+        Suborder: Odontoceti\n
+        Family: Delphinidae\n
+        Genus: Globicephala\n
+        Species: melas\n
+        Common Names: Long-finned pilot whale, Pothead\n
+        Irish Name: Míol phíolótach</string>
+    <string name="snippet_longfinnedpilotwhale">They are a placid, slow moving species and can be seen lob-tailing, spy-hopping and logging on the surface.</string>
+    <string name="title_minkewhale">minke whale</string>
+    <string name="classification_minkewhale">Class: Mammalia\n
+        Order: Cetecea\n
+        Suborder: Mysticeti\n
+        Family: Balaenopteridae\n
+        Genus: Balaenoptera\n
+        Species: acutorostrata\n
+        Common names: Minke whale; piked whale; pikehead; lesser rorqual\n
+        Irish Name: Droimeiteach beag; Míol mór mince</string>
+    <string name="snippet_minkewhale">Minke whales are typically seen once and then may disappear for up to five minutes before reappearing in a totally different, unpredictable location.</string>
+    <string name="title_northernbottlenosewhale">northern bottlenose whale</string>
+    <string name="classification_northernbottlenosewhale">Class: Mammalia\n
+        Order: Cetecea\n
+        Suborder: Odontoceti\n
+        Family: Ziphiidae\n
+        Genus: Hyperoodon\n
+        Species: ampullatus\n
+        Common Names: Northern bottlenose whale\n
+        Irish Name: Míol bolgshrónach</string>
+    <string name="snippet_northernbottlenosewhale">Northern bottlenose whales travel in groups of four to ten.</string>
+    <string name="title_northernrightwhale">northern right whale</string>
+    <string name="classification_northernrightwhale">Class: Mammalia\n
+        Order: Cetecea\n
+        Suborder: Mysticeti\n
+        Family: Balaenidae\n
+        Genus: Eubalaena\n
+        Species: glacialis\n
+        Common Names: Northern right whale\n
+        Irish Name: Fíormhíol mór; Fíormhíol mór na Bioscáine</string>
+    <string name="snippet_northernrightwhale">North Atlantic right whales appear docile and are often approachable.</string>
+    <string name="title_pygmyspermwhale">pygmy sperm whale</string>
+    <string name="classification_pygmyspermwhale">Class: Mammalia\n
+        Order: Cetecea\n
+        Suborder: Odontoceti\n
+        Family: Kogiidae\n
+        Genus: Kogia\n
+        Species: breviceps\n
+        Common Names: Pygmy sperm whale\n
+        Irish Name: Caisealoíd beag</string>
+    <string name="snippet_pygmyspermwhale">Solitary or in small groups. There are few observations at sea but from the little information available.</string>
+    <string name="title_rissosdolphin">Risso\'s dolphin</string>
+    <string name="classification_rissosdolphin">Class: Mammalia\n
+        Order: Cetecea\n
+        Suborder: Odontoceti\n
+        Family: Delphinidae\n
+        Genus: Grampus\n
+        Species: griseus\n
+        Common Names: Risso\'s Dolphin; Grey Dolphin; White-head Grampus; Grey Grampus; Grampus\n
+        Irish Name: Deilf liath</string>
+    <string name="snippet_rissosdolphin">Risso\'s dolphins are often seen travelling and surfacing slowly, and can be encountered either singly or in groups of up to ten at a time.</string>
+    <string name="title_seiwhale">sei whale</string>
+    <string name="classification_seiwhale">Class: Mammalia\n
+        Order: Cetecea\n
+        Suborder: Mysticeti\n
+        Family: Balaenopteridae\n
+        Genus: Balaenoptera\n
+        Species: borealis\n
+        Common Names: Sei whale; Pollack whale; Coalfish whale; Sardine Whale\n
+        Irish Name: Míol mór an tuaisceart</string>
+    <string name="snippet_seiwhale">Sei Whales tend to swim in pods of 3-5 animals, though sometimes larger groups may gather if food is abundant and during migrations.</string>
+    <string name="title_sowerbysbeakedwhale">Sowerby\'s beaked whale</string>
+    <string name="classification_sowerbysbeakedwhale">Class: Mammalia\n
+        Order: Cetecea\n
+        Suborder: Odontoceti\n
+        Family: Ziphiidae\n
+        Genus: Mesoplodon\n
+        Species: bidens\n
+        Common Names: Sowerby\'s beaked whale\n
+        Irish Name: Míol mór gobach Sowerby</string>
+    <string name="snippet_sowerbysbeakedwhale">When surfacing the bulbous brow and beak tend to break the water.</string>
+    <string name="title_spermwhale">sperm whale</string>
+    <string name="classification_spermwhale">Class: Mammalia\n
+        Order: Cetecea\n
+        Suborder: Odontoceti\n
+        Family: Physeteridae\n
+        Genus: Physeter\n
+        Species: macrocephalus\n
+        Common Names: Sperm whale; Cachalot\n
+        Irish Name: Caisealoíd</string>
+    <string name="snippet_spermwhale">Usual surface speed is less than 6 kph. but are capable of 40kph. in certain circumstances.</string>
+    <string name="title_stripeddolphin">striped dolphin</string>
+    <string name="classification_stripeddolphin">Class: Mammalia\n
+        Order: Cetecea\n
+        Suborder: Odontoceti\n
+        Family: Delphinidae\n
+        Genus: Stenella\n
+        Species: coeruleoalba\n
+        Common Names: Striped dolphin; Euphrosyne dolphin; Blue white dolphin\n
+        Irish Name: Deilf riabhach</string>
+    <string name="snippet_stripeddolphin">Striped dolphins are very agile and highly active animals.</string>
+    <string name="title_truesbeakedwhale">True\'s beaked whale</string>
+    <string name="classification_truesbeakedwhale">Class: Mammalia\n
+        Order: Cetecea\n
+        Suborder: Odontoceti\n
+        Family: Ziphiidae\n
+        Genus: Mesoplodon\n
+        Species: mirus\n
+        Common Names: True\'s beaked whale\n
+        Irish Name: Míol mór gobach True</string>
+    <string name="snippet_truesbeakedwhale">These animals are shy of shipping and dive quickly if disturbed.</string>
+    <string name="title_whitebeakeddolphin">white-beaked dolphin</string>
+    <string name="classification_whitebeakeddolphin">Class: Mammalia\n
+        Order: Cetecea\n
+        Suborder: Odontoceti\n
+        Family: Delphinidae\n
+        Genus: Lagenorhynchus\n
+        Species: albirostris\n
+        Common Names: White-beaked Dolphin, white-nosed dolphin, squidhound\n
+        Irish Name: Deilf na ngoba bána</string>
+    <string name="snippet_whitebeakeddolphin">A robust swimmer, white-beaked dolphins can often be seen swimming fast along the surface, creating waves and splashes.</string>
+</resources>

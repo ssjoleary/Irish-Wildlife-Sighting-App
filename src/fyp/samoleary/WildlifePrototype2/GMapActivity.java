@@ -8,7 +8,6 @@ import android.content.*;
 
 import android.database.Cursor;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -24,7 +23,6 @@ import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -93,8 +91,6 @@ public class GMapActivity extends NavDrawer implements
     private HashMap<String, Sighting> mkrObjects;
     private HashMap<String, Marker> sightingMkr;
 
-    private WildlifeDB wildlifeDB;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -147,7 +143,7 @@ public class GMapActivity extends NavDrawer implements
     }
 
     private void getLocalSightings() {
-        wildlifeDB = new WildlifeDB(this);
+        WildlifeDB wildlifeDB = new WildlifeDB(this);
         wildlifeDB.open();
 
         Cursor cursor = wildlifeDB.getInfo();
@@ -160,6 +156,7 @@ public class GMapActivity extends NavDrawer implements
                 double longitude = cursor.getDouble(cursor.getColumnIndex(Constants.SIGHTING_LNG));
                 String location = cursor.getString(cursor.getColumnIndex(Constants.SIGHTING_LOCATION));
                 String species = cursor.getString(cursor.getColumnIndex(Constants.SIGHTING_SPECIES));
+                String imgUri = cursor.getString(cursor.getColumnIndex(Constants.SIGHTING_IMGURI));
 
                 MarkerOptions mo = new MarkerOptions()
                         .position(new LatLng(latitude, longitude))
@@ -169,7 +166,7 @@ public class GMapActivity extends NavDrawer implements
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
 
                 Marker myMarker = googleMap.addMarker(mo);
-                Sighting mySighting = new Sighting(species, sub_date, latitude, longitude, location, animals);
+                Sighting mySighting = new Sighting(species, sub_date, latitude, longitude, location, animals, imgUri);
                 mkrObjects.put(myMarker.getId(), mySighting);
 
             } while(cursor.moveToNext());
@@ -270,9 +267,20 @@ public class GMapActivity extends NavDrawer implements
         switch (position) {
             case 0:
                 gotoProfile();
+                break;
+            case 1:
+                break;
+            case 2:
+                gotoSpeciesGuide();
+                break;
             default:
                 break;
         }
+    }
+
+    private void gotoSpeciesGuide() {
+        Intent intent = new Intent(this, SpeciesGuide.class);
+        startActivity(intent);
     }
 
     private void gotoProfile() {

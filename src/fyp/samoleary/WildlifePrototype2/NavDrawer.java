@@ -16,7 +16,6 @@
 
 package fyp.samoleary.WildlifePrototype2;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
@@ -46,7 +45,6 @@ public class NavDrawer extends FragmentActivity {
 
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
-    private String[] navDrawerMenuItems;
 
     //public static final String PREFS_NAME = "MyPrefsFile";
     private TextView imgText;
@@ -64,13 +62,14 @@ public class NavDrawer extends FragmentActivity {
     @Override
     public void setContentView(final int layoutResID) {
         fullLayout = (DrawerLayout) getLayoutInflater().inflate(R.layout.activity_main, null);
+        assert fullLayout != null;
         actContent = (FrameLayout) fullLayout.findViewById(R.id.content_frame);
         getLayoutInflater().inflate(layoutResID, actContent, true);
         super.setContentView(fullLayout);
 
         mTitle = mDrawerTitle = getTitle();
 
-        navDrawerMenuItems = getResources().getStringArray(R.array.menu_items_array);
+        String[] navDrawerMenuItems = getResources().getStringArray(R.array.menu_items_array);
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
@@ -115,48 +114,6 @@ public class NavDrawer extends FragmentActivity {
         mDrawerLayout.setDrawerListener(mDrawerToggle);
     }
 
-    /**@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.main, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    Called whenever we call invalidateOptionsMenu()
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        // If the nav drawer is open, hide action items related to the content view
-        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
-        menu.findItem(R.id.gmap_refresh).setVisible(!drawerOpen);
-        return super.onPrepareOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // The action bar home/up action should open or close the drawer.
-        // ActionBarDrawerToggle will take care of this.
-        if (mDrawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-        // Handle action buttons
-        switch(item.getItemId()) {
-            case R.id.popup_menu:
-                /* create intent to perform web search for this planet
-                Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
-                intent.putExtra(SearchManager.QUERY, getActionBar().getTitle());
-                // catch event that there's no activity to handle intent
-                if (intent.resolveActivity(getPackageManager()) != null) {
-                    startActivity(intent);
-                } else {
-                    Toast.makeText(this, R.string.app_not_available, Toast.LENGTH_LONG).show();
-                }
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    } */
-
-
     /* The click listener for ListView in the navigation drawer */
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         @Override
@@ -165,19 +122,8 @@ public class NavDrawer extends FragmentActivity {
         }
     }
 
-    public void selectItem(int position) {
-    switch (position) {
-        case 0:
-            gotoGMapActivity();
-            break;
-        default:
-            break;
-    }
-    }
+    public void selectItem(int position){
 
-    private void gotoGMapActivity() {
-        Intent intent = new Intent(this, GMapActivity.class);
-        startActivity(intent);
     }
 
     @Override

@@ -9,6 +9,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -25,13 +27,6 @@ import java.io.IOException;
  */
 public class SightingDialog extends Activity {
     private final static String SIGHTING = "fyp.samoleary.WildlifePrototype2.SIGHTING";
-    private TextView species;
-    private TextView date;
-    private TextView location;
-    private TextView animal;
-    private TextView lat;
-    private TextView lng;
-    private ImageView imgView;
 
     // Handle to SharedPreferences for this app
     SharedPreferences mPrefs;
@@ -43,17 +38,26 @@ public class SightingDialog extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sighting_dialog);
 
-        species = (TextView) findViewById(R.id.sighting_species);
-        date = (TextView) findViewById(R.id.sighting_date);
-        location = (TextView) findViewById(R.id.sighting_location);
-        animal = (TextView) findViewById(R.id.sighting_animal);
-        lat = (TextView) findViewById(R.id.sighting_lat);
-        lng = (TextView) findViewById(R.id.sighting_lng);
-        imgView = (ImageView) findViewById(R.id.imageViewSightingDialog);
+        TextView species = (TextView) findViewById(R.id.sighting_species);
+        TextView date = (TextView) findViewById(R.id.sighting_date);
+        TextView location = (TextView) findViewById(R.id.sighting_location);
+        TextView animal = (TextView) findViewById(R.id.sighting_animal);
+        TextView lat = (TextView) findViewById(R.id.sighting_lat);
+        TextView lng = (TextView) findViewById(R.id.sighting_lng);
+        ImageView imgView = (ImageView) findViewById(R.id.imageViewSightingDialog);
+        Button okBtn = (Button) findViewById(R.id.sighting_btn);
+
+        okBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         Intent i = getIntent();
         Sighting sighting = (Sighting) i.getSerializableExtra(SIGHTING);
 
+        assert sighting != null;
         species.setText(sighting.getSpecies());
         date.setText(sighting.getDate());
         location.setText(sighting.getLocation());
@@ -66,12 +70,12 @@ public class SightingDialog extends Activity {
         // Get an editor
         mEditor = mPrefs.edit();
 
-        Uri imgUri = Uri.parse(mPrefs.getString("imgFileUri", "default"));
-        if ((imgUri.toString().equals("default"))) {
+        String imgUri = sighting.getImgUriString();//Uri.parse(mPrefs.getString("imgFileUri", "default"));
+        if ((imgUri.equals("default"))) {
             Log.d("IrishWildlife", "Received default");
         }else{
             try {
-                Bitmap mImgBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imgUri);
+                Bitmap mImgBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), Uri.parse(imgUri));
                 imgView.setImageBitmap(mImgBitmap);
             } catch (IOException e) {
                 e.printStackTrace();

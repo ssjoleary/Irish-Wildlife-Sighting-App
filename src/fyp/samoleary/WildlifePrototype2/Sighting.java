@@ -20,6 +20,17 @@ public class Sighting implements Serializable {
     private double sightingLong;
     private String location;
     private int animals;
+    private String imgUri = null;
+
+    public Sighting(String species, String date, double sightingLat, double sightingLong, String location, int animals, String imgUri) {
+        this.species = species;
+        this.date = date;
+        this.sightingLat = sightingLat;
+        this.sightingLong = sightingLong;
+        this.location = location;
+        this.animals = animals;
+        this.imgUri = imgUri;
+    }
 
     public Sighting(String species, String date, double sightingLat, double sightingLong, String location, int animals) {
         this.species = species;
@@ -34,56 +45,32 @@ public class Sighting implements Serializable {
         return species;
     }
 
-    public void setSpecies(String species) {
-        this.species = species;
-    }
-
     public String getDate() {
         return date;
-    }
-
-    public void setDate(String date) {
-        this.date = date;
     }
 
     public double getSightingLat() {
         return sightingLat;
     }
 
-    public String getLatString() {
-        return Double.toString(sightingLat);
-    }
-
-    public void setSightingLat(double sightingLat) {
-        this.sightingLat = sightingLat;
-    }
-
     public double getSightingLong() {
         return sightingLong;
-    }
-
-    public String getLngString() {
-        return Double.toString(sightingLong);
-    }
-
-    public void setSightingLong(double sightingLong) {
-        this.sightingLong = sightingLong;
     }
 
     public int getAnimals() {
         return animals;
     }
 
-    public void setAnimals(int animals) {
-        this.animals = animals;
-    }
-
     public String getLocation() {
         return location;
     }
 
-    public void setLocation(String location) {
-        this.location = location;
+    public String getImgUriString() {
+        if (imgUri == null) {
+            imgUri = "default";
+            return imgUri;
+        }
+        return imgUri;
     }
 
 }

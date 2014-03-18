@@ -78,6 +78,11 @@
                         android:id="@+id/imageViewSightingDialog"
                         android:adjustViewBounds="true"
                         />
+                <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/ok"
+                        android:id="@+id/sighting_btn" android:layout_gravity="center"/>
             </LinearLayout>
         </TableLayout>
     </ScrollView>

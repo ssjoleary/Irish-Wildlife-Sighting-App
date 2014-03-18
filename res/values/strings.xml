@@ -2,6 +2,8 @@
 <resources>
     <string name="app_name">Irish Wildlife</string>
 
+    <string name="ok">Ok</string>
+
     <!-- Latitude, longitude format -->
     <string name="latitude_longitude">%1$.5f, %2$.5f</string>
 
@@ -42,7 +44,7 @@
 
     <string-array name="menu_items_array">
         <item>Sightings</item>
-        <item>Field Missions</item>
+        <item>Species Guide</item>
         <item>News Feed</item>
     </string-array>
 
@@ -59,6 +61,7 @@
         <item>Gervais\' beaked whale</item>
         <item>harbour porpoise</item>
         <item>humpback whale</item>
+        <item>killer whale</item>
         <item>Long-finned pilot whale</item>
         <item>minke whale</item>
         <item>northern bottlenose whale</item>
@@ -72,6 +75,33 @@
         <item>True\'s beaked whale</item>
         <item>Unidentified Whale or Dolphin</item>
         <item>white-beaked dolphin</item>
+    </string-array>
+
+    <string-array name="species_array_id">
+        <item>atlanticwhitesideddolphin</item>
+        <item>belugawhale</item>
+        <item>bluewhale</item>
+        <item>bottlenosedolphin</item>
+        <item>commondolphin</item>
+        <item>cuviersbeakedwhale</item>
+        <item>falsekillerwhale</item>
+        <item>finwhale</item>
+        <item>gervaisbeakedwhale</item>
+        <item>harbourporpoise</item>
+        <item>humpbackwhale</item>
+        <item>killerwhale</item>
+        <item>longfinnedpilotwhale</item>
+        <item>minkewhale</item>
+        <item>northernbottlenosewhale</item>
+        <item>northernrightwhale</item>
+        <item>pygmyspermwhale</item>
+        <item>rissosdolphin</item>
+        <item>seiwhale</item>
+        <item>sowerbysbeakedwhale</item>
+        <item>spermwhale</item>
+        <item>stripeddolphin</item>
+        <item>truesbeakedwhale</item>
+        <item>whitebeakeddolphin</item>
     </string-array>
 
     <string name="gmap_refresh">Refresh</string>
