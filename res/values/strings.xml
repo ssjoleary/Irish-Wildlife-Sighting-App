@@ -45,7 +45,6 @@
     <string-array name="menu_items_array">
         <item>Sightings</item>
         <item>Species Guide</item>
-        <item>News Feed</item>
     </string-array>
 
     <string-array name="species_array">

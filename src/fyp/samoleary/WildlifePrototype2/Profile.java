@@ -13,15 +13,10 @@ import android.widget.Toast;
  * Created by ssjoleary on 10/03/14.
  */
 public class Profile extends Activity {
-    //public static final String PREFS_NAME = "MyPrefsFile";
     private EditText nameText;
     private EditText phoneText;
     private EditText emailText;
-    private String name;
-    private String phone;
-    private String email;
     private Boolean isMember;
-    private Button dropTable;
     private WildlifeDB wildlifeDB;
 
     @Override
@@ -36,15 +31,15 @@ public class Profile extends Activity {
 
         // Restore Preferences
         SharedPreferences settings = getSharedPreferences(LocationUtils.SHARED_PREFERENCES, 0);
-        name = settings.getString("name", "Name");
-        phone = settings.getString("phone", "Phone");
-        email = settings.getString("email", "Email");
+        String name = settings.getString("name", "Name");
+        String phone = settings.getString("phone", "Phone");
+        String email = settings.getString("email", "Email");
         isMember = settings.getBoolean("isMember", false);
 
         nameText = (EditText)findViewById(R.id.profile_name);
         phoneText = (EditText) findViewById(R.id.profile_telephone);
         emailText = (EditText) findViewById(R.id.profile_email);
-        dropTable = (Button) findViewById(R.id.profile_dropTable);
+        Button dropTable = (Button) findViewById(R.id.profile_dropTable);
         nameText.setText(name);
         phoneText.setText(phone);
         emailText.setText(email);
