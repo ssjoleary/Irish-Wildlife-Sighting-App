@@ -96,6 +96,8 @@ public class GMapActivity extends NavDrawer implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
+        setTitle(R.string.app_name);
+
         mkrObjects = new HashMap<String, Sighting>();
         sightingMkr = new HashMap<String, Marker>();
         userTouchPoint = new LatLng(0, 0);
@@ -254,8 +256,7 @@ public class GMapActivity extends NavDrawer implements
             case R.id.gmap_refresh:
                 getRecentSightings();
                 return true;
-            case R.id.gmap_search:
-                gotoSearchActivity();
+            case R.id.gmap_help:
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -266,11 +267,21 @@ public class GMapActivity extends NavDrawer implements
     public void selectItem(int position) {
         switch (position) {
             case 0:
+                closeDrawer(position);
                 gotoProfile();
                 break;
             case 1:
+                closeDrawer(position);
+                getRecentSightings();
                 break;
             case 2:
+                break;
+            case 3:
+                closeDrawer(position);
+                gotoSearchActivity();
+                break;
+            case 4:
+                closeDrawer(position);
                 gotoSpeciesGuide();
                 break;
             default:

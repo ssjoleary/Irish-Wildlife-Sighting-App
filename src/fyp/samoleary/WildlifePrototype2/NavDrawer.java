@@ -17,12 +17,14 @@
 package fyp.samoleary.WildlifePrototype2;
 
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.util.Log;
 import android.view.View;
 import android.widget.*;
 
@@ -45,14 +47,23 @@ public class NavDrawer extends FragmentActivity {
 
     private CharSequence mDrawerTitle;
     private CharSequence mTitle;
+    private String app_ver;
 
-    //public static final String PREFS_NAME = "MyPrefsFile";
     private TextView imgText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        try
+        {
+            app_ver = this.getPackageManager().getPackageInfo(this.getPackageName(), 0).versionName;
+        }
+        catch (PackageManager.NameNotFoundException e)
+        {
+            Log.v(LocationUtils.APPTAG, e.getMessage());
+        }
 
         if (savedInstanceState == null) {
             selectItem(-1);
@@ -128,7 +139,7 @@ public class NavDrawer extends FragmentActivity {
 
     @Override
     public void setTitle(CharSequence title) {
-        mTitle = title;
+        mTitle = title + " " + app_ver;
         getActionBar().setTitle(mTitle);
     }
 
@@ -149,5 +160,10 @@ public class NavDrawer extends FragmentActivity {
         super.onConfigurationChanged(newConfig);
         // Pass any configuration change to the drawer toggles
         mDrawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    public void closeDrawer(int position){
+        mDrawerList.setItemChecked(position, false);
+        mDrawerLayout.closeDrawers();
     }
 }

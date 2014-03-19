@@ -40,9 +40,15 @@ public class Profile extends Activity {
         phoneText = (EditText) findViewById(R.id.profile_telephone);
         emailText = (EditText) findViewById(R.id.profile_email);
         Button dropTable = (Button) findViewById(R.id.profile_dropTable);
-        nameText.setText(name);
-        phoneText.setText(phone);
-        emailText.setText(email);
+        if(!name.equals("Name")) {
+            nameText.setText(name);
+        }
+        if(!phone.equals("Phone")){
+            phoneText.setText(phone);
+        }
+        if(!email.equals("Email")){
+            emailText.setText(email);
+        }
         if (isMember) {
             RadioButton btn = (RadioButton) findViewById(R.id.yes);
             btn.setChecked(true);

@@ -16,4 +16,6 @@ public class Constants {
     public static final String SIGHTING_LAT = "sighting_lat";
     public static final String SIGHTING_LNG = "sighting_lng";
     public static final String SIGHTING_IMGURI = "sighting_imguri";
+
+
 }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Irish Wildlife</string>
+    <string name="app_name">IWDG</string>
 
     <string name="ok">Ok</string>
 
@@ -43,7 +43,9 @@
     <string name="drawer_close">Close navigation drawer</string>
 
     <string-array name="menu_items_array">
-        <item>Sightings</item>
+        <item>All Sightings</item>
+        <item>Report a Sighting</item>
+        <item>Search Sightings</item>
         <item>Species Guide</item>
     </string-array>
 
@@ -104,7 +106,7 @@
     </string-array>
 
     <string name="gmap_refresh">Refresh</string>
-    <string name="gmap_search">Search Sightings</string>
+    <string name="gmap_help">Help</string>
 
     <!-- Search Form -->
     <string name="search_species">Species</string>
