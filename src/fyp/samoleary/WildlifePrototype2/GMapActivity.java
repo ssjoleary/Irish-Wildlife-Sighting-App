@@ -64,7 +64,8 @@ public class GMapActivity extends NavDrawer implements
     String userMarkerID;
 
     // Object to display an AlertDialog
-    private SightingAlertDialogFragment sightingAlertDialog;
+    private ConfirmSightingLocationDialog confirmSightingLocationDialog;
+    private ReportSightingDialog reportSightingDialog;
 
     // A request to connect to Location Services
     private LocationRequest mLocationRequest;
@@ -275,6 +276,8 @@ public class GMapActivity extends NavDrawer implements
                 getRecentSightings();
                 break;
             case 2:
+                closeDrawer(position);
+                createReportDialog();
                 break;
             case 3:
                 closeDrawer(position);
@@ -287,6 +290,12 @@ public class GMapActivity extends NavDrawer implements
             default:
                 break;
         }
+    }
+
+    private void createReportDialog() {
+        reportSightingDialog = ReportSightingDialog.newInstance(
+                R.string.dialog_report_sighting_selected);
+        reportSightingDialog.show(getSupportFragmentManager(), "dialog");
     }
 
     private void gotoSpeciesGuide() {
@@ -335,9 +344,9 @@ public class GMapActivity extends NavDrawer implements
 
             @Override
             public void onInfoWindowClick(Marker marker) {
-                sightingAlertDialog = SightingAlertDialogFragment.newInstance(
+                confirmSightingLocationDialog = ConfirmSightingLocationDialog.newInstance(
                         R.string.dialog_create_sighting_msg);
-                sightingAlertDialog.show(getSupportFragmentManager(), "dialog");
+                confirmSightingLocationDialog.show(getSupportFragmentManager(), "dialog");
             }
         });
 
@@ -356,7 +365,7 @@ public class GMapActivity extends NavDrawer implements
 
             @Override
             public void onMarkerDragEnd(Marker marker) {
-                marker.setTitle("Confirm location and begin submission");
+                marker.setTitle("Tap to confirm location and begin submission");
                 marker.showInfoWindow();
             }
         });
@@ -372,25 +381,7 @@ public class GMapActivity extends NavDrawer implements
 
     @Override
     public void onMapLongClick(LatLng point) {
-        Marker mkrOld = sightingMkr.get(mPrefs.getString("mkrID", "null"));
-        if (mkrOld==null){
-            Log.d("Placing Marker: ", "No Previous Markers Set");
-        } else {
-            mkrOld.remove();
-            sightingMkr.remove(mPrefs.getString("mkrID", "null"));
-        }
-        userTouchPoint = point;
-        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(point, 11));
-        Marker mkr = googleMap.addMarker(new MarkerOptions()
-                .position(userTouchPoint)
-                .title("Drag me or tap to begin submission!")
-                .draggable(true)
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
-        mkr.showInfoWindow();
-        userMarkerID = mkr.getId();
-        sightingMkr.put(userMarkerID, mkr);
-        mEditor.putString("mkrID", userMarkerID);
-        mEditor.commit();
+        dropSightingMarker(point);
     }
 
     public void doPositiveClick() {
@@ -527,6 +518,8 @@ public class GMapActivity extends NavDrawer implements
                         // Display the result
                         Toast.makeText(this, R.string.connected, Toast.LENGTH_SHORT).show();
                         Toast.makeText(this, R.string.resolved, Toast.LENGTH_SHORT).show();
+                        Log.d(LocationUtils.APPTAG, getString(R.string.connected));
+                        Log.d(LocationUtils.APPTAG, getString(R.string.resolved));
                         break;
 
                     // If any other result was returned by Google Play services
@@ -537,6 +530,8 @@ public class GMapActivity extends NavDrawer implements
                         // Display the result
                         Toast.makeText(this, R.string.disconnected, Toast.LENGTH_SHORT).show();
                         Toast.makeText(this, R.string.no_resolution, Toast.LENGTH_SHORT).show();
+                        Log.d(LocationUtils.APPTAG, getString(R.string.disconnected));
+                        Log.d(LocationUtils.APPTAG, getString(R.string.no_resolution));
 
                         break;
                 }
@@ -549,6 +544,7 @@ public class GMapActivity extends NavDrawer implements
                         break;
                     case Activity.RESULT_CANCELED:
                         Toast.makeText(this,"No result matched your query!" , Toast.LENGTH_SHORT).show();
+                        Log.d(LocationUtils.APPTAG, "No result matched your query!");
                         break;
                 }
 
@@ -621,7 +617,7 @@ public class GMapActivity extends NavDrawer implements
      * Calls getLastLocation() to get the current location
      *
      */
-    public void getLocation() {
+    public LatLng getLocation() {
 
         // If Google Play Services is available
         if (servicesConnected()) {
@@ -631,8 +627,12 @@ public class GMapActivity extends NavDrawer implements
 
             // Display the current location in the UI
             //mLatLng.setText(LocationUtils.getLatLng(this, currentLocation));
-            Toast.makeText(this, "You're current location:", Toast.LENGTH_SHORT).show();
-            Toast.makeText(this, LocationUtils.getLatLng(this, currentLocation), Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, "You're current location:", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(this, LocationUtils.getLatLng(this, currentLocation), Toast.LENGTH_SHORT).show();
+            return new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+        } else {
+            Log.d(LocationUtils.APPTAG, "Google Play Services Unavailable");
+            return new LatLng(0,0);
         }
     }
 
@@ -672,7 +672,8 @@ public class GMapActivity extends NavDrawer implements
     @Override
     public void onConnected(Bundle dataBundle) {
         // Display the connection status
-        Toast.makeText(this, R.string.connected, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, R.string.connected, Toast.LENGTH_SHORT).show();
+        Log.d(LocationUtils.APPTAG, getString(R.string.connected));
 
         if (mUpdatesRequested) {
             startPeriodicUpdates();
@@ -686,8 +687,8 @@ public class GMapActivity extends NavDrawer implements
     @Override
     public void onDisconnected() {
         // Display the connection status
-        Toast.makeText(this, R.string.disconnected,
-                Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, R.string.disconnected, Toast.LENGTH_SHORT).show();
+        Log.d(LocationUtils.APPTAG, getString(R.string.disconnected));
     }
 
     /*
@@ -737,9 +738,11 @@ public class GMapActivity extends NavDrawer implements
 
         // Report to the UI that the location was updated
         Toast.makeText(this, R.string.location_updated, Toast.LENGTH_SHORT).show();
+        Log.d(LocationUtils.APPTAG, getString(R.string.location_updated));
 
         // In the UI, set the latitude and longitude to the value received
         Toast.makeText(this, LocationUtils.getLatLng(this, location), Toast.LENGTH_SHORT).show();
+        Log.d(LocationUtils.APPTAG, LocationUtils.getLatLng(this, location));
     }
 
     /**
@@ -749,7 +752,8 @@ public class GMapActivity extends NavDrawer implements
     private void startPeriodicUpdates() {
 
         mLocationClient.requestLocationUpdates(mLocationRequest, this);
-        Toast.makeText(this, R.string.location_requested, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, R.string.location_requested, Toast.LENGTH_SHORT).show();
+        Log.d(LocationUtils.APPTAG, getString(R.string.location_requested));
     }
 
     /**
@@ -758,7 +762,8 @@ public class GMapActivity extends NavDrawer implements
      */
     private void stopPeriodicUpdates() {
         mLocationClient.removeLocationUpdates(this);
-        Toast.makeText(this, R.string.location_updates_stopped, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(this, R.string.location_updates_stopped, Toast.LENGTH_SHORT).show();
+        Log.d(LocationUtils.APPTAG, getString(R.string.location_updates_stopped));
     }
 
     /**
@@ -790,10 +795,10 @@ public class GMapActivity extends NavDrawer implements
     }
 
 
-    public static class SightingAlertDialogFragment extends DialogFragment {
+    public static class ConfirmSightingLocationDialog extends DialogFragment {
 
-        public static SightingAlertDialogFragment newInstance(int title) {
-            SightingAlertDialogFragment frag = new SightingAlertDialogFragment();
+        public static ConfirmSightingLocationDialog newInstance(int title) {
+            ConfirmSightingLocationDialog frag = new ConfirmSightingLocationDialog();
             Bundle args = new Bundle();
             args.putInt("title", title);
             frag.setArguments(args);
@@ -836,4 +841,86 @@ public class GMapActivity extends NavDrawer implements
         Marker mkr = sightingMkr.get(mPrefs.getString("mkrID", "null"));
         mkr.remove();
     }
+
+    public static class ReportSightingDialog extends DialogFragment {
+
+        public static ReportSightingDialog newInstance(int title) {
+            ReportSightingDialog frag = new ReportSightingDialog();
+            Bundle args = new Bundle();
+            args.putInt("title", title);
+            frag.setArguments(args);
+            return frag;
+        }
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            int title = getArguments().getInt("title");
+
+            // Use the Builder class for convenient dialog construction
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+            builder.setTitle(title)
+                    .setPositiveButton(R.string.dialog_current_location, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int id) {
+                            ((GMapActivity)getActivity()).doReportAtCurrentLocationClick();
+                        }
+                    })
+                    .setNeutralButton(R.string.dialog_chosen_location, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int id) {
+                            ((GMapActivity) getActivity()).doReportAtChosenLocationClick();
+                        }
+                    })
+                    .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            ((GMapActivity) getActivity()).doCancelReportClick();
+                        }
+                    });
+
+            // Create the AlertDialog object and return it
+            return builder.create();
+        }
+    }
+
+    private void doReportAtChosenLocationClick() {
+        Toast.makeText(GMapActivity.this, "Long Press anywhere on the map to create the Sighting", Toast.LENGTH_LONG).show();
+    }
+
+    private void doCancelReportClick() {
+
+    }
+
+    private void doReportAtCurrentLocationClick() {
+        LatLng userLocation= getLocation();
+        if (userLocation.latitude == 0 && userLocation.longitude == 0) {
+            Toast.makeText(GMapActivity.this, "Unable to fetch current location, please try again!", Toast.LENGTH_LONG).show();
+        } else {
+            dropSightingMarker(userLocation);
+        }
+    }
+
+    public void dropSightingMarker(LatLng point) {
+        Marker mkrOld = sightingMkr.get(mPrefs.getString("mkrID", "null"));
+        if (mkrOld==null){
+            Log.d("Placing Marker: ", "No Previous Markers Set");
+        } else {
+            mkrOld.remove();
+            sightingMkr.remove(mPrefs.getString("mkrID", "null"));
+        }
+        userTouchPoint = point;
+        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(point, 11));
+        Marker mkr = googleMap.addMarker(new MarkerOptions()
+                .position(userTouchPoint)
+                .title("Long Press to Drag me or tap to begin submission!")
+                .draggable(true)
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+        mkr.showInfoWindow();
+        userMarkerID = mkr.getId();
+        sightingMkr.put(userMarkerID, mkr);
+        mEditor.putString("mkrID", userMarkerID);
+        mEditor.commit();
+    }
+
 }

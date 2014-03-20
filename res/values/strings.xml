@@ -12,6 +12,9 @@
     <string name="dialog_yes">Yes</string>
     <string name="dialog_no">No</string>
     <string name="dialog_remove_marker">Remove marker?</string>
+    <string name="dialog_report_sighting_selected">Report a Sighting at...</string>
+    <string name="dialog_current_location">Current Location</string>
+    <string name="dialog_chosen_location">A Location I\'ll Choose</string>
 
     <!-- Messages For Gmap -->
     <string name="connected">Client connected</string>
