@@ -4,7 +4,6 @@ import android.app.FragmentManager;
 import android.app.ListFragment;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,21 +30,58 @@ public class SpeciesGuide extends NavDrawer {
     }
 
     @Override
-    public void selectItem(int position) {
-        switch (position) {
+    public void selectItem(int groupPosition, int childPosition) {
+        switch (groupPosition) {
             case 0:
-                gotoProfile();
+                switch (childPosition) {
+                    case 0:
+                        closeDrawer();
+                        //getRecentSightings();
+                        gotoGMapActivity(groupPosition, childPosition);
+                        break;
+                    case 1:
+                        closeDrawer();
+                        //createReportDialog();
+                        gotoGMapActivity(groupPosition, childPosition);
+                        break;
+                    case 2:
+                        closeDrawer();
+                        //gotoSearchActivity();
+                        gotoGMapActivity(groupPosition, childPosition);
+                        break;
+                    default:
+                        break;
+                }
                 break;
             case 1:
-                gotoSightings();
+                switch (childPosition) {
+                    case 0:
+                        closeDrawer();
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case 10:
+                switch (childPosition) {
+                    case 0:
+                        closeDrawer();
+                        gotoProfile();
+                        break;
+                    default:
+                        break;
+                }
                 break;
             default:
                 break;
         }
     }
 
-    private void gotoSightings() {
+
+    private void gotoGMapActivity(int groupPosition, int childPosition) {
         Intent intent = new Intent(this, GMapActivity.class);
+        intent.putExtra("groupPosition", groupPosition);
+        intent.putExtra("childPosition", childPosition);
         startActivity(intent);
     }
 

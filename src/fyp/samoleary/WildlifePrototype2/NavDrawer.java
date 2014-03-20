@@ -28,6 +28,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 /**
  * Author: Sam O'Leary
  * Email: somhairle.olaoire@mycit.ie
@@ -42,7 +46,12 @@ public class NavDrawer extends FragmentActivity {
     protected FrameLayout actContent;
 
     protected DrawerLayout mDrawerLayout;
-    protected ListView mDrawerList;
+
+    protected ExpandableListAdapter listAdapter;
+    protected ExpandableListView mDrawerList;
+    protected List<String> listDataHeader;
+    protected HashMap<String, List<String>> listDataChild;
+
     protected ActionBarDrawerToggle mDrawerToggle;
 
     private CharSequence mDrawerTitle;
@@ -66,7 +75,7 @@ public class NavDrawer extends FragmentActivity {
         }
 
         if (savedInstanceState == null) {
-            selectItem(-1);
+            selectItem(-1, -1);
         }
     }
 
@@ -80,20 +89,39 @@ public class NavDrawer extends FragmentActivity {
 
         mTitle = mDrawerTitle = getTitle();
 
-        String[] navDrawerMenuItems = getResources().getStringArray(R.array.menu_items_array);
+        //String[] navDrawerMenuItems = getResources().getStringArray(R.array.menu_items_array);
 
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerList = (ListView) findViewById(R.id.left_drawer);
+        // Get the ListView
+        mDrawerList = (ExpandableListView) findViewById(R.id.left_drawer);
+        // Preparing List Data
+        prepareListData();
+
+        listAdapter = new ExpandableListAdapter(this, listDataHeader, listDataChild);
 
         View imgView = getLayoutInflater().inflate(R.layout.header, null);
         mDrawerList.addHeaderView(imgView);
 
+        // Setting List Adapter
+        mDrawerList.setAdapter(listAdapter);
+
+        // Listview on child click listener
+        mDrawerList.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+
+            @Override
+            public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+                selectItem(groupPosition, childPosition);
+                return false;
+            }
+        });
+
+        // set up the drawer's list view with items and click listener
+        //mDrawerList.setAdapter(new ArrayAdapter<String>(this,
+        //        R.layout.drawer_list_item, navDrawerMenuItems));
+        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+
         // set a custom shadow that overlays the main content when the drawer opens
         mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
-        // set up the drawer's list view with items and click listener
-        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
-                R.layout.drawer_list_item, navDrawerMenuItems));
-        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
 
         // enable ActionBar app icon to behave as action to toggle nav drawer
         getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -125,15 +153,37 @@ public class NavDrawer extends FragmentActivity {
         mDrawerLayout.setDrawerListener(mDrawerToggle);
     }
 
+    private void prepareListData() {
+        listDataHeader = new ArrayList<String>();
+        listDataChild = new HashMap<String, List<String>>();
+
+        // Adding Group Header Data
+        listDataHeader.add("IWDG Data");
+        listDataHeader.add("Species");
+
+        // Adding Child Data
+        List<String> iwdgData = new ArrayList<String>();
+        iwdgData.add("Recent Sightings");
+        iwdgData.add("Report A Sighting");
+        iwdgData.add("Search Recent Sightings");
+
+        List<String> species = new ArrayList<String>();
+        species.add("Species Guide");
+
+        listDataChild.put(listDataHeader.get(0), iwdgData);
+        listDataChild.put(listDataHeader.get(1), species);
+    }
+
     /* The click listener for ListView in the navigation drawer */
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            selectItem(position);
+            int groupPosition = 10;
+            selectItem(groupPosition, position);
         }
     }
 
-    public void selectItem(int position){
+    public void selectItem(int groupPosition, int childPosition){
 
     }
 
@@ -162,8 +212,8 @@ public class NavDrawer extends FragmentActivity {
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
 
-    public void closeDrawer(int position){
-        mDrawerList.setItemChecked(position, false);
+    public void closeDrawer(){//}int position){
+        //mDrawerList.setItemChecked(position, false);
         mDrawerLayout.closeDrawers();
     }
 }

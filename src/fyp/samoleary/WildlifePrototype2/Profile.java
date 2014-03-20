@@ -10,7 +10,7 @@ import android.widget.RadioButton;
 import android.widget.Toast;
 
 /**
- * Created by ssjoleary on 10/03/14.
+ * Created by ssjoleary on 10/03/14
  */
 public class Profile extends Activity {
     private EditText nameText;
@@ -31,7 +31,7 @@ public class Profile extends Activity {
 
         // Restore Preferences
         SharedPreferences settings = getSharedPreferences(LocationUtils.SHARED_PREFERENCES, 0);
-        String name = settings.getString("name", "Name");
+        String name = settings.getString("name", "Click to set up Profile");
         String phone = settings.getString("phone", "Phone");
         String email = settings.getString("email", "Email");
         isMember = settings.getBoolean("isMember", false);
@@ -40,7 +40,7 @@ public class Profile extends Activity {
         phoneText = (EditText) findViewById(R.id.profile_telephone);
         emailText = (EditText) findViewById(R.id.profile_email);
         Button dropTable = (Button) findViewById(R.id.profile_dropTable);
-        if(!name.equals("Name")) {
+        if(!name.equals("Click to set up Profile")) {
             nameText.setText(name);
         }
         if(!phone.equals("Phone")){
@@ -71,8 +71,15 @@ public class Profile extends Activity {
 
         SharedPreferences settings = getSharedPreferences(LocationUtils.SHARED_PREFERENCES, 0);
         SharedPreferences.Editor editor = settings.edit();
+        String setName;
 
-        editor.putString("name", nameText.getText().toString().trim());
+        if(nameText.getText().toString().trim().equals("")) {
+            setName = "Click to set up Profile";
+        } else {
+            setName = nameText.getText().toString().trim();
+        }
+
+        editor.putString("name", setName);
         editor.putString("phone", phoneText.getText().toString().trim());
         editor.putString("email", emailText.getText().toString().trim());
         editor.putBoolean("isMember", isMember);

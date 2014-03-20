@@ -143,6 +143,10 @@ public class GMapActivity extends NavDrawer implements
             getLocalSightings();
         }
 
+        if (i.getIntExtra("groupPosition", 999) != 999){
+            selectItem(i.getIntExtra("groupPosition", 999), i.getIntExtra("childPosition", 999));
+        }
+
     }
 
     private void getLocalSightings() {
@@ -265,27 +269,46 @@ public class GMapActivity extends NavDrawer implements
     }
 
     @Override
-    public void selectItem(int position) {
-        switch (position) {
+    public void selectItem(int groupPosition, int childPosition) {
+        Log.d(LocationUtils.APPTAG, groupPosition + " : " + childPosition);
+        switch (groupPosition) {
             case 0:
-                closeDrawer(position);
-                gotoProfile();
+                switch (childPosition) {
+                    case 0:
+                        closeDrawer();
+                        getRecentSightings();
+                        break;
+                    case 1:
+                        closeDrawer();
+                        createReportDialog();
+                        break;
+                    case 2:
+                        closeDrawer();
+                        gotoSearchActivity();
+                        break;
+                    default:
+                        break;
+                }
                 break;
             case 1:
-                closeDrawer(position);
-                getRecentSightings();
+                switch (childPosition) {
+                    case 0:
+                        closeDrawer();
+                        gotoSpeciesGuide();
+                        break;
+                    default:
+                        break;
+                }
                 break;
-            case 2:
-                closeDrawer(position);
-                createReportDialog();
-                break;
-            case 3:
-                closeDrawer(position);
-                gotoSearchActivity();
-                break;
-            case 4:
-                closeDrawer(position);
-                gotoSpeciesGuide();
+            case 10:
+                switch (childPosition) {
+                    case 0:
+                        closeDrawer();
+                        gotoProfile();
+                        break;
+                    default:
+                        break;
+                }
                 break;
             default:
                 break;
