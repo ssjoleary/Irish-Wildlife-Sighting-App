@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="IWDGTheme" parent="@android:style/Theme.Holo">
+        <item name="android:actionBarStyle">@style/ActionBarIPS</item>
+    </style>
+
+    <style name="IndeterminateProgress" parent="@android:style/Widget.ProgressBar.Small">
+    </style>
+
+    <style name="ActionBarIPS" parent="@android:style/Widget.ActionBar">
+        <item name="android:indeterminateProgressStyle">@style/IndeterminateProgress</item>
+    </style>
+</resources>

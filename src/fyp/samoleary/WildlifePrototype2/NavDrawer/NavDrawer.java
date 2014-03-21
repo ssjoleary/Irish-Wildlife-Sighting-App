@@ -26,6 +26,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.*;
 import fyp.samoleary.WildlifePrototype2.LocationUtils;
 import fyp.samoleary.WildlifePrototype2.R;
@@ -65,6 +66,7 @@ public class NavDrawer extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.activity_main);
 
         try

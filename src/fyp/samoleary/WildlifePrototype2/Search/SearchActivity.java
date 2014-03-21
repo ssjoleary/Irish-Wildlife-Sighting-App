@@ -6,6 +6,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.*;
 import fyp.samoleary.WildlifePrototype2.R;
 import org.apache.http.HttpResponse;
@@ -40,6 +41,7 @@ public class SearchActivity extends Activity {
 
     public void onCreate(Bundle savedBundleInstance) {
         super.onCreate(savedBundleInstance);
+        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.search_sightings);
         init();
     }
@@ -149,6 +151,11 @@ public class SearchActivity extends Activity {
     }
     private class HttpAsyncTask extends AsyncTask<String, Void, String> {
         @Override
+        protected void onPreExecute() {
+            setProgressBarIndeterminateVisibility(true);
+        }
+
+        @Override
         protected String doInBackground(String... urls) {
 
             searchParams = new SearchParams();
@@ -160,6 +167,7 @@ public class SearchActivity extends Activity {
         @Override
         protected void onPostExecute(String result) {
             validate(result);
+            setProgressBarIndeterminateVisibility(false);
         }
     }
 

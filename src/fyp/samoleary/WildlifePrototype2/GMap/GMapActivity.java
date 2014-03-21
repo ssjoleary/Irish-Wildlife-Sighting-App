@@ -11,10 +11,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
 
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
-import android.view.View;
+import android.view.*;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -202,6 +199,7 @@ public class GMapActivity extends NavDrawer implements
             public void onResponse(String result) {
                 plotMarkers(result);
                 getLocalSightings();
+                setProgressBarIndeterminateVisibility(false);
             }
         }.execute();
     }
@@ -286,6 +284,7 @@ public class GMapActivity extends NavDrawer implements
                 switch (childPosition) {
                     case 0:
                         closeDrawer();
+                        setProgressBarIndeterminateVisibility(true);
                         getRecentSightings();
                         break;
                     case 1:
@@ -596,8 +595,10 @@ public class GMapActivity extends NavDrawer implements
                     case Activity.RESULT_OK:
                         String result = intent.getStringExtra("result");
                         plotMarkers(result);
+                        //setProgressBarIndeterminateVisibility(false);
                         break;
                     case Activity.RESULT_CANCELED:
+                        //setProgressBarIndeterminateVisibility(false);
                         Toast.makeText(this,"No result matched your query!" , Toast.LENGTH_SHORT).show();
                         Log.d(LocationUtils.APPTAG, "No result matched your query!");
                         break;
