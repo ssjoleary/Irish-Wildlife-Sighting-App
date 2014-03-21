@@ -1,10 +1,11 @@
-package fyp.samoleary.WildlifePrototype2;
+package fyp.samoleary.WildlifePrototype2.Database;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
+import fyp.samoleary.WildlifePrototype2.Constants;
 
 /**
  * Author: Sam O'Leary

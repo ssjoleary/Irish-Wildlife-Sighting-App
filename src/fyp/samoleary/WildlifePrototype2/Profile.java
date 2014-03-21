@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Toast;
+import fyp.samoleary.WildlifePrototype2.Database.WildlifeDB;
 
 /**
  * Created by ssjoleary on 10/03/14

@@ -1,4 +1,4 @@
-package fyp.samoleary.WildlifePrototype2;
+package fyp.samoleary.WildlifePrototype2.Database;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -6,6 +6,8 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.util.Log;
+import fyp.samoleary.WildlifePrototype2.Constants;
+import fyp.samoleary.WildlifePrototype2.Sighting.Sighting;
 
 /**
  * Author: Sam O'Leary

@@ -1,4 +1,4 @@
-package fyp.samoleary.WildlifePrototype2;
+package fyp.samoleary.WildlifePrototype2.Sighting;
 
 
 import android.app.ActionBar;
@@ -15,6 +15,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.*;
 import com.google.android.gms.maps.model.LatLng;
+import fyp.samoleary.WildlifePrototype2.Database.WildlifeDB;
+import fyp.samoleary.WildlifePrototype2.GMap.GMapActivity;
+import fyp.samoleary.WildlifePrototype2.LocationUtils;
+import fyp.samoleary.WildlifePrototype2.R;
 
 import java.io.File;
 import java.io.IOException;

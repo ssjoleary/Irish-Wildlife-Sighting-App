@@ -1,4 +1,4 @@
-package fyp.samoleary.WildlifePrototype2;
+package fyp.samoleary.WildlifePrototype2.SpeciesGuide;
 
 import android.os.Bundle;
 import com.google.android.youtube.player.YouTubeInitializationResult;

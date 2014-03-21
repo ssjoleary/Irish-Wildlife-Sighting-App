@@ -1,4 +1,4 @@
-package fyp.samoleary.WildlifePrototype2;
+package fyp.samoleary.WildlifePrototype2.GMap;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -30,6 +30,16 @@ import com.google.android.gms.maps.MapFragment;
 import android.support.v4.app.DialogFragment;
 
 import com.google.android.gms.maps.model.*;
+import fyp.samoleary.WildlifePrototype2.*;
+import fyp.samoleary.WildlifePrototype2.Database.WildlifeDB;
+import fyp.samoleary.WildlifePrototype2.NavDrawer.NavDrawer;
+import fyp.samoleary.WildlifePrototype2.RSSFeed.RSSFeedActivity;
+import fyp.samoleary.WildlifePrototype2.RSSFeed.RSSFeedActivityListFrag;
+import fyp.samoleary.WildlifePrototype2.Search.SearchActivity;
+import fyp.samoleary.WildlifePrototype2.Sighting.Sighting;
+import fyp.samoleary.WildlifePrototype2.Sighting.SightingDialog;
+import fyp.samoleary.WildlifePrototype2.Sighting.SubmitActivity;
+import fyp.samoleary.WildlifePrototype2.SpeciesGuide.SpeciesGuide;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.json.JSONArray;
@@ -300,6 +310,22 @@ public class GMapActivity extends NavDrawer implements
                         break;
                 }
                 break;
+            case 2:
+                switch (childPosition) {
+                    case 0:
+                        closeDrawer();
+                        gotoRSSFeed("http://www.iwdg.ie/index.php?option=com_k2&view=itemlist&task=category&id=1&Itemid=93&format=feed");
+                        break;
+                    case 1:
+                        closeDrawer();
+                        gotoRSSFeed("http://www.iwdg.ie/_customphp/iscope/rss_sightings.php");
+                        break;
+                    case 2:
+                        closeDrawer();
+                        gotoRSSFeed("http://www.iwdg.ie/_customphp/iscope/rss_strandings.php");
+                        break;
+                }
+                break;
             case 10:
                 switch (childPosition) {
                     case 0:
@@ -313,6 +339,12 @@ public class GMapActivity extends NavDrawer implements
             default:
                 break;
         }
+    }
+
+    private void gotoRSSFeed(String rssUrl) {
+        Intent intent = new Intent(this, RSSFeedActivity.class);
+        intent.putExtra("rssUrl", rssUrl);
+        startActivity(intent);
     }
 
     private void createReportDialog() {

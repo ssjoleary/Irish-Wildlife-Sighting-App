@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="fyp.samoleary.WildlifePrototype2"
           android:versionCode="1"
-          android:versionName="1.3">
+          android:versionName="1.4">
 
     <permission
             android:name="info.androidhive.googlemapsv2.permission.MAPS_RECEIVE"
@@ -39,14 +39,14 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".GMapActivity"
+        <activity android:name=".GMap.GMapActivity"
                   android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
-        <activity android:name=".NavDrawer"
+        <activity android:name=".NavDrawer.NavDrawer"
                   android:label="@string/app_name">
             <intent-filter>
                 <category android:name="android.intent.category.DEFAULT"/>
@@ -54,15 +54,15 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".SubmitActivity"
+        <activity android:name=".Sighting.SubmitActivity"
                   android:label="@string/app_name"
-                  android:parentActivityName="fyp.samoleary.WildlifePrototype2.GMapActivity">
+                  android:parentActivityName=".GMap.GMapActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
-        <activity android:name=".SpeciesGuide"
+        <activity android:name=".SpeciesGuide.SpeciesGuide"
                   android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
@@ -70,7 +70,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".SpeciesGuideDialog"
+        <activity android:name=".SpeciesGuide.SpeciesGuideDialog"
                   android:label="@string/app_name"
                   android:theme="@android:style/Theme.Holo.Dialog">
             <intent-filter>
@@ -79,7 +79,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".SearchActivity"
+        <activity android:name=".Search.SearchActivity"
                   android:label="@string/app_name"
                   android:theme="@android:style/Theme.Holo.Dialog">
             <intent-filter>
@@ -88,7 +88,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".SightingDialog"
+        <activity android:name=".Sighting.SightingDialog"
                   android:label="@string/app_name"
                   android:theme="@android:style/Theme.Holo.Dialog">
             <intent-filter>
@@ -99,12 +99,21 @@
 
         <activity android:name=".Profile"
                   android:label="@string/app_name"
-                  android:parentActivityName="fyp.samoleary.WildlifePrototype2.GMapActivity">
+                  android:parentActivityName=".GMap.GMapActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
+
+        <!-- List rss items Activity -->
+        <activity android:name=".RSSFeed.RSSFeedActivity"
+                  android:configChanges="keyboardHidden|orientation"/>
+
+        <!-- Display webpage Activity -->
+        <activity android:name=".RSSFeed.DisPlayWebPageActivity"
+                  android:parentActivityName=".RSSFeed.RSSFeedActivity"
+                  android:configChanges="keyboardHidden|orientation" />
 
         <!-- Google API Key -->
         <meta-data

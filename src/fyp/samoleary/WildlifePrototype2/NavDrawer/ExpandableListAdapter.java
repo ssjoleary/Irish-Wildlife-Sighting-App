@@ -1,4 +1,4 @@
-package fyp.samoleary.WildlifePrototype2;
+package fyp.samoleary.WildlifePrototype2.NavDrawer;
 
 import java.util.HashMap;
 import java.util.List;
@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.TextView;
+import fyp.samoleary.WildlifePrototype2.R;
 
 public class ExpandableListAdapter extends BaseExpandableListAdapter {
 

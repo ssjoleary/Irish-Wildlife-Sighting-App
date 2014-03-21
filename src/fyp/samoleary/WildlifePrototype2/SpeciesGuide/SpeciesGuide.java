@@ -1,4 +1,4 @@
-package fyp.samoleary.WildlifePrototype2;
+package fyp.samoleary.WildlifePrototype2.SpeciesGuide;
 
 import android.app.FragmentManager;
 import android.app.ListFragment;
@@ -9,6 +9,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
+import fyp.samoleary.WildlifePrototype2.GMap.GMapActivity;
+import fyp.samoleary.WildlifePrototype2.NavDrawer.NavDrawer;
+import fyp.samoleary.WildlifePrototype2.Profile;
+import fyp.samoleary.WildlifePrototype2.R;
+import fyp.samoleary.WildlifePrototype2.RSSFeed.RSSFeedActivity;
 
 /**
  * Created by ssjoleary on 17/03/2014
@@ -21,7 +26,7 @@ public class SpeciesGuide extends NavDrawer {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.speciesguide_listview);
 
-        FragmentManager fragmentManager= getFragmentManager();
+        FragmentManager fragmentManager = getFragmentManager();
 
         if (fragmentManager.findFragmentById(R.id.speciesfrag) == null) {
             SpeciesGuideListfrag speciesGuideListfrag = new SpeciesGuideListfrag();
@@ -62,6 +67,22 @@ public class SpeciesGuide extends NavDrawer {
                         break;
                 }
                 break;
+            case 2:
+                switch (childPosition) {
+                    case 0:
+                        closeDrawer();
+                        gotoRSSFeed("http://www.iwdg.ie/index.php?option=com_k2&view=itemlist&task=category&id=1&Itemid=93&format=feed");
+                        break;
+                    case 1:
+                        closeDrawer();
+                        gotoRSSFeed("http://www.iwdg.ie/_customphp/iscope/rss_sightings.php");
+                        break;
+                    case 2:
+                        closeDrawer();
+                        gotoRSSFeed("http://www.iwdg.ie/_customphp/iscope/rss_strandings.php");
+                        break;
+                }
+                break;
             case 10:
                 switch (childPosition) {
                     case 0:
@@ -88,6 +109,12 @@ public class SpeciesGuide extends NavDrawer {
     private void gotoProfile() {
         Intent i = new Intent(this, Profile.class);
         startActivity(i);
+    }
+
+    private void gotoRSSFeed(String rssUrl) {
+        Intent intent = new Intent(this, RSSFeedActivity.class);
+        intent.putExtra("rssUrl", rssUrl);
+        startActivity(intent);
     }
 
     @Override

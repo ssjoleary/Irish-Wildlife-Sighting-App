@@ -1,8 +1,5 @@
-package fyp.samoleary.WildlifePrototype2;
+package fyp.samoleary.WildlifePrototype2.Search;
 
-/**
- * Created by ssjoleary on 06/03/14.
- */
 public class SearchParams {
     private String county;
     private String species;

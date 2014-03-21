@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package fyp.samoleary.WildlifePrototype2;
+package fyp.samoleary.WildlifePrototype2.NavDrawer;
 
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -27,6 +27,8 @@ import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.View;
 import android.widget.*;
+import fyp.samoleary.WildlifePrototype2.LocationUtils;
+import fyp.samoleary.WildlifePrototype2.R;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -160,6 +162,7 @@ public class NavDrawer extends FragmentActivity {
         // Adding Group Header Data
         listDataHeader.add("IWDG Data");
         listDataHeader.add("Species");
+        listDataHeader.add("RSS Feed");
 
         // Adding Child Data
         List<String> iwdgData = new ArrayList<String>();
@@ -170,8 +173,14 @@ public class NavDrawer extends FragmentActivity {
         List<String> species = new ArrayList<String>();
         species.add("Species Guide");
 
+        List<String> rssfeed = new ArrayList<String>();
+        rssfeed.add("Cetacean News");
+        rssfeed.add("Latest Sightings");
+        rssfeed.add("Latest Strandings");
+
         listDataChild.put(listDataHeader.get(0), iwdgData);
         listDataChild.put(listDataHeader.get(1), species);
+        listDataChild.put(listDataHeader.get(2), rssfeed);
     }
 
     /* The click listener for ListView in the navigation drawer */

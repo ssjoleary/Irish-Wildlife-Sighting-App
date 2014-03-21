@@ -4,8 +4,8 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" >
     <fragment
-            android:id="@+id/speciesfrag"
-            android:name="fyp.samoleary.WildlifePrototype2.SpeciesGuide.SpeciesGuide$SpeciesGuideListfrag"
+            android:id="@+id/rssfeedfrag"
+            android:name="fyp.samoleary.WildlifePrototype2.RSSFeed.RSSFeedActivityListFrag"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"/>
 </RelativeLayout>

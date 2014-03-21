@@ -1,10 +1,6 @@
-package fyp.samoleary.WildlifePrototype2;
+package fyp.samoleary.WildlifePrototype2.GMap;
 
-/**
- * Created by ssjoleary on 19/02/14.
- */
 import org.apache.http.client.methods.HttpUriRequest;
-
 
 public abstract class HttpHandler {
 

@@ -1,4 +1,4 @@
-package fyp.samoleary.WildlifePrototype2;
+package fyp.samoleary.WildlifePrototype2.Sighting;
 
 import android.app.Activity;
 import android.content.Context;
@@ -13,6 +13,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import fyp.samoleary.WildlifePrototype2.LocationUtils;
+import fyp.samoleary.WildlifePrototype2.R;
 
 import java.io.IOException;
 
