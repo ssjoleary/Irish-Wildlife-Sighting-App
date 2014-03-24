@@ -227,7 +227,6 @@ public class GMapActivity extends NavDrawer implements
                             .flat(true)
                             .snippet("Click here for details")
                             .rotation(0);
-
                     Marker myMarker = googleMap.addMarker(mo);
                     Sighting mySighting = new Sighting(species, sub_date, latitude, longitude, location, animals);
                     mkrObjects.put(myMarker.getId(), mySighting);
@@ -245,15 +244,15 @@ public class GMapActivity extends NavDrawer implements
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.gmapcontextmenu, menu);
+        //MenuInflater inflater = getMenuInflater();
+        //inflater.inflate(R.menu.gmapcontextmenu, menu);
         return super.onCreateOptionsMenu(menu);
     }
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         // If the nav drawer is open, hide action items related to the content view
         boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
-        menu.findItem(R.id.gmap_refresh).setVisible(!drawerOpen);
+//        menu.findItem(R.id.gmap_refresh).setVisible(!drawerOpen);
         return super.onPrepareOptionsMenu(menu);
     }
 
