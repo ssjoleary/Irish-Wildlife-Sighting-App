@@ -13,7 +13,7 @@ import fyp.samoleary.WildlifePrototype2.GMap.GMapActivity;
 import fyp.samoleary.WildlifePrototype2.NavDrawer.NavDrawer;
 import fyp.samoleary.WildlifePrototype2.Profile;
 import fyp.samoleary.WildlifePrototype2.R;
-import fyp.samoleary.WildlifePrototype2.RSSFeed.RSSFeedActivity;
+import fyp.samoleary.WildlifePrototype2.RSSFeed.NewsFeedActivity;
 
 /**
  * Created by ssjoleary on 17/03/2014
@@ -112,7 +112,7 @@ public class SpeciesGuide extends NavDrawer {
     }
 
     private void gotoRSSFeed(String rssUrl) {
-        Intent intent = new Intent(this, RSSFeedActivity.class);
+        Intent intent = new Intent(this, NewsFeedActivity.class);
         intent.putExtra("rssUrl", rssUrl);
         startActivity(intent);
     }

@@ -164,7 +164,7 @@ public class NavDrawer extends FragmentActivity {
         // Adding Group Header Data
         listDataHeader.add("IWDG Data");
         listDataHeader.add("Species");
-        listDataHeader.add("RSS Feed");
+        listDataHeader.add("News Feed");
 
         // Adding Child Data
         List<String> iwdgData = new ArrayList<String>();
@@ -175,14 +175,14 @@ public class NavDrawer extends FragmentActivity {
         List<String> species = new ArrayList<String>();
         species.add("Species Guide");
 
-        List<String> rssfeed = new ArrayList<String>();
-        rssfeed.add("Cetacean News");
-        rssfeed.add("Latest Sightings");
-        rssfeed.add("Latest Strandings");
+        List<String> newsFeed = new ArrayList<String>();
+        newsFeed.add("Cetacean News");
+        newsFeed.add("Latest Sightings");
+        newsFeed.add("Latest Strandings");
 
         listDataChild.put(listDataHeader.get(0), iwdgData);
         listDataChild.put(listDataHeader.get(1), species);
-        listDataChild.put(listDataHeader.get(2), rssfeed);
+        listDataChild.put(listDataHeader.get(2), newsFeed);
     }
 
     /* The click listener for ListView in the navigation drawer */

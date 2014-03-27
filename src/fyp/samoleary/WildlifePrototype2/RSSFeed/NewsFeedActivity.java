@@ -12,7 +12,7 @@ import fyp.samoleary.WildlifePrototype2.Profile;
 import fyp.samoleary.WildlifePrototype2.R;
 import fyp.samoleary.WildlifePrototype2.SpeciesGuide.SpeciesGuide;
 
-public class RSSFeedActivity extends NavDrawer {
+public class NewsFeedActivity extends NavDrawer {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,15 +73,15 @@ public class RSSFeedActivity extends NavDrawer {
                 switch (childPosition) {
                     case 0:
                         closeDrawer();
-                        gotoRSSFeed("http://www.iwdg.ie/index.php?option=com_k2&view=itemlist&task=category&id=1&Itemid=93&format=feed");
+                        gotoNewsFeed("http://www.iwdg.ie/index.php?option=com_k2&view=itemlist&task=category&id=1&Itemid=93&format=feed");
                         break;
                     case 1:
                         closeDrawer();
-                        gotoRSSFeed("http://www.iwdg.ie/_customphp/iscope/rss_sightings.php");
+                        gotoNewsFeed("http://www.iwdg.ie/_customphp/iscope/rss_sightings.php");
                         break;
                     case 2:
                         closeDrawer();
-                        gotoRSSFeed("http://www.iwdg.ie/_customphp/iscope/rss_strandings.php");
+                        gotoNewsFeed("http://www.iwdg.ie/_customphp/iscope/rss_strandings.php");
                         break;
                 }
                 break;
@@ -117,8 +117,8 @@ public class RSSFeedActivity extends NavDrawer {
         startActivity(intent);
     }
 
-    private void gotoRSSFeed(String rssUrl) {
-        Intent intent = new Intent(this, RSSFeedActivity.class);
+    private void gotoNewsFeed(String rssUrl) {
+        Intent intent = new Intent(this, NewsFeedActivity.class);
         intent.putExtra("rssUrl", rssUrl);
         startActivity(intent);
     }

@@ -1,5 +1,8 @@
 package fyp.samoleary.WildlifePrototype2.Sighting;
 
+import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.clustering.ClusterItem;
+
 import java.io.Serializable;
 
 /**
@@ -11,7 +14,7 @@ import java.io.Serializable;
  * 1: 12/02/14
  * Description:
  */
-public class Sighting implements Serializable {
+public class Sighting implements Serializable, ClusterItem {
     private final static long serialVersionUID = 1;
 
     private String species;
@@ -73,4 +76,8 @@ public class Sighting implements Serializable {
         return imgUri;
     }
 
+    @Override
+    public LatLng getPosition() {
+        return new LatLng(sightingLat, sightingLong);
+    }
 }

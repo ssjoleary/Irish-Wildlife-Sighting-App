@@ -27,11 +27,12 @@ import com.google.android.gms.maps.MapFragment;
 import android.support.v4.app.DialogFragment;
 
 import com.google.android.gms.maps.model.*;
+import com.google.maps.android.MarkerManager;
+import com.google.maps.android.clustering.ClusterManager;
 import fyp.samoleary.WildlifePrototype2.*;
 import fyp.samoleary.WildlifePrototype2.Database.WildlifeDB;
 import fyp.samoleary.WildlifePrototype2.NavDrawer.NavDrawer;
-import fyp.samoleary.WildlifePrototype2.RSSFeed.RSSFeedActivity;
-import fyp.samoleary.WildlifePrototype2.RSSFeed.RSSFeedActivityListFrag;
+import fyp.samoleary.WildlifePrototype2.RSSFeed.NewsFeedActivity;
 import fyp.samoleary.WildlifePrototype2.Search.SearchActivity;
 import fyp.samoleary.WildlifePrototype2.Sighting.Sighting;
 import fyp.samoleary.WildlifePrototype2.Sighting.SightingDialog;
@@ -70,6 +71,9 @@ public class GMapActivity extends NavDrawer implements
     LatLng userTouchPoint;
     String userMarkerID;
 
+    // Marker Clustering
+    private ClusterManager<Sighting> mClusterManager;
+
     // Object to display an AlertDialog
     private ConfirmSightingLocationDialog confirmSightingLocationDialog;
     private ReportSightingDialog reportSightingDialog;
@@ -96,7 +100,7 @@ public class GMapActivity extends NavDrawer implements
     // Google Map
     private GoogleMap googleMap;
 
-    private HashMap<String, Sighting> mkrObjects;
+    //private HashMap<String, Sighting> mkrObjects;
     private HashMap<String, Marker> sightingMkr;
 
     @Override
@@ -106,7 +110,7 @@ public class GMapActivity extends NavDrawer implements
 
         setTitle(R.string.app_name);
 
-        mkrObjects = new HashMap<String, Sighting>();
+        //mkrObjects = new HashMap<String, Sighting>();
         sightingMkr = new HashMap<String, Marker>();
         userTouchPoint = new LatLng(0, 0);
 
@@ -134,6 +138,13 @@ public class GMapActivity extends NavDrawer implements
          * handle callbacks.
          */
         mLocationClient = new LocationClient(this, this, this);
+
+
+        // Initialize ClusterManager with the context and the map.
+        // (Activity extends context, so we can pass 'this' in the constructor.)
+        mClusterManager = new ClusterManager<Sighting>(this, ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap());
+        ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap().setOnCameraChangeListener(mClusterManager);
+        ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap().setOnMarkerClickListener(mClusterManager);
 
         try {
             // Loading map
@@ -179,9 +190,10 @@ public class GMapActivity extends NavDrawer implements
                         .rotation(0)
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
 
-                Marker myMarker = googleMap.addMarker(mo);
+                //Marker myMarker = googleMap.addMarker(mo);
                 Sighting mySighting = new Sighting(species, sub_date, latitude, longitude, location, animals, imgUri);
-                mkrObjects.put(myMarker.getId(), mySighting);
+                mClusterManager.addItem(mySighting);
+                //mkrObjects.put(myMarker.getId(), mySighting);
 
             } while(cursor.moveToNext());
         }
@@ -199,6 +211,7 @@ public class GMapActivity extends NavDrawer implements
             public void onResponse(String result) {
                 plotMarkers(result);
                 getLocalSightings();
+                mClusterManager.cluster();
                 setProgressBarIndeterminateVisibility(false);
             }
         }.execute();
@@ -206,6 +219,8 @@ public class GMapActivity extends NavDrawer implements
 
     private void plotMarkers(String result) {
         googleMap.clear();
+        mClusterManager.clearItems();
+        //mkrObjects.clear();
         JSONArray json;
         try {
             json = new JSONArray(result);
@@ -227,9 +242,11 @@ public class GMapActivity extends NavDrawer implements
                             .flat(true)
                             .snippet("Click here for details")
                             .rotation(0);
-                    Marker myMarker = googleMap.addMarker(mo);
+                    //Marker myMarker = googleMap.addMarker(mo);
                     Sighting mySighting = new Sighting(species, sub_date, latitude, longitude, location, animals);
-                    mkrObjects.put(myMarker.getId(), mySighting);
+                    //mkrObjects.put(myMarker.getId(), mySighting);
+
+                    mClusterManager.addItem(mySighting);
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -238,8 +255,6 @@ public class GMapActivity extends NavDrawer implements
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-
     }
 
     @Override
@@ -312,15 +327,15 @@ public class GMapActivity extends NavDrawer implements
                 switch (childPosition) {
                     case 0:
                         closeDrawer();
-                        gotoRSSFeed("http://www.iwdg.ie/index.php?option=com_k2&view=itemlist&task=category&id=1&Itemid=93&format=feed");
+                        gotoNewsFeed("http://www.iwdg.ie/index.php?option=com_k2&view=itemlist&task=category&id=1&Itemid=93&format=feed");
                         break;
                     case 1:
                         closeDrawer();
-                        gotoRSSFeed("http://www.iwdg.ie/_customphp/iscope/rss_sightings.php");
+                        gotoNewsFeed("http://www.iwdg.ie/_customphp/iscope/rss_sightings.php");
                         break;
                     case 2:
                         closeDrawer();
-                        gotoRSSFeed("http://www.iwdg.ie/_customphp/iscope/rss_strandings.php");
+                        gotoNewsFeed("http://www.iwdg.ie/_customphp/iscope/rss_strandings.php");
                         break;
                 }
                 break;
@@ -339,8 +354,8 @@ public class GMapActivity extends NavDrawer implements
         }
     }
 
-    private void gotoRSSFeed(String rssUrl) {
-        Intent intent = new Intent(this, RSSFeedActivity.class);
+    private void gotoNewsFeed(String rssUrl) {
+        Intent intent = new Intent(this, NewsFeedActivity.class);
         intent.putExtra("rssUrl", rssUrl);
         startActivity(intent);
     }
@@ -373,25 +388,26 @@ public class GMapActivity extends NavDrawer implements
                 //Toast.makeText(getApplicationContext(), R.string.unable_to_create_maps, Toast.LENGTH_SHORT).show();
                 initializeMap();
             }
+
         }
     }
 
     private void initializeMap() {
         googleMap.setMyLocationEnabled(true);
 
-        googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(Marker marker) {
-                if (mkrObjects.containsKey(marker.getId())) {
-                    Sighting sighting = mkrObjects.get(marker.getId());
-                    gotoDisplaySightingDialog(sighting);
-                    return true;
-                } else {
-                    marker.showInfoWindow();
-                    return true;
-                }
-            }
-        });
+        /**googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+        @Override
+        public boolean onMarkerClick(Marker marker) {
+        if (mkrObjects.containsKey(marker.getId())) {
+        Sighting sighting = mkrObjects.get(marker.getId());
+        gotoDisplaySightingDialog(sighting);
+        return true;
+        } else {
+        marker.showInfoWindow();
+        return true;
+        }
+        }
+        });**/
 
         googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
 
@@ -418,12 +434,21 @@ public class GMapActivity extends NavDrawer implements
 
             @Override
             public void onMarkerDragEnd(Marker marker) {
+                userTouchPoint = marker.getPosition();
                 marker.setTitle("Tap to confirm location and begin submission");
                 marker.showInfoWindow();
             }
         });
 
         googleMap.setOnMapLongClickListener(this);
+
+        mClusterManager.setOnClusterItemClickListener(new ClusterManager.OnClusterItemClickListener<Sighting>() {
+            @Override
+            public boolean onClusterItemClick(Sighting sighting) {
+                gotoDisplaySightingDialog(sighting);
+                return false;
+            }
+        });
     }
 
     private void gotoDisplaySightingDialog(Sighting sighting) {
@@ -491,24 +516,28 @@ public class GMapActivity extends NavDrawer implements
      */
     @Override
     public void onStart() {
-
         super.onStart();
-
+        Log.d(LocationUtils.APPTAG, "onStart");
         /*
          * Connect the client. Don't re-start any requests here;
          * instead, wait for onResume()
          */
         mLocationClient.connect();
-
     }
 
+    @Override
+    public void onRestart() {
+        super.onRestart();
+        Log.d(LocationUtils.APPTAG, "onRestart");
+    }
     /*
      * Called when the system detects that this Activity is now visible.
      */
     @Override
     protected void onResume() {
         super.onResume();
-        initializeMapIfNeeded();
+        Log.d(LocationUtils.APPTAG, "onResume");
+        getRecentSightings();
 
         // If the app already has a setting for getting location updates, get it
         if (mPrefs.contains(LocationUtils.KEY_UPDATES_REQUESTED)) {
@@ -588,7 +617,7 @@ public class GMapActivity extends NavDrawer implements
 
                         break;
                 }
-
+                break;
             case SEARCH_REQUEST:
                 switch (resultCode) {
                     case Activity.RESULT_OK:
@@ -602,18 +631,21 @@ public class GMapActivity extends NavDrawer implements
                         Log.d(LocationUtils.APPTAG, "No result matched your query!");
                         break;
                 }
-
+                break;
             case SUBMIT_REQUEST:
                 switch (resultCode) {
                     case Activity.RESULT_OK:
-                        Sighting sighting = (Sighting) intent.getSerializableExtra("userSighting");
-                        mkrObjects.put(mPrefs.getString("mkrID", "null"), sighting);
+                        Sighting mySighting = (Sighting) intent.getSerializableExtra("userSighting");
+                        mClusterManager.addItem(mySighting);
+                        //mkrObjects.put(mPrefs.getString("mkrID", "null"), sighting);
                         Marker mkr = sightingMkr.get(mPrefs.getString("mkrID", "null"));
-                        if (mkr != null) {
+                        sightingMkr.remove(mPrefs.getString("mkrID", "null"));
+                        mkr.remove();
+                        /*if (mkr != null) {
                             mkr.setDraggable(false);
                             mkr.hideInfoWindow();
                             sightingMkr.remove(mPrefs.getString("mkrID", "null"));
-                        }
+                        }*/
                         break;
                     case Activity.RESULT_CANCELED:
 

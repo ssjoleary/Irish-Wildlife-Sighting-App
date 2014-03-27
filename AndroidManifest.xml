@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="fyp.samoleary.WildlifePrototype2"
           android:versionCode="1"
-          android:versionName="1.4">
+          android:versionName="1.5">
 
     <permission
             android:name="info.androidhive.googlemapsv2.permission.MAPS_RECEIVE"
@@ -109,12 +109,12 @@
         </activity>
 
         <!-- List rss items Activity -->
-        <activity android:name=".RSSFeed.RSSFeedActivity"
+        <activity android:name=".RSSFeed.NewsFeedActivity"
                   android:configChanges="keyboardHidden|orientation"/>
 
         <!-- Display webpage Activity -->
         <activity android:name=".RSSFeed.DisPlayWebPageActivity"
-                  android:parentActivityName=".RSSFeed.RSSFeedActivity"
+                  android:parentActivityName=".RSSFeed.NewsFeedActivity"
                   android:configChanges="keyboardHidden|orientation" />
 
         <!-- Google API Key -->
