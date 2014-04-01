@@ -3,7 +3,6 @@ package fyp.samoleary.WildlifePrototype2;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import fyp.samoleary.WildlifePrototype2.GMap.GMapActivity;
 import fyp.samoleary.WildlifePrototype2.GMap.HttpHandler;
 import fyp.samoleary.WildlifePrototype2.SpeciesGuide.SpeciesGuide;
 import org.apache.http.client.methods.HttpGet;

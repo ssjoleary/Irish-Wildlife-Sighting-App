@@ -27,7 +27,6 @@ import com.google.android.gms.maps.MapFragment;
 import android.support.v4.app.DialogFragment;
 
 import com.google.android.gms.maps.model.*;
-import com.google.maps.android.MarkerManager;
 import com.google.maps.android.clustering.ClusterManager;
 import fyp.samoleary.WildlifePrototype2.*;
 import fyp.samoleary.WildlifePrototype2.Database.WildlifeDB;

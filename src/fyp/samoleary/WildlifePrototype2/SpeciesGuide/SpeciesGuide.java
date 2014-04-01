@@ -98,7 +98,6 @@ public class SpeciesGuide extends NavDrawer {
         }
     }
 
-
     private void gotoGMapActivity(int groupPosition, int childPosition) {
         Intent intent = new Intent(this, GMapActivity.class);
         intent.putExtra("groupPosition", groupPosition);
@@ -138,9 +137,9 @@ public class SpeciesGuide extends NavDrawer {
         }
 
         public void onListItemClick(ListView l, View v, int position, long id) {
-                Intent intent = new Intent(v.getContext(), SpeciesGuideDialog.class);
-                intent.putExtra("position", position);
-                startActivity(intent);
+            Intent intent = new Intent(v.getContext(), SpeciesGuideDialog.class);
+            intent.putExtra("position", position);
+            startActivity(intent);
         }
     }
 

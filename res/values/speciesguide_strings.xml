@@ -36,13 +36,13 @@
     <string name="snippet_bluewhale">Once relatively common in Irish waters, 98 animals were landed between 1908:1914.</string>
 
     <string name="title_bottlenosedolphin">bottlenose dolphin</string>
-    <string name="classification_bottlenosedolphin">Class: Mammalia
-        Order: Cetecea
-        Suborder: Odontoceti
-        Family: Delphinidae
-        Genus: Tursiops
-        Species: truncatus
-        Common names: bottlenose dolphin
+    <string name="classification_bottlenosedolphin">Class: Mammalia\n
+        Order: Cetecea\n
+        Suborder: Odontoceti\n
+        Family: Delphinidae\n
+        Genus: Tursiops\n
+        Species: truncatus\n
+        Common names: bottlenose dolphin\n
         Irish Name: Deilf bolgshrónach</string>
     <string name="snippet_bottlenosedolphin">Bottlenose numbers are unknown but are thought to be common.</string>
     <string name="title_commondolphin">common dolphin</string>
