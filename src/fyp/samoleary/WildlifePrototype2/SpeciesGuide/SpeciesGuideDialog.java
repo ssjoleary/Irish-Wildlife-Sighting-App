@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import fyp.samoleary.WildlifePrototype2.LocationUtils;
 import fyp.samoleary.WildlifePrototype2.R;
 
 import java.util.Locale;
@@ -20,6 +21,9 @@ public class SpeciesGuideDialog extends FragmentActivity implements TextToSpeech
     private TextView speciesClassification;
     private TextView speciesTitle;
     private TextToSpeech tts;
+    private int position;
+    private String[] values;
+    private Button latinBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,8 +31,8 @@ public class SpeciesGuideDialog extends FragmentActivity implements TextToSpeech
         setContentView(R.layout.species_list_detail);
 
         Intent intent = getIntent();
-        int position = intent.getIntExtra("position", -1);
-        String[] values = getResources().getStringArray(R.array.species_array_id);
+        position = intent.getIntExtra("position", -1);
+        values = getResources().getStringArray(R.array.species_array_id);
 
         tts = new TextToSpeech(this, this);
         tts.setSpeechRate(1);
@@ -48,7 +52,9 @@ public class SpeciesGuideDialog extends FragmentActivity implements TextToSpeech
         String speciesSnippetText = "classification_"+values[position];
         int speciesClassificationID = this.getResources().getIdentifier(speciesSnippetText, "string", this.getPackageName());
         speciesClassification.setText(speciesClassificationID);
-        speciesClassification.setOnClickListener(new View.OnClickListener() {
+
+        latinBtn = (Button) findViewById(R.id.guide_latin);
+        latinBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 speakOut();
@@ -68,8 +74,10 @@ public class SpeciesGuideDialog extends FragmentActivity implements TextToSpeech
     }
 
     private void speakOut() {
-        String text = speciesTitle.getText().toString();
-        tts.speak(text, TextToSpeech.QUEUE_FLUSH, null);
+        String text = "latin_"+values[position];
+        int textID = this.getResources().getIdentifier(text, "string", this.getPackageName());
+        String latin = getResources().getString(textID);
+        tts.speak(latin, TextToSpeech.QUEUE_FLUSH, null);
     }
 
     @Override
@@ -87,14 +95,14 @@ public class SpeciesGuideDialog extends FragmentActivity implements TextToSpeech
 
         if (status == TextToSpeech.SUCCESS) {
 
-            int result = tts.setLanguage(Locale.US);
+            int result = tts.setLanguage(Locale.ENGLISH);
 
             if (result == TextToSpeech.LANG_MISSING_DATA
                     || result == TextToSpeech.LANG_NOT_SUPPORTED) {
                 Log.e("TTS", "This Language is not supported");
             } else {
-                //btnSpeak.setEnabled(true);
-                speakOut();
+                latinBtn.setEnabled(true);
+                //speakOut();
             }
 
         } else {

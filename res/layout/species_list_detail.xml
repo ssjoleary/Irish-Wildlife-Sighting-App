@@ -31,6 +31,21 @@
                       android:textAppearance="?android:attr/textAppearanceSmall"
                       android:text="@string/classification_belugawhale"
                       android:id="@+id/species_detail_classification"/>
+            <LinearLayout android:layout_width="wrap_content"
+                          android:layout_height="wrap_content"
+                          android:orientation="horizontal" android:layout_gravity="center">
+                <Button android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/guide_latin"
+                        android:id="@+id/guide_latin"
+                        style="?android:buttonBarButtonStyle" android:layout_gravity="left"/>
+                <Button android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/guide_sound"
+                        android:id="@+id/guide_sound"
+                        style="?android:buttonBarButtonStyle" android:layout_gravity="right"
+                        />
+            </LinearLayout>
             <FrameLayout
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"

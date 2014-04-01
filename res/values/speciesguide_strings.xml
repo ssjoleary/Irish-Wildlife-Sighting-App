@@ -2,6 +2,34 @@
 <resources>
     <string name="guide_whales">Whales</string>
 
+    <string name="guide_latin">Latin Pronunciation</string>
+    <string name="guide_sound">Play Sound</string>
+
+    <string name="latin_atlanticwhitesideddolphin">Lagenorhynchus acutus</string>
+    <string name="latin_belugawhale">Delphinapterus leucas</string>
+    <string name="latin_bluewhale">Balaenoptera musculus</string>
+    <string name="latin_bottlenosedolphin">Tursiops truncatus</string>
+    <string name="latin_commondolphin">Delphinus delphis</string>
+    <string name="latin_cuviersbeakedwhale">Ziphius cavirostris</string>
+    <string name="latin_falsekillerwhale">Peponocephala electra</string>
+    <string name="latin_finwhale">Balaenoptera physalus</string>
+    <string name="latin_gervaisbeakedwhale">Mesoplodon europaeus</string>
+    <string name="latin_harbourporpoise">Phocoena phocoena</string>
+    <string name="latin_humpbackwhale">Megaptera novaeangliae</string>
+    <string name="latin_killerwhale">Orcinus orca</string>
+    <string name="latin_longfinnedpilotwhale">Globicephala melas</string>
+    <string name="latin_minkewhale">Balaenoptera acutorostrata</string>
+    <string name="latin_northernbottlenosewhale">Hyperoodon ampullatus</string>
+    <string name="latin_northernrightwhale">Eubalaena glacialis</string>
+    <string name="latin_pygmyspermwhale">Kogia breviceps</string>
+    <string name="latin_rissosdolphin">Grampus griseus</string>
+    <string name="latin_seiwhale">Balaenoptera borealis</string>
+    <string name="latin_sowerbysbeakedwhale">Mesoplodon bidens</string>
+    <string name="latin_spermwhale">Physeter macrocephalus</string>
+    <string name="latin_stripeddolphin">Stenella coeruleoalba</string>
+    <string name="latin_truesbeakedwhale">Mesoplodon mirus</string>
+    <string name="latin_whitebeakeddolphin">Lagenorhynchus albirostris</string>
+
     <string name="title_atlanticwhitesideddolphin">atlantic white-sided dolphin</string>
     <string name="classification_atlanticwhitesideddolphin">Class: Mammalia\n
         Order: Cetacea\n
@@ -12,7 +40,6 @@
         Common names: Atlantic white-sided dolphin\n
         Irish name: Deilf le cliathán bán</string>
     <string name="snippet_atlanticwhitesideddolphin">Atlantic white-sided dolphins are gregarious and acrobatic.</string>
-
     <string name="title_belugawhale">Beluga Whale</string>
     <string name="classification_belugawhale">Class: Mammalia\n
         Order: Cetecea\n
@@ -23,7 +50,6 @@
         Common names: Beluga, Sea Canary, White Whale\n
         Irish Name: Míol mór bán</string>
     <string name="snippet_belugawhale">The Beluga whale is normally a slow swimmer, spending much time at the surface.</string>
-
     <string name="title_bluewhale">Blue Whale</string>
     <string name="classification_bluewhale">Class: Mammalia\n
         Order: Cetecea\n
@@ -34,7 +60,6 @@
         Common names: Blue Whale, Sulphur Bottom\n
         Irish Name: Míol mór gorm.</string>
     <string name="snippet_bluewhale">Once relatively common in Irish waters, 98 animals were landed between 1908:1914.</string>
-
     <string name="title_bottlenosedolphin">bottlenose dolphin</string>
     <string name="classification_bottlenosedolphin">Class: Mammalia\n
         Order: Cetecea\n
