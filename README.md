@@ -13,6 +13,8 @@ Currently:
 
 - Working to completion at the moment in an iterative fashion by producing a working prototype week to week under the guidance of my Project Supervisor. 
 
+Screenshots: 
+
 - Map of 20 of the most recently reported Sightings (left)
 - Details of a selected Sighting (right)
 
