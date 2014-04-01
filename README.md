@@ -13,26 +13,17 @@ Currently:
 
 - Working to completion at the moment in an iterative fashion by producing a working prototype week to week under the guidance of my Project Supervisor. 
 
-- Map of 20 of the most recently reported Sightings
+- Map of 20 of the most recently reported Sightings (left)
+- Details of a selected Sighting (right)
 
-![one](screenshots/Screenshot_2014-04-01-01-47-42.png)
+![one](screenshots/Screenshot_2014-04-01-01-47-42.png)  ![two](screenshots/Screenshot_2014-04-01-01-48-22.png)
 
-- Details of a selected Sighting
+- Navigation Drawer (left)
+- Searching for a particular sighting or a set of sightings (right)
 
-![two](screenshots/Screenshot_2014-04-01-01-48-22.png)
+![three](screenshots/Screenshot_2014-04-01-01-49-23.png) ![four](screenshots/Screenshot_2014-04-01-01-49-47.png)
 
-- Navigation Drawer
+- Species Guide (left)
+- Info on a particular Species with an embedded YouTube video (right)
 
-![three](screenshots/Screenshot_2014-04-01-01-49-23.png)
-
-- Searching for a particular sighting or a set of sightings
-
-![four](screenshots/Screenshot_2014-04-01-01-49-47.png)
-
-- Species Guide
-
-![five](screenshots/Screenshot_2014-04-01-01-51-43.png)
-
-- Info on a particular Species with an embedded YouTube video
-
-![six](screenshots/Screenshot_2014-04-01-01-51-48.png)
+![five](screenshots/Screenshot_2014-04-01-01-51-43.png) ![six](screenshots/Screenshot_2014-04-01-01-51-48.png)
