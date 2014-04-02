@@ -170,10 +170,10 @@ public class GMapActivity extends NavDrawer implements
         if (i.getStringExtra("result") == null) {
             getRecentSightings();
             //getLocalSightings();
-        } else {
-            plotMarkers(i.getStringExtra("result"));
-            //getLocalSightings();
-        }
+        } //else {
+        //plotMarkers(i.getStringExtra("result"));
+        //getLocalSightings();
+        //}
 
         if (i.getIntExtra("groupPosition", 999) != 999){
             selectItem(i.getIntExtra("groupPosition", 999), i.getIntExtra("childPosition", 999));
@@ -191,7 +191,7 @@ public class GMapActivity extends NavDrawer implements
 
         wildlifeDB.open();
 
-        Cursor cursor = wildlifeDB.getInfoRssSighting();
+        Cursor cursor = wildlifeDB.getInfoRssSightingLimit();
         startManagingCursor(cursor);
         if(cursor.moveToFirst()){
             do {
@@ -264,7 +264,7 @@ public class GMapActivity extends NavDrawer implements
                         nextID = ID + 1;
                     }
 
-                    JSONObject fields = c.getJSONObject("fields");
+                    /*JSONObject fields = c.getJSONObject("fields");
                     int animals = fields.getInt("animals");
                     String sub_date = fields.getString("sub_date");
                     double latitude = fields.getDouble("latitude");
@@ -272,7 +272,7 @@ public class GMapActivity extends NavDrawer implements
                     String location = fields.getString("location");
                     String species = fields.getString("species");
 
-                    /*MarkerOptions mo = new MarkerOptions()
+                    MarkerOptions mo = new MarkerOptions()
                             .position(new LatLng(latitude, longitude))
                             .flat(true)
                             .snippet("Click here for details")
@@ -665,8 +665,8 @@ public class GMapActivity extends NavDrawer implements
                 switch (resultCode) {
                     case Activity.RESULT_OK:
                         String result = intent.getStringExtra("result");
-                        plotMarkers(result);
-                        //setProgressBarIndeterminateVisibility(false);
+                        //plotMarkers(result);
+                        setProgressBarIndeterminateVisibility(false);
                         break;
                     case Activity.RESULT_CANCELED:
                         //setProgressBarIndeterminateVisibility(false);

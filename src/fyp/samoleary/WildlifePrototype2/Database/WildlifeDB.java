@@ -112,6 +112,9 @@ public class WildlifeDB {
     public Cursor getInfoRssSighting() {
         return db.query(Constants.TABLE_NAME_RSS_SIGHTING, null, null, null, null, null, null);
     }
+    public Cursor getInfoRssSightingLimit() {
+        return db.query(Constants.TABLE_NAME_RSS_SIGHTING, null, null, null, null, null, null, "10,20");
+    }
      /**
      * This method, dropTable(), is called when the user resets their profile. The table is dropped, or deleted, and all
      * the information gathered up to that point is lost.

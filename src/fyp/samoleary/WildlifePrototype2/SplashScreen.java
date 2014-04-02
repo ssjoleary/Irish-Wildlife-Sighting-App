@@ -8,10 +8,16 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import fyp.samoleary.WildlifePrototype2.Database.WildlifeDB;
+import fyp.samoleary.WildlifePrototype2.GMap.HttpHandler;
 import fyp.samoleary.WildlifePrototype2.RSSFeed.RSSItem;
 import fyp.samoleary.WildlifePrototype2.RSSFeed.RSSParser;
 import fyp.samoleary.WildlifePrototype2.Sighting.Sighting;
 import fyp.samoleary.WildlifePrototype2.SpeciesGuide.SpeciesGuide;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -30,24 +36,56 @@ public class SplashScreen extends Activity{
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
-                /*new HttpHandler() {
-                    @Override
-                    public HttpUriRequest getHttpRequestMethod() {
-                        return new HttpGet("http://fyp-irish-wildlife.herokuapp.com/sightings/getsighting/");
-
-                    }
-                    @Override
-                    public void onResponse(String result) {
-                        Intent i = new Intent(SplashScreen.this, SpeciesGuide.class);
-                        i.putExtra("result", result);
-
-                        startActivity(i);
-                        finish();
-                    }
-                }.execute();*/
         pDialog = new ProgressDialog(this);
         wildlifeDB = new WildlifeDB(this);
+        new HttpHandler() {
+            @Override
+            public HttpUriRequest getHttpRequestMethod() {
+                return new HttpGet("http://fyp-irish-wildlife.herokuapp.com/sightings/getsighting/");
+
+            }
+            @Override
+            public void onResponse(String result) {
+                getLatestJSONSighting(result);
+            }
+        }.execute();
+
         new RssSightingAsyncTask().execute(getString(R.string.rssfeed_sightings));
+    }
+
+    private void getLatestJSONSighting(String result) {
+
+        JSONArray json;
+        try {
+            json = new JSONArray(result);
+            for (int i = 0; i < json.length(); i++) {
+                JSONObject c;
+                try {
+                    c = json.getJSONObject(i);
+
+
+                    int ID = c.getInt("pk");
+
+                    if(!checkSightingExists(String.valueOf(ID))) {
+                        JSONObject fields = c.getJSONObject("fields");
+                        int animals = fields.getInt("animals");
+                        String sub_date = fields.getString("sub_date");
+                        double latitude = fields.getDouble("latitude");
+                        double longitude = fields.getDouble("longitude");
+                        String location = fields.getString("location");
+                        String species = fields.getString("species");
+                        String name = fields.getString("name");
+                        Sighting sighting = new Sighting(ID, species, sub_date, latitude, longitude, location, animals, name);
+                        wildlifeDB.insertInfoRssSighting(sighting);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
     }
 
     private class RssSightingAsyncTask extends AsyncTask<String, Void, String> {
@@ -133,21 +171,21 @@ public class SplashScreen extends Activity{
             finish();
         }
 
-        private boolean checkSightingExists(String id) {
+    }
 
-            Cursor cursor = wildlifeDB.getInfoRssSighting();
-            startManagingCursor(cursor);
-            if(cursor.moveToFirst()){
-                do {
-                    int existingID = cursor.getInt(cursor.getColumnIndex(Constants.SIGHTING_ID));
-                    if(id.equals(Integer.toString(existingID))){
-                        return true;
-                    }
-                } while(cursor.moveToNext());
-            }
-            return false;
+    private boolean checkSightingExists(String id) {
+
+        Cursor cursor = wildlifeDB.getInfoRssSighting();
+        startManagingCursor(cursor);
+        if(cursor.moveToFirst()){
+            do {
+                int existingID = cursor.getInt(cursor.getColumnIndex(Constants.SIGHTING_ID));
+                if(id.equals(Integer.toString(existingID))){
+                    return true;
+                }
+            } while(cursor.moveToNext());
         }
-
+        return false;
     }
 
 }
