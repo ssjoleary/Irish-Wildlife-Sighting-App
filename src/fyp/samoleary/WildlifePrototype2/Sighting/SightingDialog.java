@@ -46,6 +46,7 @@ public class SightingDialog extends Activity {
         TextView animal = (TextView) findViewById(R.id.sighting_animal);
         TextView lat = (TextView) findViewById(R.id.sighting_lat);
         TextView lng = (TextView) findViewById(R.id.sighting_lng);
+        TextView observer = (TextView) findViewById(R.id.sighting_observer);
         ImageView imgView = (ImageView) findViewById(R.id.imageViewSightingDialog);
         Button okBtn = (Button) findViewById(R.id.sighting_btn);
 
@@ -66,6 +67,7 @@ public class SightingDialog extends Activity {
         animal.setText(Integer.toString(sighting.getAnimals()));
         lat.setText(String.format("%.5f", sighting.getSightingLat()));
         lng.setText(String.format("%.5f", sighting.getSightingLong()));
+        observer.setText(sighting.getName());
 
         // Open Shared Preferences
         mPrefs = getSharedPreferences(LocationUtils.SHARED_PREFERENCES, Context.MODE_PRIVATE);

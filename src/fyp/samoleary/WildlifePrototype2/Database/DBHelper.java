@@ -33,6 +33,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String CREATE_TABLE_RSS_SIGHTING="create table "+
             Constants.TABLE_NAME_RSS_SIGHTING+" ("+
             Constants.SIGHTING_ID+" integer primary key, "+
+            Constants.SIGHTING_NAME+" text not null, "+
             Constants.SIGHTING_SPECIES+" text not null, "+
             Constants.SIGHTING_DATE+" text not null, "+
             Constants.SIGHTING_LOCATION+" text not null,"+

@@ -21,8 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SplashScreen extends Activity{
-    RSSParser rssParser = new RSSParser();
-    List<RSSItem> rssItems = new ArrayList<RSSItem>();
+
     // Progress Dialog
     private ProgressDialog pDialog;
     private WildlifeDB wildlifeDB;
@@ -52,10 +51,13 @@ public class SplashScreen extends Activity{
     }
 
     private class RssSightingAsyncTask extends AsyncTask<String, Void, String> {
+        RSSParser rssParser = new RSSParser();
+        List<RSSItem> rssItems = new ArrayList<RSSItem>();
 
         @Override
         protected void onPreExecute() {
             wildlifeDB.open();
+            wildlifeDB.dropTable();
             //wildlifeDB.dropTableRssSighting();
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(false);
@@ -79,8 +81,12 @@ public class SplashScreen extends Activity{
                             .get();
 
                     Element id = doc.select("html body#bd.fs3 div#ja-wrapper div#ja-containerwrap-fr div#ja-containerwrap2 div#ja-container div#ja-container2.clearfix div#ja-mainbody-fr.clearfix div#ja-contentwrap div#ja-content div#k2Container.itemView div.itemBody div.itemFullText div table.table1 tbody tr td").get(0);
+                    Log.d(LocationUtils.APPTAG, id.ownText());
 
                     if(!checkSightingExists(id.ownText())){
+                        Element name = doc.select("html body#bd.fs3 div#ja-wrapper div#ja-containerwrap-fr div#ja-containerwrap2 div#ja-container div#ja-container2.clearfix div#ja-mainbody-fr.clearfix div#ja-contentwrap div#ja-content div#k2Container.itemView div.itemBody div.itemFullText div table.table1 tbody tr td").get(30);
+                        Log.d(LocationUtils.APPTAG, name.ownText());
+
                         Element species = doc.select("html body#bd.fs3 div#ja-wrapper div#ja-containerwrap-fr div#ja-containerwrap2 div#ja-container div#ja-container2.clearfix div#ja-mainbody-fr.clearfix div#ja-contentwrap div#ja-content div#k2Container.itemView div.itemBody div.itemFullText div table.table1 tbody tr td a").first();
                         Element date = doc.select("html body#bd.fs3 div#ja-wrapper div#ja-containerwrap-fr div#ja-containerwrap2 div#ja-container div#ja-container2.clearfix div#ja-mainbody-fr.clearfix div#ja-contentwrap div#ja-content div#k2Container.itemView div.itemBody div.itemFullText div table.table1 tbody tr td").get(5);
                         Element lat = doc.select("html body#bd.fs3 div#ja-wrapper div#ja-containerwrap-fr div#ja-containerwrap2 div#ja-container div#ja-container2.clearfix div#ja-mainbody-fr.clearfix div#ja-contentwrap div#ja-content div#k2Container.itemView div.itemBody div.itemFullText div table.table1 tbody tr td").get(18);
@@ -88,26 +94,25 @@ public class SplashScreen extends Activity{
                         Element location = doc.select("html body#bd.fs3 div#ja-wrapper div#ja-containerwrap-fr div#ja-containerwrap2 div#ja-container div#ja-container2.clearfix div#ja-mainbody-fr.clearfix div#ja-contentwrap div#ja-content div#k2Container.itemView div.itemBody div.itemFullText div table.table1 tbody tr td").get(3);
                         Element animals = doc.select("html body#bd.fs3 div#ja-wrapper div#ja-containerwrap-fr div#ja-containerwrap2 div#ja-container div#ja-container2.clearfix div#ja-mainbody-fr.clearfix div#ja-contentwrap div#ja-content div#k2Container.itemView div.itemBody div.itemFullText div table.table1 tbody tr td").get(7);
                         if(species == null) {
+                            Element nametwo = doc.select("html body#bd.fs3 div#ja-wrapper div#ja-containerwrap-fr div#ja-containerwrap2 div#ja-container div#ja-container2.clearfix div#ja-mainbody-fr.clearfix div#ja-contentwrap div#ja-content div#k2Container.itemView div.itemBody div.itemFullText div table.table1 tbody tr td").get(29);
+                            Log.d(LocationUtils.APPTAG, nametwo.ownText());
+
                             Element speciesText = doc.select("html body#bd.fs3 div#ja-wrapper div#ja-containerwrap-fr div#ja-containerwrap2 div#ja-container div#ja-container2.clearfix div#ja-mainbody-fr.clearfix div#ja-contentwrap div#ja-content div#k2Container.itemView div.itemBody div.itemFullText div table.table1 tbody tr td").get(2);
                             Element latText = doc.select("html body#bd.fs3 div#ja-wrapper div#ja-containerwrap-fr div#ja-containerwrap2 div#ja-container div#ja-container2.clearfix div#ja-mainbody-fr.clearfix div#ja-contentwrap div#ja-content div#k2Container.itemView div.itemBody div.itemFullText div table.table1 tbody tr td").get(16);
                             Element lngText = doc.select("html body#bd.fs3 div#ja-wrapper div#ja-containerwrap-fr div#ja-containerwrap2 div#ja-container div#ja-container2.clearfix div#ja-mainbody-fr.clearfix div#ja-contentwrap div#ja-content div#k2Container.itemView div.itemBody div.itemFullText div table.table1 tbody tr td").get(17);
 
-                            Sighting sighting = new Sighting(Integer.parseInt(id.ownText()), speciesText.ownText(), date.ownText(), latText.ownText(), lngText.ownText(), location.ownText(), animals.ownText());
+                            Sighting sighting = new Sighting(Integer.parseInt(id.ownText()), speciesText.ownText(), date.ownText(), latText.ownText(), lngText.ownText(), location.ownText(), animals.ownText(), nametwo.ownText());
                             wildlifeDB.insertInfoRssSighting(sighting);
-                            Log.d(LocationUtils.APPTAG, "Shouldn't be here!");
+                            Log.d(LocationUtils.APPTAG, "Sighting added: species = null");
                         } else {
-                            Sighting sighting = new Sighting(Integer.parseInt(id.ownText()), species.ownText(), date.ownText(), lat.ownText(), lng.ownText(), location.ownText(), animals.ownText());
+                            Sighting sighting = new Sighting(Integer.parseInt(id.ownText()), species.ownText(), date.ownText(), lat.ownText(), lng.ownText(), location.ownText(), animals.ownText(), name.ownText());
                             wildlifeDB.insertInfoRssSighting(sighting);
-                            Log.d(LocationUtils.APPTAG, "Shouldn't be here!");
+                            Log.d(LocationUtils.APPTAG, "Sighting added: species != null");
                         }
                     } else {
-                        Log.d(LocationUtils.APPTAG, "Should be here!");
+                        Log.d(LocationUtils.APPTAG, "Sighting not added");
                         return null;
                     }
-
-                    /*for(Element element: elements){
-                        Log.d(LocationUtils.APPTAG, element.ownText());
-                    }*/
                 }
             } catch (IOException e) {
                 e.printStackTrace();

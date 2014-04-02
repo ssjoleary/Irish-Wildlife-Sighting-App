@@ -4,10 +4,12 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 
+import android.app.ProgressDialog;
 import android.content.*;
 
 import android.database.Cursor;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -32,6 +34,8 @@ import fyp.samoleary.WildlifePrototype2.*;
 import fyp.samoleary.WildlifePrototype2.Database.WildlifeDB;
 import fyp.samoleary.WildlifePrototype2.NavDrawer.NavDrawer;
 import fyp.samoleary.WildlifePrototype2.RSSFeed.NewsFeedActivity;
+import fyp.samoleary.WildlifePrototype2.RSSFeed.RSSItem;
+import fyp.samoleary.WildlifePrototype2.RSSFeed.RSSParser;
 import fyp.samoleary.WildlifePrototype2.Search.SearchActivity;
 import fyp.samoleary.WildlifePrototype2.Sighting.Sighting;
 import fyp.samoleary.WildlifePrototype2.Sighting.SightingDialog;
@@ -42,8 +46,14 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Author: Sam O'Leary
@@ -69,6 +79,8 @@ public class GMapActivity extends NavDrawer implements
     private final static int SEARCH_REQUEST = 2000;
     LatLng userTouchPoint;
     String userMarkerID;
+
+    private WildlifeDB wildlifeDB;
 
     // Marker Clustering
     private ClusterManager<Sighting> mClusterManager;
@@ -167,10 +179,14 @@ public class GMapActivity extends NavDrawer implements
 
     }
 
+    private void checkForNewSightings() {
+        new RssSightingAsyncTask().execute(getString(R.string.rssfeed_sightings));
+    }
+
     private void getLocalSightings() {
         googleMap.clear();
         mClusterManager.clearItems();
-        WildlifeDB wildlifeDB = new WildlifeDB(this);
+        wildlifeDB = new WildlifeDB(this);
         wildlifeDB.open();
 
         Cursor cursor = wildlifeDB.getInfoRssSighting();
@@ -183,6 +199,7 @@ public class GMapActivity extends NavDrawer implements
                 double longitude = cursor.getDouble(cursor.getColumnIndex(Constants.SIGHTING_LNG));
                 String location = cursor.getString(cursor.getColumnIndex(Constants.SIGHTING_LOCATION));
                 String species = cursor.getString(cursor.getColumnIndex(Constants.SIGHTING_SPECIES));
+                String name = cursor.getString(cursor.getColumnIndex(Constants.SIGHTING_NAME));
                 //String imgUri = cursor.getString(cursor.getColumnIndex(Constants.SIGHTING_IMGURI));
 
                 MarkerOptions mo = new MarkerOptions()
@@ -193,12 +210,13 @@ public class GMapActivity extends NavDrawer implements
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
 
                 //Marker myMarker = googleMap.addMarker(mo);
-                Sighting mySighting = new Sighting(species, sub_date, latitude, longitude, location, animals);//, imgUri);
+                Sighting mySighting = new Sighting(species, sub_date, latitude, longitude, location, animals, name);//, imgUri);
                 mClusterManager.addItem(mySighting);
                 //mkrObjects.put(myMarker.getId(), mySighting);
 
             } while(cursor.moveToNext());
         }
+        wildlifeDB.close();
         mClusterManager.cluster();
         setProgressBarIndeterminateVisibility(false);
     }
@@ -215,7 +233,6 @@ public class GMapActivity extends NavDrawer implements
             public void onResponse(String result) {
                 plotMarkers(result);
                 getLocalSightings();
-                mClusterManager.cluster();
                 setProgressBarIndeterminateVisibility(false);
             }
         }.execute();
@@ -232,6 +249,8 @@ public class GMapActivity extends NavDrawer implements
                 JSONObject c;
                 try {
                     c = json.getJSONObject(i);
+
+                    int ID = c.getInt("pk");
 
                     JSONObject fields = c.getJSONObject("fields");
                     int animals = fields.getInt("animals");
@@ -250,7 +269,7 @@ public class GMapActivity extends NavDrawer implements
                     Sighting mySighting = new Sighting(species, sub_date, latitude, longitude, location, animals);
                     //mkrObjects.put(myMarker.getId(), mySighting);
 
-                    mClusterManager.addItem(mySighting);
+                    //mClusterManager.addItem(mySighting);
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -263,15 +282,15 @@ public class GMapActivity extends NavDrawer implements
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        //MenuInflater inflater = getMenuInflater();
-        //inflater.inflate(R.menu.gmapcontextmenu, menu);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.gmapcontextmenu, menu);
         return super.onCreateOptionsMenu(menu);
     }
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         // If the nav drawer is open, hide action items related to the content view
         boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
-//        menu.findItem(R.id.gmap_refresh).setVisible(!drawerOpen);
+        menu.findItem(R.id.gmap_refresh).setVisible(!drawerOpen);
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -286,7 +305,8 @@ public class GMapActivity extends NavDrawer implements
         switch(item.getItemId()) {
             case R.id.gmap_refresh:
                 //getRecentSightings();
-                getLocalSightings();
+                //getLocalSightings();
+                checkForNewSightings();
                 return true;
             case R.id.gmap_help:
                 return true;
@@ -887,7 +907,6 @@ public class GMapActivity extends NavDrawer implements
         }
     }
 
-
     public static class ConfirmSightingLocationDialog extends DialogFragment {
 
         public static ConfirmSightingLocationDialog newInstance(int title) {
@@ -1014,6 +1033,110 @@ public class GMapActivity extends NavDrawer implements
         sightingMkr.put(userMarkerID, mkr);
         mEditor.putString("mkrID", userMarkerID);
         mEditor.commit();
+    }
+
+    private class RssSightingAsyncTask extends AsyncTask<String, Void, String> {
+        RSSParser rssParser = new RSSParser();
+        List<RSSItem> rssItems = new ArrayList<RSSItem>();
+
+        @Override
+        protected void onPreExecute() {
+            wildlifeDB.open();
+            wildlifeDB.dropTable();
+            //wildlifeDB.dropTableRssSighting();
+            /*pDialog.setIndeterminate(false);
+            pDialog.setCancelable(false);
+            pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            pDialog.setMessage("Checking for recent sightings");
+            pDialog.show();*/
+
+            setProgressBarIndeterminateVisibility(true);
+        }
+
+        @Override
+        protected String doInBackground(String... urls) {
+            String url = urls[0];
+            // list of rss items
+            rssItems = rssParser.getRSSFeedItems(url);
+
+            Document doc;//Jsoup.parse(rssItems.get(0).getLink());
+            try {
+                for(RSSItem rssItem: rssItems) {
+                    doc = Jsoup.connect(rssItem.getLink())
+                            .userAgent("Mozilla/5.0 Gecko/20100101 Firefox/21.0")
+                            .timeout(0)
+                            .get();
+
+                    Element id = doc.select("html body#bd.fs3 div#ja-wrapper div#ja-containerwrap-fr div#ja-containerwrap2 div#ja-container div#ja-container2.clearfix div#ja-mainbody-fr.clearfix div#ja-contentwrap div#ja-content div#k2Container.itemView div.itemBody div.itemFullText div table.table1 tbody tr td").get(0);
+                    Log.d(LocationUtils.APPTAG, id.ownText());
+
+                    if(!checkSightingExists(id.ownText())){
+                        Element name = doc.select("html body#bd.fs3 div#ja-wrapper div#ja-containerwrap-fr div#ja-containerwrap2 div#ja-container div#ja-container2.clearfix div#ja-mainbody-fr.clearfix div#ja-contentwrap div#ja-content div#k2Container.itemView div.itemBody div.itemFullText div table.table1 tbody tr td").get(30);
+                        Log.d(LocationUtils.APPTAG, name.ownText());
+
+                        Element species = doc.select("html body#bd.fs3 div#ja-wrapper div#ja-containerwrap-fr div#ja-containerwrap2 div#ja-container div#ja-container2.clearfix div#ja-mainbody-fr.clearfix div#ja-contentwrap div#ja-content div#k2Container.itemView div.itemBody div.itemFullText div table.table1 tbody tr td a").first();
+                        Element date = doc.select("html body#bd.fs3 div#ja-wrapper div#ja-containerwrap-fr div#ja-containerwrap2 div#ja-container div#ja-container2.clearfix div#ja-mainbody-fr.clearfix div#ja-contentwrap div#ja-content div#k2Container.itemView div.itemBody div.itemFullText div table.table1 tbody tr td").get(5);
+                        Element lat = doc.select("html body#bd.fs3 div#ja-wrapper div#ja-containerwrap-fr div#ja-containerwrap2 div#ja-container div#ja-container2.clearfix div#ja-mainbody-fr.clearfix div#ja-contentwrap div#ja-content div#k2Container.itemView div.itemBody div.itemFullText div table.table1 tbody tr td").get(18);
+                        Element lng = doc.select("html body#bd.fs3 div#ja-wrapper div#ja-containerwrap-fr div#ja-containerwrap2 div#ja-container div#ja-container2.clearfix div#ja-mainbody-fr.clearfix div#ja-contentwrap div#ja-content div#k2Container.itemView div.itemBody div.itemFullText div table.table1 tbody tr td").get(19);
+                        Element location = doc.select("html body#bd.fs3 div#ja-wrapper div#ja-containerwrap-fr div#ja-containerwrap2 div#ja-container div#ja-container2.clearfix div#ja-mainbody-fr.clearfix div#ja-contentwrap div#ja-content div#k2Container.itemView div.itemBody div.itemFullText div table.table1 tbody tr td").get(3);
+                        Element animals = doc.select("html body#bd.fs3 div#ja-wrapper div#ja-containerwrap-fr div#ja-containerwrap2 div#ja-container div#ja-container2.clearfix div#ja-mainbody-fr.clearfix div#ja-contentwrap div#ja-content div#k2Container.itemView div.itemBody div.itemFullText div table.table1 tbody tr td").get(7);
+                        if(species == null) {
+                            Element nametwo = doc.select("html body#bd.fs3 div#ja-wrapper div#ja-containerwrap-fr div#ja-containerwrap2 div#ja-container div#ja-container2.clearfix div#ja-mainbody-fr.clearfix div#ja-contentwrap div#ja-content div#k2Container.itemView div.itemBody div.itemFullText div table.table1 tbody tr td").get(29);
+                            Log.d(LocationUtils.APPTAG, nametwo.ownText());
+
+                            Element speciesText = doc.select("html body#bd.fs3 div#ja-wrapper div#ja-containerwrap-fr div#ja-containerwrap2 div#ja-container div#ja-container2.clearfix div#ja-mainbody-fr.clearfix div#ja-contentwrap div#ja-content div#k2Container.itemView div.itemBody div.itemFullText div table.table1 tbody tr td").get(2);
+                            Element latText = doc.select("html body#bd.fs3 div#ja-wrapper div#ja-containerwrap-fr div#ja-containerwrap2 div#ja-container div#ja-container2.clearfix div#ja-mainbody-fr.clearfix div#ja-contentwrap div#ja-content div#k2Container.itemView div.itemBody div.itemFullText div table.table1 tbody tr td").get(16);
+                            Element lngText = doc.select("html body#bd.fs3 div#ja-wrapper div#ja-containerwrap-fr div#ja-containerwrap2 div#ja-container div#ja-container2.clearfix div#ja-mainbody-fr.clearfix div#ja-contentwrap div#ja-content div#k2Container.itemView div.itemBody div.itemFullText div table.table1 tbody tr td").get(17);
+
+                            Sighting sighting = new Sighting(Integer.parseInt(id.ownText()), speciesText.ownText(), date.ownText(), latText.ownText(), lngText.ownText(), location.ownText(), animals.ownText(), nametwo.ownText());
+                            wildlifeDB.insertInfoRssSighting(sighting);
+                            Log.d(LocationUtils.APPTAG, "Sighting added: species = null");
+                        } else {
+                            Sighting sighting = new Sighting(Integer.parseInt(id.ownText()), species.ownText(), date.ownText(), lat.ownText(), lng.ownText(), location.ownText(), animals.ownText(), name.ownText());
+                            wildlifeDB.insertInfoRssSighting(sighting);
+                            Log.d(LocationUtils.APPTAG, "Sighting added: species != null");
+                        }
+                    } else {
+                        Log.d(LocationUtils.APPTAG, "Sighting not added");
+                        return null;
+                    }
+
+                    /*for(Element element: elements){
+                        Log.d(LocationUtils.APPTAG, element.ownText());
+                    }*/
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+
+        }
+        // onPostExecute displays the results of the AsyncTask.
+        @Override
+        protected void onPostExecute(String result) {
+            // dismiss the dialog after getting all products
+            //pDialog.dismiss();
+            wildlifeDB.close();
+            getLocalSightings();
+            setProgressBarIndeterminateVisibility(false);
+        }
+
+        private boolean checkSightingExists(String id) {
+
+            Cursor cursor = wildlifeDB.getInfoRssSighting();
+            startManagingCursor(cursor);
+            if(cursor.moveToFirst()){
+                do {
+                    int existingID = cursor.getInt(cursor.getColumnIndex(Constants.SIGHTING_ID));
+                    if(id.equals(Integer.toString(existingID))){
+                        return true;
+                    }
+                } while(cursor.moveToNext());
+            }
+            return false;
+        }
+
     }
 
 }

@@ -90,6 +90,7 @@ public class WildlifeDB {
             newTaskValue.put(Constants.SIGHTING_ANIMALS, sighting.getAnimals());
             newTaskValue.put(Constants.SIGHTING_LAT, sighting.getSightingLat());
             newTaskValue.put(Constants.SIGHTING_LNG, sighting.getSightingLong());
+            newTaskValue.put(Constants.SIGHTING_NAME, sighting.getName());
             return db.insertOrThrow(Constants.TABLE_NAME_RSS_SIGHTING, null, newTaskValue);
         }   catch (SQLiteException e) {
             Log.d(LocationUtils.APPTAG,"Insert into database exception caught"+ e.getMessage());

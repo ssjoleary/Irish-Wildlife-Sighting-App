@@ -108,7 +108,7 @@
         <item>whitebeakeddolphin</item>
     </string-array>
 
-    <string name="gmap_refresh">Refresh</string>
+    <string name="gmap_refresh">Check for New Sightings</string>
     <string name="gmap_help">Help</string>
 
     <!-- Search Form -->
@@ -135,6 +135,7 @@
     <string name="cancel">Cancel</string>
 
     <!-- Sighting Dialog -->
+    <string name="sighting_observer">Observer</string>
     <string name="sighting_species">Species</string>
     <string name="sighting_location">Location</string>
     <string name="sighting_animals">Animals</string>
