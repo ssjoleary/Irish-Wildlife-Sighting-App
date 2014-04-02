@@ -157,6 +157,8 @@ public class GMapActivity extends NavDrawer implements
         ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap().setOnCameraChangeListener(mClusterManager);
         ((MapFragment) getFragmentManager().findFragmentById(R.id.map)).getMap().setOnMarkerClickListener(mClusterManager);
 
+        wildlifeDB = new WildlifeDB(this);
+
         try {
             // Loading map
             initializeMapIfNeeded();
@@ -166,11 +168,11 @@ public class GMapActivity extends NavDrawer implements
 
         Intent i = getIntent();
         if (i.getStringExtra("result") == null) {
-            //getRecentSightings();
-            getLocalSightings();
+            getRecentSightings();
+            //getLocalSightings();
         } else {
-            //plotMarkers(i.getStringExtra("result"));
-            getLocalSightings();
+            plotMarkers(i.getStringExtra("result"));
+            //getLocalSightings();
         }
 
         if (i.getIntExtra("groupPosition", 999) != 999){
@@ -186,13 +188,14 @@ public class GMapActivity extends NavDrawer implements
     private void getLocalSightings() {
         googleMap.clear();
         mClusterManager.clearItems();
-        wildlifeDB = new WildlifeDB(this);
+
         wildlifeDB.open();
 
         Cursor cursor = wildlifeDB.getInfoRssSighting();
         startManagingCursor(cursor);
         if(cursor.moveToFirst()){
             do {
+                int ID = cursor.getInt(cursor.getColumnIndex(Constants.SIGHTING_ID));
                 int animals = cursor.getInt(cursor.getColumnIndex(Constants.SIGHTING_ANIMALS));
                 String sub_date = cursor.getString(cursor.getColumnIndex(Constants.SIGHTING_DATE));
                 double latitude  = cursor.getDouble(cursor.getColumnIndex(Constants.SIGHTING_LAT));
@@ -202,20 +205,22 @@ public class GMapActivity extends NavDrawer implements
                 String name = cursor.getString(cursor.getColumnIndex(Constants.SIGHTING_NAME));
                 //String imgUri = cursor.getString(cursor.getColumnIndex(Constants.SIGHTING_IMGURI));
 
-                MarkerOptions mo = new MarkerOptions()
+                /*MarkerOptions mo = new MarkerOptions()
                         .position(new LatLng(latitude, longitude))
                         .flat(true)
                         .snippet("Click here for details")
                         .rotation(0)
-                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));*/
 
                 //Marker myMarker = googleMap.addMarker(mo);
-                Sighting mySighting = new Sighting(species, sub_date, latitude, longitude, location, animals, name);//, imgUri);
+                Sighting mySighting = new Sighting(ID, species, sub_date, latitude, longitude, location, animals, name);//, imgUri);
+                Log.d(LocationUtils.APPTAG, "SightingID: " + ID);
                 mClusterManager.addItem(mySighting);
                 //mkrObjects.put(myMarker.getId(), mySighting);
 
             } while(cursor.moveToNext());
         }
+        stopManagingCursor(cursor);
         wildlifeDB.close();
         mClusterManager.cluster();
         setProgressBarIndeterminateVisibility(false);
@@ -225,6 +230,7 @@ public class GMapActivity extends NavDrawer implements
         new HttpHandler() {
             @Override
             public HttpUriRequest getHttpRequestMethod() {
+                setProgressBarIndeterminateVisibility(true);
 
                 return new HttpGet("http://fyp-irish-wildlife.herokuapp.com/sightings/getsighting/");
 
@@ -239,8 +245,11 @@ public class GMapActivity extends NavDrawer implements
     }
 
     private void plotMarkers(String result) {
-        googleMap.clear();
-        mClusterManager.clearItems();
+
+        int nextID = mPrefs.getInt("ID", 0);
+
+        //googleMap.clear();
+        //mClusterManager.clearItems();
         //mkrObjects.clear();
         JSONArray json;
         try {
@@ -251,6 +260,9 @@ public class GMapActivity extends NavDrawer implements
                     c = json.getJSONObject(i);
 
                     int ID = c.getInt("pk");
+                    if(ID >= nextID){
+                        nextID = ID + 1;
+                    }
 
                     JSONObject fields = c.getJSONObject("fields");
                     int animals = fields.getInt("animals");
@@ -260,13 +272,14 @@ public class GMapActivity extends NavDrawer implements
                     String location = fields.getString("location");
                     String species = fields.getString("species");
 
-                    MarkerOptions mo = new MarkerOptions()
+                    /*MarkerOptions mo = new MarkerOptions()
                             .position(new LatLng(latitude, longitude))
                             .flat(true)
                             .snippet("Click here for details")
-                            .rotation(0);
+                            .rotation(0);*/
+
                     //Marker myMarker = googleMap.addMarker(mo);
-                    Sighting mySighting = new Sighting(species, sub_date, latitude, longitude, location, animals);
+                    //Sighting mySighting = new Sighting(species, sub_date, latitude, longitude, location, animals);
                     //mkrObjects.put(myMarker.getId(), mySighting);
 
                     //mClusterManager.addItem(mySighting);
@@ -278,6 +291,9 @@ public class GMapActivity extends NavDrawer implements
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        Log.d(LocationUtils.APPTAG, "nextID: " + nextID);
+        mEditor.putInt("ID", nextID);
+        mEditor.commit();
     }
 
     @Override
@@ -644,6 +660,7 @@ public class GMapActivity extends NavDrawer implements
                         break;
                 }
                 break;
+
             case SEARCH_REQUEST:
                 switch (resultCode) {
                     case Activity.RESULT_OK:
@@ -658,15 +675,17 @@ public class GMapActivity extends NavDrawer implements
                         break;
                 }
                 break;
+
             case SUBMIT_REQUEST:
                 switch (resultCode) {
                     case Activity.RESULT_OK:
-                        Sighting mySighting = (Sighting) intent.getSerializableExtra("userSighting");
-                        mClusterManager.addItem(mySighting);
+                        //Sighting mySighting = (Sighting) intent.getSerializableExtra("userSighting");
+                        //mClusterManager.addItem(mySighting);
                         //mkrObjects.put(mPrefs.getString("mkrID", "null"), sighting);
                         Marker mkr = sightingMkr.get(mPrefs.getString("mkrID", "null"));
                         sightingMkr.remove(mPrefs.getString("mkrID", "null"));
                         mkr.remove();
+                        getLocalSightings();
                         /*if (mkr != null) {
                             mkr.setDraggable(false);
                             mkr.hideInfoWindow();
@@ -1134,6 +1153,7 @@ public class GMapActivity extends NavDrawer implements
                     }
                 } while(cursor.moveToNext());
             }
+            stopManagingCursor(cursor);
             return false;
         }
 

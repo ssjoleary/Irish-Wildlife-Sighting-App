@@ -60,7 +60,7 @@ public class Profile extends Activity {
         dropTable.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                wildlifeDB.dropTable();
+                wildlifeDB.dropTableRssSighting();
                 wildlifeDB.close();
                 Toast.makeText(Profile.this, "User Created Sightings Deleted!", Toast.LENGTH_SHORT).show();
             }

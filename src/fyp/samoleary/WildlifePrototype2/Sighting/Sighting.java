@@ -27,7 +27,8 @@ public class Sighting implements Serializable, ClusterItem {
     private int animals;
     private String imgUri = null;
 
-    public Sighting(String species, String date, double sightingLat, double sightingLong, String location, int animals, String name) {
+    public Sighting(int ID, String species, String date, double sightingLat, double sightingLong, String location, int animals, String name) {
+        this.ID = ID;
         this.species = species;
         this.date = date;
         this.sightingLat = sightingLat;
@@ -76,7 +77,7 @@ public class Sighting implements Serializable, ClusterItem {
         }
     }
 
-    public Sighting(String species, String date, double sightingLat, double sightingLong, String location, int animals) {
+    /*public Sighting(String species, String date, double sightingLat, double sightingLong, String location, int animals) {
         this.species = species;
         this.date = date;
         this.sightingLat = sightingLat;
@@ -84,7 +85,7 @@ public class Sighting implements Serializable, ClusterItem {
         this.location = location;
         this.animals = animals;
     }
-
+    */
     public String getSpecies() {
         return species;
     }

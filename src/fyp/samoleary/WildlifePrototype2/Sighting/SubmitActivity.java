@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -17,11 +18,22 @@ import android.widget.*;
 import com.google.android.gms.maps.model.LatLng;
 import fyp.samoleary.WildlifePrototype2.Database.WildlifeDB;
 import fyp.samoleary.WildlifePrototype2.GMap.GMapActivity;
+import fyp.samoleary.WildlifePrototype2.GMap.HttpHandler;
 import fyp.samoleary.WildlifePrototype2.LocationUtils;
 import fyp.samoleary.WildlifePrototype2.R;
+import fyp.samoleary.WildlifePrototype2.Search.SearchParams;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -71,6 +83,7 @@ public class SubmitActivity extends Activity {
     // Handle to a SharedPreferences editor
     SharedPreferences.Editor mEditor;
     private String imgUri;
+    private int nextID = -1;
 
     protected void onCreate(Bundle savedBundleInstance) {
         super.onCreate(savedBundleInstance);
@@ -97,10 +110,21 @@ public class SubmitActivity extends Activity {
         submit_btn = (Button) findViewById(R.id.submit_form_btn);
         inclPhoto = (Button) findViewById(R.id.submit_form_inclphoto);
 
+        submit_btn.setEnabled(false);
+        getRecentSightings();
         submit_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                submitSighting();
+                if(location_view.getText().toString().equals("") || animals_view.getText().toString().equals("")) {
+                    Toast.makeText(getBaseContext(), "Please fill in all fields", Toast.LENGTH_LONG).show();
+                } else if(nextID != -1) {
+                    Log.d(LocationUtils.APPTAG, "SubmitActivity: onClick: success");
+                    submitSighting();
+                } else {
+                    Log.d(LocationUtils.APPTAG, "SubmitActivity: onClick: failure: nextID: " + nextID);
+                    Toast.makeText(getBaseContext(), "Error?", Toast.LENGTH_LONG).show();
+                }
+                //TODO cannot get latest ID
             }
         });
 
@@ -151,7 +175,6 @@ public class SubmitActivity extends Activity {
         long_view.setText(String.format("%.5f", user_coordinates.longitude));
 
         wildlifeDB = new WildlifeDB(this);
-        wildlifeDB.open();
 
         // Open Shared Preferences
         mPrefs = getSharedPreferences(LocationUtils.SHARED_PREFERENCES, Context.MODE_PRIVATE);
@@ -176,13 +199,115 @@ public class SubmitActivity extends Activity {
     private void submitSighting() {
         userSighting = createSighting();
 
-        wildlifeDB.insertInfo(userSighting);
+        wildlifeDB.open();
+        wildlifeDB.insertInfoRssSighting(userSighting);
         wildlifeDB.close();
+
+        //TODO send sighting to remote database
+        Log.d(LocationUtils.APPTAG, "SubmitActivity: submitSighting: execute");
+        new HttpAsyncTask().execute("http://fyp-irish-wildlife.herokuapp.com/sightings/postsighting/");
 
         Intent intent = new Intent(this, GMapActivity.class);
         setResult(RESULT_OK, intent);
-        intent.putExtra("userSighting", userSighting);
+        //intent.putExtra("userSighting", userSighting);
         finish();
+    }
+
+    public static String POST(String url, Sighting sightingSubmit){
+        InputStream inputStream;
+        String result = "";
+        try {
+
+            // 1. create HttpClient
+            HttpClient httpclient = new DefaultHttpClient();
+
+            // 2. make POST request to the given URL
+            HttpPost httpPost = new HttpPost(url);
+
+            String json;
+
+            // 3. build jsonObject
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.accumulate("species", sightingSubmit.getSpecies());
+            jsonObject.accumulate("date", sightingSubmit.getDate());
+            jsonObject.accumulate("lat", sightingSubmit.getSightingLat());
+            jsonObject.accumulate("lng", sightingSubmit.getSightingLong());
+            jsonObject.accumulate("location", sightingSubmit.getLocation());
+            jsonObject.accumulate("animals", sightingSubmit.getAnimals());
+            jsonObject.accumulate("name", sightingSubmit.getName());
+
+            // 4. convert JSONObject to JSON to String
+            json = jsonObject.toString();
+            // ** Alternative way to convert Person object to JSON string usin Jackson Lib
+            // ObjectMapper mapper = new ObjectMapper();
+            // json = mapper.writeValueAsString(searchActivity);
+
+            // 5. set json to StringEntity
+            StringEntity se = new StringEntity(json);
+
+            // 6. set httpPost Entity
+            httpPost.setEntity(se);
+
+            // 7. Set some headers to inform server about the type of the content
+            httpPost.setHeader("Accept", "application/json");
+            httpPost.setHeader("Content-type", "application/json");
+
+            // 8. Execute POST request to the given URL
+            HttpResponse httpResponse = httpclient.execute(httpPost);
+
+            // 9. receive response as inputStream
+            inputStream = httpResponse.getEntity().getContent();
+
+            // 10. convert inputstream to string
+            if(inputStream != null) {
+                Log.d(LocationUtils.APPTAG, "SubmitActivity: POST: inputStream != null");
+                result = convertInputStreamToString(inputStream);
+            }
+            else {
+                Log.d(LocationUtils.APPTAG, "SubmitActivity: POST: inputStream = null: did not work");
+                result = "Did not work!";
+            }
+
+        } catch (Exception e) {
+            Log.d("InputStream", e.getLocalizedMessage());
+        }
+
+        // 11. return result
+        return result;
+    }
+
+    private class HttpAsyncTask extends AsyncTask<String, Void, String> {
+        @Override
+        protected void onPreExecute() {
+            setProgressBarIndeterminateVisibility(true);
+        }
+
+        @Override
+        protected String doInBackground(String... urls) {
+            Log.d(LocationUtils.APPTAG, "SubmitActivity: HttpAsyncTask: doInBackground");
+            return POST(urls[0], userSighting);
+        }
+        // onPostExecute displays the results of the AsyncTask.
+        @Override
+        protected void onPostExecute(String result) {
+            showSuccess(result);
+            setProgressBarIndeterminateVisibility(false);
+        }
+    }
+
+    private static String convertInputStreamToString(InputStream inputStream) throws IOException {
+        BufferedReader bufferedReader = new BufferedReader( new InputStreamReader(inputStream));
+        String line;
+        StringBuilder result = new StringBuilder();
+        while((line = bufferedReader.readLine()) != null) {
+            result.append(line);
+        }
+
+        inputStream.close();
+        Log.d(LocationUtils.APPTAG, "SubmitActivity: convertInputStreamToString: result.To.String(): " + result.toString());
+
+        return result.toString();
+
     }
 
     private Sighting createSighting() {
@@ -190,22 +315,86 @@ public class SubmitActivity extends Activity {
         String location;
         int animals;
 
+        //int nextID = mPrefs.getInt("ID", 0);
+        String name = mPrefs.getString("name", "Click to set up Profile");
+        String phone = mPrefs.getString("phone", "Phone");
+        String email = mPrefs.getString("email", "Email");
+        Boolean isMember = mPrefs.getBoolean("isMember", false);
+
         String dateOut = date.toString();
         sightingLat = user_coordinates.latitude;
         sightingLong = user_coordinates.longitude;
-        if (location_view.getText().toString().equals("")) {
-            location = "Not Set";
-        } else {
-            location = location_view.getText().toString();
-        }
+
+        location = location_view.getText().toString();
         location += ", " + county;
 
-        if (animals_view.getText().toString().equals("")) {
-            animals = 0;
-        } else {
-            animals = Integer.parseInt(animals_view.getText().toString());
+        animals = Integer.parseInt(animals_view.getText().toString());
+
+        return new Sighting(nextID, species, dateOut, sightingLat, sightingLong, location, animals, name);
+    }
+
+    private void getRecentSightings() {
+        new HttpHandler() {
+            @Override
+            public HttpUriRequest getHttpRequestMethod() {
+                setProgressBarIndeterminateVisibility(true);
+
+                return new HttpGet("http://fyp-irish-wildlife.herokuapp.com/sightings/getsighting/");
+
+            }
+            @Override
+            public void onResponse(String result) {
+                getNextID(result);
+                submit_btn.setEnabled(true);
+                setProgressBarIndeterminateVisibility(false);
+            }
+        }.execute();
+    }
+
+    private void getNextID(String result) {
+        JSONArray json;
+        try {
+            json = new JSONArray(result);
+            for (int i = 0; i < json.length(); i++) {
+                JSONObject c;
+                try {
+                    c = json.getJSONObject(i);
+
+                    int ID = c.getInt("pk");
+                    if(ID >= nextID){
+                        nextID = ID + 1;
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
-        return new Sighting(species, dateOut, sightingLat, sightingLong, location, animals, imgUri);
+        Log.d(LocationUtils.APPTAG, "SubmitActivity: nextID: " + nextID);
+    }
+
+    private void showSuccess(String result) {
+        generateNoteOnSD("ErrorHtml", result);
+        JSONArray json;
+        try {
+            json = new JSONArray(result);
+            for (int i = 0; i < json.length(); i++) {
+                JSONObject c;
+                try {
+                    c = json.getJSONObject(i);
+
+                    String success = c.getString("success");
+                    Log.d(LocationUtils.APPTAG, "isSuccessful: " + success);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public void onRadioButtonClicked(View view) {
@@ -317,6 +506,26 @@ public class SubmitActivity extends Activity {
             } else {
                 // Video capture failed, advise user
             }
+        }
+    }
+
+    public void generateNoteOnSD(String sFileName, String sBody){
+        try
+        {
+            File root = new File(Environment.getExternalStorageDirectory(), "Documents");
+            if (!root.exists()) {
+                root.mkdirs();
+            }
+            File gpxfile = new File(root, sFileName);
+            FileWriter writer = new FileWriter(gpxfile);
+            writer.append(sBody);
+            writer.flush();
+            writer.close();
+            Toast.makeText(this, "Saved", Toast.LENGTH_SHORT).show();
+        }
+        catch(IOException e)
+        {
+            e.printStackTrace();
         }
     }
 }
