@@ -17,6 +17,7 @@ import java.io.Serializable;
 public class Sighting implements Serializable, ClusterItem {
     private final static long serialVersionUID = 1;
 
+    private int ID;
     private String species;
     private String date;
     private double sightingLat;
@@ -33,6 +34,40 @@ public class Sighting implements Serializable, ClusterItem {
         this.location = location;
         this.animals = animals;
         this.imgUri = imgUri;
+    }
+
+    public Sighting(int ID, String species, String date, String sightingLat, String sightingLong, String location, String animals) {
+        this.ID = ID;
+        if(species.equals("")){
+            this.species = "N/A";
+        } else {
+            this.species = species;
+        }
+        if(date.equals("")){
+            this.date = "N/A";
+        } else {
+            this.date = date;
+        }
+        if(sightingLat.equals("")){
+            this.sightingLat = 0;
+        } else {
+            this.sightingLat = Double.parseDouble(sightingLat);
+        }
+        if(sightingLong.equals("")){
+            this.sightingLong = 0;
+        } else {
+            this.sightingLong = Double.parseDouble(sightingLong);
+        }
+        if(location.equals("")){
+            this.location = "N/A";
+        } else {
+            this.location = location;
+        }
+        if(animals.equals("")){
+            this.animals = 0;
+        } else {
+            this.animals = Integer.parseInt(animals);
+        }
     }
 
     public Sighting(String species, String date, double sightingLat, double sightingLong, String location, int animals) {
@@ -79,5 +114,9 @@ public class Sighting implements Serializable, ClusterItem {
     @Override
     public LatLng getPosition() {
         return new LatLng(sightingLat, sightingLong);
+    }
+
+    public int getID() {
+        return ID;
     }
 }

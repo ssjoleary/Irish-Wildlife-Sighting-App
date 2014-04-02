@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.util.Log;
 import fyp.samoleary.WildlifePrototype2.Constants;
+import fyp.samoleary.WildlifePrototype2.LocationUtils;
 import fyp.samoleary.WildlifePrototype2.Sighting.Sighting;
 
 /**
@@ -79,6 +80,23 @@ public class WildlifeDB {
         }
     }
 
+    public long insertInfoRssSighting(Sighting sighting) {
+        try {
+            ContentValues newTaskValue = new ContentValues();
+            newTaskValue.put(Constants.SIGHTING_ID, sighting.getID());
+            newTaskValue.put(Constants.SIGHTING_SPECIES, sighting.getSpecies());
+            newTaskValue.put(Constants.SIGHTING_DATE, sighting.getDate());
+            newTaskValue.put(Constants.SIGHTING_LOCATION, sighting.getLocation());
+            newTaskValue.put(Constants.SIGHTING_ANIMALS, sighting.getAnimals());
+            newTaskValue.put(Constants.SIGHTING_LAT, sighting.getSightingLat());
+            newTaskValue.put(Constants.SIGHTING_LNG, sighting.getSightingLong());
+            return db.insertOrThrow(Constants.TABLE_NAME_RSS_SIGHTING, null, newTaskValue);
+        }   catch (SQLiteException e) {
+            Log.d(LocationUtils.APPTAG,"Insert into database exception caught"+ e.getMessage());
+            return -1;
+        }
+    }
+
     /**
      * This method, getInfo(), queries the Database and returns all the information it contains.
      *
@@ -89,12 +107,21 @@ public class WildlifeDB {
         return db.query(Constants.TABLE_NAME, null, null, null, null, null, null);
     }
 
-    /**
+    public Cursor getInfoRssSighting() {
+        return db.query(Constants.TABLE_NAME_RSS_SIGHTING, null, null, null, null, null, null);
+    }
+     /**
      * This method, dropTable(), is called when the user resets their profile. The table is dropped, or deleted, and all
      * the information gathered up to that point is lost.
      */
     public void dropTable() {
         db.execSQL("DROP TABLE IF EXISTS " + Constants.TABLE_NAME);
         dbHelper.onCreate(db);
+    }
+
+    public void dropTableRssSighting() {
+        db.execSQL("DROP TABLE IF EXISTS " + Constants.TABLE_NAME_RSS_SIGHTING);
+        dbHelper.onCreate(db);
+        Log.d(LocationUtils.APPTAG, "Table Dropped");
     }
 }

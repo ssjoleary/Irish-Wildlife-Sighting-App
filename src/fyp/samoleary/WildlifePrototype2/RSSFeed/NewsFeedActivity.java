@@ -73,15 +73,15 @@ public class NewsFeedActivity extends NavDrawer {
                 switch (childPosition) {
                     case 0:
                         closeDrawer();
-                        gotoNewsFeed("http://www.iwdg.ie/index.php?option=com_k2&view=itemlist&task=category&id=1&Itemid=93&format=feed");
+                        gotoNewsFeed(getString(R.string.rssfeed_news));
                         break;
                     case 1:
                         closeDrawer();
-                        gotoNewsFeed("http://www.iwdg.ie/_customphp/iscope/rss_sightings.php");
+                        gotoNewsFeed(getString(R.string.rssfeed_sightings));
                         break;
                     case 2:
                         closeDrawer();
-                        gotoNewsFeed("http://www.iwdg.ie/_customphp/iscope/rss_strandings.php");
+                        gotoNewsFeed(getString(R.string.rssfeed_strandings));
                         break;
                 }
                 break;

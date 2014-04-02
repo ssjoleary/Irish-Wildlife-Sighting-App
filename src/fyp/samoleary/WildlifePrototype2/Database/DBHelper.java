@@ -30,6 +30,16 @@ public class DBHelper extends SQLiteOpenHelper {
             Constants.SIGHTING_IMGURI+" text not null, "+
             Constants.SIGHTING_ANIMALS+" integer not null);";
 
+    private static final String CREATE_TABLE_RSS_SIGHTING="create table "+
+            Constants.TABLE_NAME_RSS_SIGHTING+" ("+
+            Constants.SIGHTING_ID+" integer primary key, "+
+            Constants.SIGHTING_SPECIES+" text not null, "+
+            Constants.SIGHTING_DATE+" text not null, "+
+            Constants.SIGHTING_LOCATION+" text not null,"+
+            Constants.SIGHTING_LNG+" double not null,"+
+            Constants.SIGHTING_LAT+" double not null,"+
+            Constants.SIGHTING_ANIMALS+" integer not null);";
+
     /**
      * The constructor for the DBHelper class.
      * @param context
@@ -51,7 +61,8 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         Log.v("DBHelper onCreate", "Creating all the tables");
         try {
-            db.execSQL(CREATE_TABLE);
+            db.execSQL(CREATE_TABLE_RSS_SIGHTING);
+            //db.execSQL(CREATE_TABLE);
         } catch (SQLiteException e) {
             Log.v("Create Table exception", e.getMessage());
         }
@@ -75,6 +86,7 @@ public class DBHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         Log.w("TaskDBAdapter", "Upgrading from version "+oldVersion+" to "+newVersion+", which will destroy all old data");
         db.execSQL("drop table if exists " +Constants.TABLE_NAME);
+        db.execSQL("drop table if exists " +Constants.TABLE_NAME_RSS_SIGHTING);
         onCreate(db);
     }
 }

@@ -10,6 +10,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import fyp.samoleary.WildlifePrototype2.LocationUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -146,7 +147,7 @@ public class RSSParser {
      * Getting RSS feed link from HTML source code
      *
      * @param url is url of the website
-     * @returns url of rss link of website
+     * @return url of rss link of website
      * */
     public String getRSSLinkFromURL(String url) {
         // RSS url
@@ -159,7 +160,7 @@ public class RSSParser {
             org.jsoup.select.Elements links = doc
                     .select("link[type=application/rss+xml]");
 
-            Log.d("No of RSS links found", " " + links.size());
+            Log.d(LocationUtils.APPTAG, "No of RSS links found: " + links.size());
 
             // check if urls found or not
             if (links.size() > 0) {

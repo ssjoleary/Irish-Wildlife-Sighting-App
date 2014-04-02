@@ -154,9 +154,10 @@ public class GMapActivity extends NavDrawer implements
 
         Intent i = getIntent();
         if (i.getStringExtra("result") == null) {
-            getRecentSightings();
+            //getRecentSightings();
+            getLocalSightings();
         } else {
-            plotMarkers(i.getStringExtra("result"));
+            //plotMarkers(i.getStringExtra("result"));
             getLocalSightings();
         }
 
@@ -167,10 +168,12 @@ public class GMapActivity extends NavDrawer implements
     }
 
     private void getLocalSightings() {
+        googleMap.clear();
+        mClusterManager.clearItems();
         WildlifeDB wildlifeDB = new WildlifeDB(this);
         wildlifeDB.open();
 
-        Cursor cursor = wildlifeDB.getInfo();
+        Cursor cursor = wildlifeDB.getInfoRssSighting();
         startManagingCursor(cursor);
         if(cursor.moveToFirst()){
             do {
@@ -180,7 +183,7 @@ public class GMapActivity extends NavDrawer implements
                 double longitude = cursor.getDouble(cursor.getColumnIndex(Constants.SIGHTING_LNG));
                 String location = cursor.getString(cursor.getColumnIndex(Constants.SIGHTING_LOCATION));
                 String species = cursor.getString(cursor.getColumnIndex(Constants.SIGHTING_SPECIES));
-                String imgUri = cursor.getString(cursor.getColumnIndex(Constants.SIGHTING_IMGURI));
+                //String imgUri = cursor.getString(cursor.getColumnIndex(Constants.SIGHTING_IMGURI));
 
                 MarkerOptions mo = new MarkerOptions()
                         .position(new LatLng(latitude, longitude))
@@ -190,12 +193,14 @@ public class GMapActivity extends NavDrawer implements
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
 
                 //Marker myMarker = googleMap.addMarker(mo);
-                Sighting mySighting = new Sighting(species, sub_date, latitude, longitude, location, animals, imgUri);
+                Sighting mySighting = new Sighting(species, sub_date, latitude, longitude, location, animals);//, imgUri);
                 mClusterManager.addItem(mySighting);
                 //mkrObjects.put(myMarker.getId(), mySighting);
 
             } while(cursor.moveToNext());
         }
+        mClusterManager.cluster();
+        setProgressBarIndeterminateVisibility(false);
     }
 
     private void getRecentSightings() {
@@ -280,7 +285,8 @@ public class GMapActivity extends NavDrawer implements
         // Handle action buttons
         switch(item.getItemId()) {
             case R.id.gmap_refresh:
-                getRecentSightings();
+                //getRecentSightings();
+                getLocalSightings();
                 return true;
             case R.id.gmap_help:
                 return true;
@@ -298,7 +304,8 @@ public class GMapActivity extends NavDrawer implements
                     case 0:
                         closeDrawer();
                         setProgressBarIndeterminateVisibility(true);
-                        getRecentSightings();
+                        //getRecentSightings();
+                        getLocalSightings();
                         break;
                     case 1:
                         closeDrawer();
@@ -536,8 +543,8 @@ public class GMapActivity extends NavDrawer implements
     protected void onResume() {
         super.onResume();
         Log.d(LocationUtils.APPTAG, "onResume");
-        getRecentSightings();
-
+        //getRecentSightings();
+        getLocalSightings();
         // If the app already has a setting for getting location updates, get it
         if (mPrefs.contains(LocationUtils.KEY_UPDATES_REQUESTED)) {
             mUpdatesRequested = mPrefs.getBoolean(LocationUtils.KEY_UPDATES_REQUESTED, false);
