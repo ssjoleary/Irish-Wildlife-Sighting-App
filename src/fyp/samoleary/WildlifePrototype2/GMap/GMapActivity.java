@@ -684,8 +684,12 @@ public class GMapActivity extends NavDrawer implements
                         //mkrObjects.put(mPrefs.getString("mkrID", "null"), sighting);
                         Marker mkr = sightingMkr.get(mPrefs.getString("mkrID", "null"));
                         sightingMkr.remove(mPrefs.getString("mkrID", "null"));
-                        mkr.remove();
+
+                        if (mkr != null)
+                            mkr.remove();
+
                         getLocalSightings();
+
                         /*if (mkr != null) {
                             mkr.setDraggable(false);
                             mkr.hideInfoWindow();

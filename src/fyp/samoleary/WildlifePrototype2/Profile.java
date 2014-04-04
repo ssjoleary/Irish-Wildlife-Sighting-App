@@ -19,6 +19,7 @@ public class Profile extends Activity {
     private EditText emailText;
     private Boolean isMember;
     private WildlifeDB wildlifeDB;
+    private Button dropTable;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -40,7 +41,7 @@ public class Profile extends Activity {
         nameText = (EditText)findViewById(R.id.profile_name);
         phoneText = (EditText) findViewById(R.id.profile_telephone);
         emailText = (EditText) findViewById(R.id.profile_email);
-        Button dropTable = (Button) findViewById(R.id.profile_dropTable);
+        dropTable = (Button) findViewById(R.id.profile_dropTable);
         if(!name.equals("Click to set up Profile")) {
             nameText.setText(name);
         }
@@ -63,6 +64,8 @@ public class Profile extends Activity {
                 wildlifeDB.dropTableRssSighting();
                 wildlifeDB.close();
                 Toast.makeText(Profile.this, "User Created Sightings Deleted!", Toast.LENGTH_SHORT).show();
+                dropTable.setText("User Created Sightings Deleted!");
+                dropTable.setEnabled(false);
             }
         });
     }

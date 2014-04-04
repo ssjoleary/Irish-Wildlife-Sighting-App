@@ -129,7 +129,8 @@ public class SubmitActivity extends Activity {
                         Log.d(LocationUtils.APPTAG, "SubmitActivity: onClick: we're in");
                         new MyImgurUploadTask(Uri.parse(mImageUri)).execute();
                     }
-
+                    submit_btn.setText("Loading...");
+                    submit_btn.setEnabled(false);
                 } else {
                     Log.d(LocationUtils.APPTAG, "SubmitActivity: onClick: failure: nextID: " + nextID);
                     Toast.makeText(getBaseContext(), "Error?", Toast.LENGTH_LONG).show();
