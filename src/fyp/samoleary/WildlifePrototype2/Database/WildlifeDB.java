@@ -71,7 +71,7 @@ public class WildlifeDB {
             newTaskValue.put(Constants.SIGHTING_ANIMALS, sighting.getAnimals());
             newTaskValue.put(Constants.SIGHTING_LAT, sighting.getSightingLat());
             newTaskValue.put(Constants.SIGHTING_LNG, sighting.getSightingLong());
-            newTaskValue.put(Constants.SIGHTING_IMGURI, sighting.getImgUriString());
+            newTaskValue.put(Constants.SIGHTING_IMGURI, sighting.getImgUrlString());
             return db.insert(Constants.TABLE_NAME, null, newTaskValue);
         }   catch (SQLiteException e) {
             System.out.println("Insert into database exception caught");
@@ -91,6 +91,7 @@ public class WildlifeDB {
             newTaskValue.put(Constants.SIGHTING_LAT, sighting.getSightingLat());
             newTaskValue.put(Constants.SIGHTING_LNG, sighting.getSightingLong());
             newTaskValue.put(Constants.SIGHTING_NAME, sighting.getName());
+            newTaskValue.put(Constants.SIGHTING_IMAGE, sighting.getImgUrlString());
             Log.d(LocationUtils.APPTAG, "WildlifeDB: Inserted sighting");
             return db.insertOrThrow(Constants.TABLE_NAME_RSS_SIGHTING, null, newTaskValue);
         }   catch (SQLiteException e) {

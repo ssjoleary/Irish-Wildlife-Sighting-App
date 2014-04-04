@@ -10,6 +10,8 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -48,6 +50,7 @@ public class SightingDialog extends Activity {
         TextView lng = (TextView) findViewById(R.id.sighting_lng);
         TextView observer = (TextView) findViewById(R.id.sighting_observer);
         ImageView imgView = (ImageView) findViewById(R.id.imageViewSightingDialog);
+        WebView webView = (WebView) findViewById(R.id.webView);
         Button okBtn = (Button) findViewById(R.id.sighting_btn);
 
         okBtn.setOnClickListener(new View.OnClickListener() {
@@ -74,8 +77,15 @@ public class SightingDialog extends Activity {
         // Get an editor
         mEditor = mPrefs.edit();
 
-        String imgUri = sighting.getImgUriString();//Uri.parse(mPrefs.getString("imgFileUri", "default"));
-        if ((imgUri.equals("default"))) {
+        String imgUri = sighting.getImgUrlString();//Uri.parse(mPrefs.getString("imgFileUri", "default"));
+        Log.d(LocationUtils.APPTAG, "SightingDialog: imgUrl: " + imgUri);
+        if(!imgUri.equals("image")){
+            webView.getSettings().setJavaScriptEnabled(true);
+            webView.loadUrl("http://i.imgur.com/"+imgUri+".jpg");
+            webView.setWebViewClient(new DisPlayWebPageActivityClient());
+        }
+
+        /*if ((imgUri.equals("default"))) {webview.setWebViewClient(new DisPlayWebPageActivityClient());
             Log.d("IrishWildlife", "Received default");
         }else{
             try {
@@ -84,6 +94,45 @@ public class SightingDialog extends Activity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }
+        }*/
     }
+    private class DisPlayWebPageActivityClient extends WebViewClient {
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            view.loadUrl(url);
+            return true;
+        }
+        /**
+         * Notify the host application that a page has started loading. This method
+         * is called once for each main frame load so a page with iframes or
+         * framesets will call onPageStarted one time for the main frame. This also
+         * means that onPageStarted will not be called when the contents of an
+         * embedded frame changes, i.e. clicking a link whose target is an iframe.
+         *
+         * @param view The WebView that is initiating the callback.
+         * @param url The url to be loaded.
+         * @param favicon The favicon for this page if it already exists in the
+         *            database.
+         */
+        @Override
+        public void onPageStarted(WebView view, String url, Bitmap favicon) {
+            setProgressBarIndeterminateVisibility(true);
+        }
+
+        /**
+         * Notify the host application that a page has finished loading. This method
+         * is called only for main frame. When onPageFinished() is called, the
+         * rendering picture may not be updated yet. To get the notification for the
+         * new Picture, use {@link WebView.PictureListener#onNewPicture}.
+         *
+         * @param view The WebView that is initiating the callback.
+         * @param url The url of the page.
+         */
+        @Override
+        public void onPageFinished(WebView view, String url) {
+            setProgressBarIndeterminateVisibility(false);
+        }
+
+    }
+
 }

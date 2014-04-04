@@ -27,9 +27,9 @@ public class Sighting implements Serializable, ClusterItem {
     private double sightingLong;
     private String location;
     private int animals;
-    private String imgUri = null;
+    private String imgUrl = "image";
 
-    public Sighting(int ID, String species, String date, double sightingLat, double sightingLong, String location, int animals, String name) {
+    public Sighting(int ID, String species, String date, double sightingLat, double sightingLong, String location, int animals, String name, String imgUrl) {
         this.ID = ID;
         this.species = species;
         this.date = date;
@@ -38,6 +38,7 @@ public class Sighting implements Serializable, ClusterItem {
         this.location = location;
         this.animals = animals;
         this.name = name;
+        this.imgUrl = imgUrl;
     }
 
     public Sighting(int ID, String species, String date, String sightingLat, String sightingLong, String location, String animals, String name) {
@@ -122,12 +123,12 @@ public class Sighting implements Serializable, ClusterItem {
         return location;
     }
 
-    public String getImgUriString() {
-        if (imgUri == null) {
-            imgUri = "default";
-            return imgUri;
+    public String getImgUrlString() {
+        if (imgUrl == null) {
+            imgUrl = "image";
+            return imgUrl;
         }
-        return imgUri;
+        return imgUrl;
     }
 
     @Override

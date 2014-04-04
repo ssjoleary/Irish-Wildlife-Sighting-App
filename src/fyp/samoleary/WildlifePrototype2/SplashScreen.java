@@ -75,7 +75,8 @@ public class SplashScreen extends Activity{
                         String location = fields.getString("location");
                         String species = fields.getString("species");
                         String name = fields.getString("name");
-                        Sighting sighting = new Sighting(ID, species, sub_date, latitude, longitude, location, animals, name);
+                        String imgurl = fields.getString("imageurl");
+                        Sighting sighting = new Sighting(ID, species, sub_date, latitude, longitude, location, animals, name, imgurl);
                         wildlifeDB.insertInfoRssSighting(sighting);
                     }
                 } catch (JSONException e) {

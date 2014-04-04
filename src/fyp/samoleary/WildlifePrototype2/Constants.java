@@ -17,6 +17,7 @@ public class Constants {
     public static final String SIGHTING_LNG = "sighting_lng";
     public static final String SIGHTING_IMGURI = "sighting_imguri";
     public static final String SIGHTING_NAME = "sighting_name";
+    public static final String SIGHTING_IMAGE = "sighting_image";
 
     public static final String TABLE_NAME_RSS_SIGHTING = "rsssightings";
 

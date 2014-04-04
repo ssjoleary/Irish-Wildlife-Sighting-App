@@ -129,7 +129,7 @@ public class SubmitActivity extends Activity {
                         Log.d(LocationUtils.APPTAG, "SubmitActivity: onClick: we're in");
                         new MyImgurUploadTask(Uri.parse(mImageUri)).execute();
                     }
-                    //submitSighting();
+
                 } else {
                     Log.d(LocationUtils.APPTAG, "SubmitActivity: onClick: failure: nextID: " + nextID);
                     Toast.makeText(getBaseContext(), "Error?", Toast.LENGTH_LONG).show();
@@ -245,6 +245,7 @@ public class SubmitActivity extends Activity {
             jsonObject.accumulate("location", sightingSubmit.getLocation());
             jsonObject.accumulate("animals", sightingSubmit.getAnimals());
             jsonObject.accumulate("name", sightingSubmit.getName());
+            jsonObject.accumulate("imageurl", sightingSubmit.getImgUrlString());
 
             // 4. convert JSONObject to JSON to String
             json = jsonObject.toString();
@@ -339,8 +340,10 @@ public class SubmitActivity extends Activity {
         location += ", " + county;
 
         animals = Integer.parseInt(animals_view.getText().toString());
+        if (mImgurUrl == null)
+                mImgurUrl = "image";
 
-        return new Sighting(nextID, species, dateOut, sightingLat, sightingLong, location, animals, name);
+        return new Sighting(nextID, species, dateOut, sightingLat, sightingLong, location, animals, name, mImgurUrl);
     }
 
     private void getRecentSightings() {
@@ -545,7 +548,7 @@ public class SubmitActivity extends Activity {
             super.onPostExecute(imageId);
             mImgurUploadTask = null;
             if (imageId != null) {
-                mImgurUrl = "http://imgur.com/" + imageId;
+                mImgurUrl = "" + imageId;
                 Log.d(LocationUtils.APPTAG, "imgur upload success: " + mImgurUrl);
                 //setImgurUploadStatus(R.string.choose_image_upload_status_success);
                 //if (isResumed()) {
@@ -564,6 +567,7 @@ public class SubmitActivity extends Activity {
                     }
                 }*/
             }
+            submitSighting();
             /*if (isVisible())
                 getView().findViewById(R.id.choose_image_button).setEnabled(true);*/
         }

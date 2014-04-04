@@ -203,7 +203,7 @@ public class GMapActivity extends NavDrawer implements
                 String location = cursor.getString(cursor.getColumnIndex(Constants.SIGHTING_LOCATION));
                 String species = cursor.getString(cursor.getColumnIndex(Constants.SIGHTING_SPECIES));
                 String name = cursor.getString(cursor.getColumnIndex(Constants.SIGHTING_NAME));
-                //String imgUri = cursor.getString(cursor.getColumnIndex(Constants.SIGHTING_IMGURI));
+                String imgurl = cursor.getString(cursor.getColumnIndex(Constants.SIGHTING_IMAGE));
 
                 /*MarkerOptions mo = new MarkerOptions()
                         .position(new LatLng(latitude, longitude))
@@ -213,7 +213,7 @@ public class GMapActivity extends NavDrawer implements
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));*/
 
                 //Marker myMarker = googleMap.addMarker(mo);
-                Sighting mySighting = new Sighting(ID, species, sub_date, latitude, longitude, location, animals, name);//, imgUri);
+                Sighting mySighting = new Sighting(ID, species, sub_date, latitude, longitude, location, animals, name, imgurl);//, imgUri);
                 Log.d(LocationUtils.APPTAG, "SightingID: " + ID);
                 mClusterManager.addItem(mySighting);
                 //mkrObjects.put(myMarker.getId(), mySighting);
