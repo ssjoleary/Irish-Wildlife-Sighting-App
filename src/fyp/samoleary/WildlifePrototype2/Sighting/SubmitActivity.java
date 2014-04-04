@@ -19,9 +19,9 @@ import com.google.android.gms.maps.model.LatLng;
 import fyp.samoleary.WildlifePrototype2.Database.WildlifeDB;
 import fyp.samoleary.WildlifePrototype2.GMap.GMapActivity;
 import fyp.samoleary.WildlifePrototype2.GMap.HttpHandler;
+import fyp.samoleary.WildlifePrototype2.ImgurUploadTask;
 import fyp.samoleary.WildlifePrototype2.LocationUtils;
 import fyp.samoleary.WildlifePrototype2.R;
-import fyp.samoleary.WildlifePrototype2.Search.SearchParams;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
@@ -82,12 +82,18 @@ public class SubmitActivity extends Activity {
 
     // Handle to a SharedPreferences editor
     SharedPreferences.Editor mEditor;
-    private String imgUri;
+    private String mImageUri;
     private int nextID = -1;
+
+    private static Context context;
+    private MyImgurUploadTask mImgurUploadTask;
+    private String mImgurUrl;
 
     protected void onCreate(Bundle savedBundleInstance) {
         super.onCreate(savedBundleInstance);
         setContentView(R.layout.submit_sighting);
+
+        SubmitActivity.context = getApplicationContext();
 
         List<String> speciesList = new ArrayList<String>(Arrays.asList(getResources().getStringArray(R.array.species_array)));
         List<String> countiesList = new ArrayList<String>(Arrays.asList(getResources().getStringArray(R.array.counties_array)));
@@ -119,7 +125,11 @@ public class SubmitActivity extends Activity {
                     Toast.makeText(getBaseContext(), "Please fill in all fields", Toast.LENGTH_LONG).show();
                 } else if(nextID != -1) {
                     Log.d(LocationUtils.APPTAG, "SubmitActivity: onClick: success");
-                    submitSighting();
+                    if (mImageUri != null && mImgurUrl == null) {
+                        Log.d(LocationUtils.APPTAG, "SubmitActivity: onClick: we're in");
+                        new MyImgurUploadTask(Uri.parse(mImageUri)).execute();
+                    }
+                    //submitSighting();
                 } else {
                     Log.d(LocationUtils.APPTAG, "SubmitActivity: onClick: failure: nextID: " + nextID);
                     Toast.makeText(getBaseContext(), "Error?", Toast.LENGTH_LONG).show();
@@ -376,7 +386,7 @@ public class SubmitActivity extends Activity {
     }
 
     private void showSuccess(String result) {
-        generateNoteOnSD("ErrorHtml", result);
+        //generateNoteOnSD("ErrorHtml", result);
         JSONArray json;
         try {
             json = new JSONArray(result);
@@ -479,9 +489,9 @@ public class SubmitActivity extends Activity {
                     imgView.setImageBitmap(mImgBitmap);
                 } else {
                     Log.d("IrishWildlife", "Data is null: " + mPrefs.getString("imgFileUri", null));
-                    imgUri = mPrefs.getString("imgFileUri", "default");
+                    mImageUri = mPrefs.getString("imgFileUri", "default");
                     try {
-                        Bitmap mImgBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), Uri.parse(imgUri));
+                        Bitmap mImgBitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), Uri.parse(mImageUri));
                         imgView.setImageBitmap(mImgBitmap);
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -509,7 +519,57 @@ public class SubmitActivity extends Activity {
         }
     }
 
-    public void generateNoteOnSD(String sFileName, String sBody){
+    public static Context getAppContext() {
+        return SubmitActivity.context;
+    }
+
+    private class MyImgurUploadTask extends ImgurUploadTask {
+        public MyImgurUploadTask(Uri imageUri) {
+            super(imageUri, getContentResolver());
+        }
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            if (mImgurUploadTask != null) {
+                boolean cancelled = mImgurUploadTask.cancel(false);
+                if (!cancelled)
+                    this.cancel(true);
+            }
+            mImgurUploadTask = this;
+            mImgurUrl = null;
+            //getView().findViewById(R.id.choose_image_button).setEnabled(false);
+            //setImgurUploadStatus(R.string.choose_image_upload_status_uploading);
+        }
+        @Override
+        protected void onPostExecute(String imageId) {
+            super.onPostExecute(imageId);
+            mImgurUploadTask = null;
+            if (imageId != null) {
+                mImgurUrl = "http://imgur.com/" + imageId;
+                Log.d(LocationUtils.APPTAG, "imgur upload success: " + mImgurUrl);
+                //setImgurUploadStatus(R.string.choose_image_upload_status_success);
+                //if (isResumed()) {
+                //    getView().findViewById(R.id.imgur_link_layout).setVisibility(View.VISIBLE);
+                //    ((TextView) getView().findViewById(R.id.link_url)).setText(mImgurUrl);
+                //}
+            } else {
+                mImgurUrl = null;
+                Log.d(LocationUtils.APPTAG, "imgur upload error");
+                //setImgurUploadStatus(R.string.choose_image_upload_status_failure);
+                /*if (isResumed()) {
+                    getView().findViewById(R.id.imgur_link_layout).setVisibility(View.GONE);
+                    if (isVisible()) {
+                        ((ImageView) getView().findViewById(R.id.choose_image_preview)).setImageBitmap(null);
+                        Toast.makeText(getActivity(), R.string.imgur_upload_error, Toast.LENGTH_LONG).show();
+                    }
+                }*/
+            }
+            /*if (isVisible())
+                getView().findViewById(R.id.choose_image_button).setEnabled(true);*/
+        }
+    }
+
+    /**public void generateNoteOnSD(String sFileName, String sBody){
         try
         {
             File root = new File(Environment.getExternalStorageDirectory(), "Documents");
@@ -527,5 +587,5 @@ public class SubmitActivity extends Activity {
         {
             e.printStackTrace();
         }
-    }
+    }*/
 }

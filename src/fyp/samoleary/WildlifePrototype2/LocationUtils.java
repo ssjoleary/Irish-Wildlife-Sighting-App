@@ -13,6 +13,12 @@ import android.location.Location;
  * Description:
  */
 public class LocationUtils {
+    public static final String MY_IMGUR_CLIENT_ID = "097252c7c1aae8e";
+    public static final String MY_IMGUR_CLIENT_SECRET = "cb0a2a462b79545d4e4b136cdb5a01e5fdcd6d8e";
+    //The arbitrary redirect url (Authorization callback URL), ex. awesome://imgur or http://android,
+    // declared when registering your app with Imgur API
+    public static final String MY_IMGUR_REDIRECT_URL = "abc";
+
     // Debugging tag for the application
     public static final String APPTAG = "DEBUGWildifePrototype";
 

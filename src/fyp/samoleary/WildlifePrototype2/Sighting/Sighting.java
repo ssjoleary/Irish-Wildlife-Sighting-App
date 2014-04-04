@@ -1,7 +1,9 @@
 package fyp.samoleary.WildlifePrototype2.Sighting;
 
+import android.util.Log;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.clustering.ClusterItem;
+import fyp.samoleary.WildlifePrototype2.LocationUtils;
 
 import java.io.Serializable;
 
@@ -53,12 +55,22 @@ public class Sighting implements Serializable, ClusterItem {
         if(sightingLat.equals("")){
             this.sightingLat = 0;
         } else {
-            this.sightingLat = Double.parseDouble(sightingLat);
+            try{
+                this.sightingLat = Double.parseDouble(sightingLat);
+            } catch (NumberFormatException e) {
+                this.sightingLong = 0;
+                Log.d(LocationUtils.APPTAG, "NumberFormatException: Sighting.java: 62");
+            }
         }
         if(sightingLong.equals("")){
             this.sightingLong = 0;
         } else {
-            this.sightingLong = Double.parseDouble(sightingLong);
+            try {
+                this.sightingLong = Double.parseDouble(sightingLong);
+            } catch (NumberFormatException e) {
+                this.sightingLong = 0;
+                Log.d(LocationUtils.APPTAG, "NumberFormatException: Sighting.java: 72");
+            }
         }
         if(location.equals("")){
             this.location = "N/A";
