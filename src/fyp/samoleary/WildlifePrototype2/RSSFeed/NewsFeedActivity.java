@@ -100,6 +100,18 @@ public class NewsFeedActivity extends NavDrawer {
         }
     }
 
+    @Override
+    public void selectGroup(int groupPosition) {
+        switch (groupPosition) {
+            case 1:
+                closeDrawer();
+                gotoSpeciesGuide();
+                break;
+            default:
+                break;
+        }
+    }
+
     private void gotoSpeciesGuide() {
         Intent intent = new Intent(this, SpeciesGuide.class);
         startActivity(intent);

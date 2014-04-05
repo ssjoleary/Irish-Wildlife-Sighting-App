@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 
-import android.app.ProgressDialog;
 import android.content.*;
 
 import android.database.Cursor;
@@ -182,6 +181,17 @@ public class GMapActivity extends NavDrawer implements
     }
 
     private void checkForNewSightings() {
+        new HttpHandler() {
+            @Override
+            public HttpUriRequest getHttpRequestMethod() {
+                return new HttpGet("http://fyp-irish-wildlife.herokuapp.com/sightings/getsighting/");
+
+            }
+            @Override
+            public void onResponse(String result) {
+                getLatestJSONSighting(result);
+            }
+        }.execute();
         new RssSightingAsyncTask().execute(getString(R.string.rssfeed_sightings));
     }
 
@@ -191,7 +201,7 @@ public class GMapActivity extends NavDrawer implements
 
         wildlifeDB.open();
 
-        Cursor cursor = wildlifeDB.getInfoRssSightingLimit();
+        Cursor cursor = wildlifeDB.getInfoRssSighting();
         startManagingCursor(cursor);
         if(cursor.moveToFirst()){
             do {
@@ -218,10 +228,10 @@ public class GMapActivity extends NavDrawer implements
                 //mkrObjects.put(myMarker.getId(), mySighting);
 
             } while(cursor.moveToNext());
+            mClusterManager.cluster();
         }
         stopManagingCursor(cursor);
         wildlifeDB.close();
-        mClusterManager.cluster();
         setProgressBarIndeterminateVisibility(false);
     }
 
@@ -236,20 +246,16 @@ public class GMapActivity extends NavDrawer implements
             }
             @Override
             public void onResponse(String result) {
-                plotMarkers(result);
+                getNextID(result);
                 getLocalSightings();
                 setProgressBarIndeterminateVisibility(false);
             }
         }.execute();
     }
 
-    private void plotMarkers(String result) {
-
+    private void getNextID(String result) {
         int nextID = mPrefs.getInt("ID", 0);
 
-        //googleMap.clear();
-        //mClusterManager.clearItems();
-        //mkrObjects.clear();
         JSONArray json;
         try {
             json = new JSONArray(result);
@@ -262,26 +268,42 @@ public class GMapActivity extends NavDrawer implements
                     if(ID >= nextID){
                         nextID = ID + 1;
                     }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        mEditor.putInt("ID", nextID);
+        mEditor.commit();
+    }
 
-                    /*JSONObject fields = c.getJSONObject("fields");
+    private void plotMarkers(String result) {
+        googleMap.clear();
+        mClusterManager.clearItems();
+        //mkrObjects.clear();
+        JSONArray json;
+        try {
+            json = new JSONArray(result);
+            for (int i = 0; i < json.length(); i++) {
+                JSONObject c;
+                try {
+                    c = json.getJSONObject(i);
+
+                    int ID = c.getInt("pk");
+                    JSONObject fields = c.getJSONObject("fields");
                     int animals = fields.getInt("animals");
                     String sub_date = fields.getString("sub_date");
                     double latitude = fields.getDouble("latitude");
                     double longitude = fields.getDouble("longitude");
                     String location = fields.getString("location");
                     String species = fields.getString("species");
+                    String name = fields.getString("name");
+                    String imgurl = fields.getString("imageurl");
+                    Sighting sighting = new Sighting(ID, species, sub_date, latitude, longitude, location, animals, name, imgurl);
 
-                    MarkerOptions mo = new MarkerOptions()
-                            .position(new LatLng(latitude, longitude))
-                            .flat(true)
-                            .snippet("Click here for details")
-                            .rotation(0);*/
-
-                    //Marker myMarker = googleMap.addMarker(mo);
-                    //Sighting mySighting = new Sighting(species, sub_date, latitude, longitude, location, animals);
-                    //mkrObjects.put(myMarker.getId(), mySighting);
-
-                    //mClusterManager.addItem(mySighting);
+                    mClusterManager.addItem(sighting);
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -290,9 +312,7 @@ public class GMapActivity extends NavDrawer implements
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        //Log.d(LocationUtils.APPTAG, "nextID: " + nextID);
-        mEditor.putInt("ID", nextID);
-        mEditor.commit();
+        mClusterManager.cluster();
     }
 
     @Override
@@ -355,14 +375,16 @@ public class GMapActivity extends NavDrawer implements
                 }
                 break;
             case 1:
-                switch (childPosition) {
+                closeDrawer();
+                gotoSpeciesGuide();
+                /*switch (childPosition) {
                     case 0:
                         closeDrawer();
                         gotoSpeciesGuide();
                         break;
                     default:
                         break;
-                }
+                }*/
                 break;
             case 2:
                 switch (childPosition) {
@@ -389,6 +411,18 @@ public class GMapActivity extends NavDrawer implements
                     default:
                         break;
                 }
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void selectGroup(int groupPosition) {
+        switch (groupPosition) {
+            case 1:
+                closeDrawer();
+                gotoSpeciesGuide();
                 break;
             default:
                 break;
@@ -580,6 +614,9 @@ public class GMapActivity extends NavDrawer implements
         //Log.d(LocationUtils.APPTAG, "onResume");
         //getRecentSightings();
         getLocalSightings();
+        LatLng point = new LatLng(53.41608, -7.93396);
+        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(point, 6));
+
         // If the app already has a setting for getting location updates, get it
         if (mPrefs.contains(LocationUtils.KEY_UPDATES_REQUESTED)) {
             mUpdatesRequested = mPrefs.getBoolean(LocationUtils.KEY_UPDATES_REQUESTED, false);
@@ -664,11 +701,16 @@ public class GMapActivity extends NavDrawer implements
                 switch (resultCode) {
                     case Activity.RESULT_OK:
                         String result = intent.getStringExtra("result");
-                        //plotMarkers(result);
+                        Log.d(LocationUtils.APPTAG, "Result: " + result);
+                        if (result.equals("all")) {
+                            getLocalSightings();
+                        }else{
+                            plotMarkers(result);
+                        }
                         setProgressBarIndeterminateVisibility(false);
                         break;
                     case Activity.RESULT_CANCELED:
-                        //setProgressBarIndeterminateVisibility(false);
+                        setProgressBarIndeterminateVisibility(false);
                         Toast.makeText(this,"No result matched your query!" , Toast.LENGTH_SHORT).show();
                         Log.d(LocationUtils.APPTAG, "No result matched your query!");
                         break;
@@ -695,8 +737,17 @@ public class GMapActivity extends NavDrawer implements
                             sightingMkr.remove(mPrefs.getString("mkrID", "null"));
                         }*/
                         break;
-                    case Activity.RESULT_CANCELED:
 
+                    case Activity.RESULT_CANCELED:
+                        mkr = sightingMkr.get(mPrefs.getString("mkrID", "null"));
+                        sightingMkr.remove(mPrefs.getString("mkrID", "null"));
+
+                        if (mkr != null)
+                            mkr.remove();
+
+                        getLocalSightings();
+                        LatLng point = new LatLng(53.41608, -7.93396);
+                        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(point, 6));
                         break;
                 }
                 // If any other request code was received
@@ -1141,23 +1192,57 @@ public class GMapActivity extends NavDrawer implements
             getLocalSightings();
             setProgressBarIndeterminateVisibility(false);
         }
+    }
 
-        private boolean checkSightingExists(String id) {
+    private boolean checkSightingExists(String id) {
 
-            Cursor cursor = wildlifeDB.getInfoRssSighting();
-            startManagingCursor(cursor);
-            if(cursor.moveToFirst()){
-                do {
-                    int existingID = cursor.getInt(cursor.getColumnIndex(Constants.SIGHTING_ID));
-                    if(id.equals(Integer.toString(existingID))){
-                        return true;
+        Cursor cursor = wildlifeDB.getInfoRssSighting();
+        startManagingCursor(cursor);
+        if(cursor.moveToFirst()){
+            do {
+                int existingID = cursor.getInt(cursor.getColumnIndex(Constants.SIGHTING_ID));
+                if(id.equals(Integer.toString(existingID))){
+                    return true;
+                }
+            } while(cursor.moveToNext());
+        }
+        stopManagingCursor(cursor);
+        return false;
+    }
+
+    private void getLatestJSONSighting(String result) {
+
+        JSONArray json;
+        try {
+            json = new JSONArray(result);
+            for (int i = 0; i < json.length(); i++) {
+                JSONObject c;
+                try {
+                    c = json.getJSONObject(i);
+
+
+                    int ID = c.getInt("pk");
+
+                    if(!checkSightingExists(String.valueOf(ID))) {
+                        JSONObject fields = c.getJSONObject("fields");
+                        int animals = fields.getInt("animals");
+                        String sub_date = fields.getString("sub_date");
+                        double latitude = fields.getDouble("latitude");
+                        double longitude = fields.getDouble("longitude");
+                        String location = fields.getString("location");
+                        String species = fields.getString("species");
+                        String name = fields.getString("name");
+                        String imgurl = fields.getString("imageurl");
+                        Sighting sighting = new Sighting(ID, species, sub_date, latitude, longitude, location, animals, name, imgurl);
+                        wildlifeDB.insertInfoRssSighting(sighting);
                     }
-                } while(cursor.moveToNext());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
-            stopManagingCursor(cursor);
-            return false;
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
 
     }
-
 }

@@ -27,6 +27,6 @@
             android:layout_height="match_parent"
             android:layout_gravity="start"
             android:choiceMode="singleChoice"
-
+            android:groupIndicator="@android:color/transparent"
             android:background="#ffffff"/>
 </android.support.v4.widget.DrawerLayout>

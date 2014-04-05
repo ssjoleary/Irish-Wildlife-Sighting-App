@@ -92,7 +92,14 @@ public class SearchActivity extends Activity {
         search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new HttpAsyncTask().execute("http://fyp-irish-wildlife.herokuapp.com/sightings/getspecificsighting/");
+                if (countySpinner.getItemAtPosition(countyPos).toString().equals("Any...") && speciesSpinner.getItemAtPosition(speciesPos).toString().equals("Any...")){
+                    Intent returnIntent = new Intent();
+                    returnIntent.putExtra("result", "all");
+                    setResult(RESULT_OK, returnIntent);
+                    finish();
+                }else{
+                    new HttpAsyncTask().execute("http://fyp-irish-wildlife.herokuapp.com/sightings/getspecificsighting/");
+                }
             }
         });
     }

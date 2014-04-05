@@ -193,6 +193,13 @@ public class SubmitActivity extends Activity {
         mEditor = mPrefs.edit();
     }
 
+    @Override
+    public void onStop(){
+        super.onStop();
+        Intent returnIntent = new Intent();
+        setResult(RESULT_CANCELED, returnIntent);
+    }
+
     private void goGetPhoto() {
         // Create Intent to take a picture and return control to the calling application
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);

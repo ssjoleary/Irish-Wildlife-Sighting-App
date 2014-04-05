@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 import fyp.samoleary.WildlifePrototype2.R;
 
@@ -81,11 +82,14 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     @Override
     public View getGroupView(int groupPosition, boolean isExpanded,
                              View convertView, ViewGroup parent) {
+
         String headerTitle = (String) getGroup(groupPosition);
+
+
         if (convertView == null) {
-            LayoutInflater infalInflater = (LayoutInflater) this._context
+            LayoutInflater inflater = (LayoutInflater) this._context
                     .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = infalInflater.inflate(R.layout.drawer_list_group, null);
+            convertView = inflater.inflate(R.layout.drawer_list_group, null);
         }
 
         assert convertView != null;
@@ -93,6 +97,20 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
                 .findViewById(R.id.lblListHeader);
         lblListHeader.setTypeface(null, Typeface.BOLD);
         lblListHeader.setText(headerTitle);
+        ImageView groupView = (ImageView) convertView.findViewById(R.id.groupIcon);
+        switch (groupPosition){
+            case 0:
+                groupView.setImageResource(R.drawable.ic_action_place);
+                break;
+            case 1:
+                groupView.setImageResource(R.drawable.ic_action_view_as_list);
+                break;
+            case 2:
+                groupView.setImageResource(R.drawable.ic_action_web_site);
+                break;
+            default:
+                break;
+        }
 
         return convertView;
     }

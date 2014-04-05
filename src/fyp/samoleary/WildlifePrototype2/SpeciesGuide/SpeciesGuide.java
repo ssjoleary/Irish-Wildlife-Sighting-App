@@ -59,13 +59,14 @@ public class SpeciesGuide extends NavDrawer {
                 }
                 break;
             case 1:
-                switch (childPosition) {
+                closeDrawer();
+                /*switch (childPosition) {
                     case 0:
                         closeDrawer();
                         break;
                     default:
                         break;
-                }
+                }*/
                 break;
             case 2:
                 switch (childPosition) {
@@ -92,6 +93,17 @@ public class SpeciesGuide extends NavDrawer {
                     default:
                         break;
                 }
+                break;
+            default:
+                break;
+        }
+    }
+
+    @Override
+    public void selectGroup(int groupPosition) {
+        switch (groupPosition) {
+            case 1:
+                closeDrawer();
                 break;
             default:
                 break;

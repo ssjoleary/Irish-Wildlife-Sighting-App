@@ -16,6 +16,7 @@
 
 package fyp.samoleary.WildlifePrototype2.NavDrawer;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
@@ -29,6 +30,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.*;
 import fyp.samoleary.WildlifePrototype2.LocationUtils;
+import fyp.samoleary.WildlifePrototype2.Profile;
 import fyp.samoleary.WildlifePrototype2.R;
 
 import java.util.ArrayList;
@@ -119,6 +121,14 @@ public class NavDrawer extends FragmentActivity {
             }
         });
 
+        mDrawerList.setOnGroupClickListener(new ExpandableListView.OnGroupClickListener() {
+            @Override
+            public boolean onGroupClick(ExpandableListView parent, View v, int groupPosition, long id) {
+                selectGroup(groupPosition);
+                return false;
+            }
+        });
+
         // set up the drawer's list view with items and click listener
         //mDrawerList.setAdapter(new ArrayAdapter<String>(this,
         //        R.layout.drawer_list_item, navDrawerMenuItems));
@@ -157,23 +167,27 @@ public class NavDrawer extends FragmentActivity {
         mDrawerLayout.setDrawerListener(mDrawerToggle);
     }
 
+    public void selectGroup(int groupPosition) {
+
+    }
+
     private void prepareListData() {
         listDataHeader = new ArrayList<String>();
         listDataChild = new HashMap<String, List<String>>();
 
         // Adding Group Header Data
         listDataHeader.add("IWDG Data");
-        listDataHeader.add("Species");
+        listDataHeader.add("Species Guide");
         listDataHeader.add("News Feed");
 
         // Adding Child Data
         List<String> iwdgData = new ArrayList<String>();
-        iwdgData.add("Recent Sightings");
+        iwdgData.add("View Sightings");
         iwdgData.add("Report A Sighting");
-        iwdgData.add("Search Recent Sightings");
+        iwdgData.add("Search Sightings");
 
         List<String> species = new ArrayList<String>();
-        species.add("Species Guide");
+        //species.add("Species Guide");
 
         List<String> newsFeed = new ArrayList<String>();
         newsFeed.add("Cetacean News");
@@ -185,13 +199,17 @@ public class NavDrawer extends FragmentActivity {
         listDataChild.put(listDataHeader.get(2), newsFeed);
     }
 
-    /* The click listener for ListView in the navigation drawer */
-    private class DrawerItemClickListener implements ListView.OnItemClickListener {
+    /* The click listener for ListView in the navigation drawer*/
+    private class DrawerItemClickListener implements ExpandableListView.OnItemClickListener {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            int groupPosition = 10;
-            selectItem(groupPosition, position);
+            gotoProfile();
         }
+    }
+
+    private void gotoProfile() {
+        Intent i = new Intent(this, Profile.class);
+        startActivity(i);
     }
 
     public void selectItem(int groupPosition, int childPosition){
