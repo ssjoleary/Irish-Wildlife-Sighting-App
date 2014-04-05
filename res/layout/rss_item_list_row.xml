@@ -18,7 +18,7 @@
             android:paddingBottom="1dip"
             android:textSize="18dip"
             android:textStyle="bold"
-            android:textColor="#ffffff"/>
+            android:textColor="#576494"/>
 
     <!-- published date -->
     <TextView
@@ -28,7 +28,7 @@
             android:layout_height="wrap_content"
             android:paddingBottom="3dip"
             android:textSize="14dip"
-            android:textColor="#ffffff"/>
+            android:textColor="#576494"/>
 
     <!-- article description -->
     <TextView android:id="@+id/article_link"

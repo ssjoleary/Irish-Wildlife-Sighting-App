@@ -152,4 +152,5 @@
         <![CDATA[http://www.iwdg.ie/index.php?option=com_k2&view=itemlist&task=category&id=1&Itemid=93&format=feed]]></string>
     <string name="rssfeed_sightings">http://www.iwdg.ie/_customphp/iscope/rss_sightings.php</string>
     <string name="rssfeed_strandings">http://www.iwdg.ie/_customphp/iscope/rss_strandings.php</string>
+    <string name="content_description_species_item_image">species_list_item_image</string>
 </resources>

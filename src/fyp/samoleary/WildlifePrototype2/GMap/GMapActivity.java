@@ -214,7 +214,6 @@ public class GMapActivity extends NavDrawer implements
 
                 //Marker myMarker = googleMap.addMarker(mo);
                 Sighting mySighting = new Sighting(ID, species, sub_date, latitude, longitude, location, animals, name, imgurl);//, imgUri);
-                Log.d(LocationUtils.APPTAG, "SightingID: " + ID);
                 mClusterManager.addItem(mySighting);
                 //mkrObjects.put(myMarker.getId(), mySighting);
 
@@ -291,7 +290,7 @@ public class GMapActivity extends NavDrawer implements
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Log.d(LocationUtils.APPTAG, "nextID: " + nextID);
+        //Log.d(LocationUtils.APPTAG, "nextID: " + nextID);
         mEditor.putInt("ID", nextID);
         mEditor.commit();
     }
@@ -333,7 +332,7 @@ public class GMapActivity extends NavDrawer implements
 
     @Override
     public void selectItem(int groupPosition, int childPosition) {
-        Log.d(LocationUtils.APPTAG, groupPosition + " : " + childPosition);
+        //Log.d(LocationUtils.APPTAG, groupPosition + " : " + childPosition);
         switch (groupPosition) {
             case 0:
                 switch (childPosition) {
@@ -559,7 +558,7 @@ public class GMapActivity extends NavDrawer implements
     @Override
     public void onStart() {
         super.onStart();
-        Log.d(LocationUtils.APPTAG, "onStart");
+        //Log.d(LocationUtils.APPTAG, "onStart");
         /*
          * Connect the client. Don't re-start any requests here;
          * instead, wait for onResume()
@@ -570,7 +569,7 @@ public class GMapActivity extends NavDrawer implements
     @Override
     public void onRestart() {
         super.onRestart();
-        Log.d(LocationUtils.APPTAG, "onRestart");
+        //Log.d(LocationUtils.APPTAG, "onRestart");
     }
     /*
      * Called when the system detects that this Activity is now visible.
@@ -578,7 +577,7 @@ public class GMapActivity extends NavDrawer implements
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d(LocationUtils.APPTAG, "onResume");
+        //Log.d(LocationUtils.APPTAG, "onResume");
         //getRecentSightings();
         getLocalSightings();
         // If the app already has a setting for getting location updates, get it
@@ -1091,11 +1090,11 @@ public class GMapActivity extends NavDrawer implements
                             .get();
 
                     Element id = doc.select("html body#bd.fs3 div#ja-wrapper div#ja-containerwrap-fr div#ja-containerwrap2 div#ja-container div#ja-container2.clearfix div#ja-mainbody-fr.clearfix div#ja-contentwrap div#ja-content div#k2Container.itemView div.itemBody div.itemFullText div table.table1 tbody tr td").get(0);
-                    Log.d(LocationUtils.APPTAG, id.ownText());
+                    //Log.d(LocationUtils.APPTAG, id.ownText());
 
                     if(!checkSightingExists(id.ownText())){
                         Element name = doc.select("html body#bd.fs3 div#ja-wrapper div#ja-containerwrap-fr div#ja-containerwrap2 div#ja-container div#ja-container2.clearfix div#ja-mainbody-fr.clearfix div#ja-contentwrap div#ja-content div#k2Container.itemView div.itemBody div.itemFullText div table.table1 tbody tr td").get(30);
-                        Log.d(LocationUtils.APPTAG, name.ownText());
+                        //Log.d(LocationUtils.APPTAG, name.ownText());
 
                         Element species = doc.select("html body#bd.fs3 div#ja-wrapper div#ja-containerwrap-fr div#ja-containerwrap2 div#ja-container div#ja-container2.clearfix div#ja-mainbody-fr.clearfix div#ja-contentwrap div#ja-content div#k2Container.itemView div.itemBody div.itemFullText div table.table1 tbody tr td a").first();
                         Element date = doc.select("html body#bd.fs3 div#ja-wrapper div#ja-containerwrap-fr div#ja-containerwrap2 div#ja-container div#ja-container2.clearfix div#ja-mainbody-fr.clearfix div#ja-contentwrap div#ja-content div#k2Container.itemView div.itemBody div.itemFullText div table.table1 tbody tr td").get(5);
@@ -1105,7 +1104,7 @@ public class GMapActivity extends NavDrawer implements
                         Element animals = doc.select("html body#bd.fs3 div#ja-wrapper div#ja-containerwrap-fr div#ja-containerwrap2 div#ja-container div#ja-container2.clearfix div#ja-mainbody-fr.clearfix div#ja-contentwrap div#ja-content div#k2Container.itemView div.itemBody div.itemFullText div table.table1 tbody tr td").get(7);
                         if(species == null) {
                             Element nametwo = doc.select("html body#bd.fs3 div#ja-wrapper div#ja-containerwrap-fr div#ja-containerwrap2 div#ja-container div#ja-container2.clearfix div#ja-mainbody-fr.clearfix div#ja-contentwrap div#ja-content div#k2Container.itemView div.itemBody div.itemFullText div table.table1 tbody tr td").get(29);
-                            Log.d(LocationUtils.APPTAG, nametwo.ownText());
+                            //Log.d(LocationUtils.APPTAG, nametwo.ownText());
 
                             Element speciesText = doc.select("html body#bd.fs3 div#ja-wrapper div#ja-containerwrap-fr div#ja-containerwrap2 div#ja-container div#ja-container2.clearfix div#ja-mainbody-fr.clearfix div#ja-contentwrap div#ja-content div#k2Container.itemView div.itemBody div.itemFullText div table.table1 tbody tr td").get(2);
                             Element latText = doc.select("html body#bd.fs3 div#ja-wrapper div#ja-containerwrap-fr div#ja-containerwrap2 div#ja-container div#ja-container2.clearfix div#ja-mainbody-fr.clearfix div#ja-contentwrap div#ja-content div#k2Container.itemView div.itemBody div.itemFullText div table.table1 tbody tr td").get(16);
@@ -1113,14 +1112,14 @@ public class GMapActivity extends NavDrawer implements
 
                             Sighting sighting = new Sighting(Integer.parseInt(id.ownText()), speciesText.ownText(), date.ownText(), latText.ownText(), lngText.ownText(), location.ownText(), animals.ownText(), nametwo.ownText());
                             wildlifeDB.insertInfoRssSighting(sighting);
-                            Log.d(LocationUtils.APPTAG, "Sighting added: species = null");
+                            //Log.d(LocationUtils.APPTAG, "Sighting added: species = null");
                         } else {
                             Sighting sighting = new Sighting(Integer.parseInt(id.ownText()), species.ownText(), date.ownText(), lat.ownText(), lng.ownText(), location.ownText(), animals.ownText(), name.ownText());
                             wildlifeDB.insertInfoRssSighting(sighting);
-                            Log.d(LocationUtils.APPTAG, "Sighting added: species != null");
+                            //Log.d(LocationUtils.APPTAG, "Sighting added: species != null");
                         }
                     } else {
-                        Log.d(LocationUtils.APPTAG, "Sighting not added");
+                        //Log.d(LocationUtils.APPTAG, "Sighting not added");
                         return null;
                     }
 
@@ -1131,9 +1130,7 @@ public class GMapActivity extends NavDrawer implements
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
             return null;
-
         }
         // onPostExecute displays the results of the AsyncTask.
         @Override

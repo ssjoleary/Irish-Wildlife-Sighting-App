@@ -12,7 +12,7 @@
             android:divider="#bababa"
             android:dividerHeight="1dp"
             android:listSelector="@drawable/action_search"
-            android:background="#000000"
+            android:background="#ffffff"
             android:cacheColorHint="#00000000"/>
 
 </RelativeLayout>

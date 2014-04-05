@@ -19,7 +19,7 @@ import java.util.Locale;
  */
 public class SpeciesGuideDialog extends FragmentActivity implements TextToSpeech.OnInitListener {
     private TextView speciesClassification;
-    private TextView speciesTitle;
+    //private TextView speciesTitle;
     private TextToSpeech tts;
     private int position;
     private String[] values;
@@ -38,7 +38,7 @@ public class SpeciesGuideDialog extends FragmentActivity implements TextToSpeech
         tts.setSpeechRate(1);
         tts.setPitch(1);
 
-        speciesTitle = (TextView) findViewById(R.id.species_detail_title);
+        //speciesTitle = (TextView) findViewById(R.id.species_detail_title);
         ImageView speciesImage = (ImageView) findViewById(R.id.species_detail_image);
         speciesClassification = (TextView) findViewById(R.id.species_detail_classification);
 
@@ -47,7 +47,7 @@ public class SpeciesGuideDialog extends FragmentActivity implements TextToSpeech
 
         String speciesTitleText = "title_"+values[position];
         int speciesTitleID = this.getResources().getIdentifier(speciesTitleText, "string", this.getPackageName());
-        speciesTitle.setText(speciesTitleID);
+        setTitle(speciesTitleID);
 
         String speciesSnippetText = "classification_"+values[position];
         int speciesClassificationID = this.getResources().getIdentifier(speciesSnippetText, "string", this.getPackageName());

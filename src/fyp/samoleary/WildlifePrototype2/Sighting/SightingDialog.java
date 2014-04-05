@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
@@ -42,14 +43,13 @@ public class SightingDialog extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.sighting_dialog);
 
-        TextView species = (TextView) findViewById(R.id.sighting_species);
+
         TextView date = (TextView) findViewById(R.id.sighting_date);
         TextView location = (TextView) findViewById(R.id.sighting_location);
         TextView animal = (TextView) findViewById(R.id.sighting_animal);
         TextView lat = (TextView) findViewById(R.id.sighting_lat);
         TextView lng = (TextView) findViewById(R.id.sighting_lng);
         TextView observer = (TextView) findViewById(R.id.sighting_observer);
-        ImageView imgView = (ImageView) findViewById(R.id.imageViewSightingDialog);
         WebView webView = (WebView) findViewById(R.id.webView);
         Button okBtn = (Button) findViewById(R.id.sighting_btn);
 
@@ -64,7 +64,7 @@ public class SightingDialog extends Activity {
         Sighting sighting = (Sighting) i.getSerializableExtra(SIGHTING);
 
         assert sighting != null;
-        species.setText(sighting.getSpecies());
+        setTitle(sighting.getSpecies());
         date.setText(sighting.getDate());
         location.setText(sighting.getLocation());
         animal.setText(Integer.toString(sighting.getAnimals()));
@@ -80,9 +80,12 @@ public class SightingDialog extends Activity {
         String imgUri = sighting.getImgUrlString();//Uri.parse(mPrefs.getString("imgFileUri", "default"));
         Log.d(LocationUtils.APPTAG, "SightingDialog: imgUrl: " + imgUri);
         if(!imgUri.equals("image")){
+            //webView.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
             webView.getSettings().setJavaScriptEnabled(true);
-            webView.loadUrl("http://i.imgur.com/"+imgUri+".jpg");
+            webView.getSettings().setLoadWithOverviewMode(true);
+            webView.getSettings().setUseWideViewPort(true);
             webView.setWebViewClient(new DisPlayWebPageActivityClient());
+            webView.loadUrl("http://i.imgur.com/" + imgUri + ".jpg");
         }
 
         /*if ((imgUri.equals("default"))) {webview.setWebViewClient(new DisPlayWebPageActivityClient());

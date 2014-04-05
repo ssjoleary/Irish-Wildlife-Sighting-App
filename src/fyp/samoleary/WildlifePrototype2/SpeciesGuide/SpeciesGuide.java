@@ -132,7 +132,6 @@ public class SpeciesGuide extends NavDrawer {
             String[] values = getResources().getStringArray(R.array.species_array_id);
             SpeciesGuideArrayAdapter adapter = new SpeciesGuideArrayAdapter(inflater.getContext(), values);
             setListAdapter(adapter);
-
             return super.onCreateView(inflater, container, savedInstanceState);
         }
 
@@ -140,6 +139,13 @@ public class SpeciesGuide extends NavDrawer {
             Intent intent = new Intent(v.getContext(), SpeciesGuideDialog.class);
             intent.putExtra("position", position);
             startActivity(intent);
+        }
+
+        @Override
+        public void onViewCreated(View view, Bundle savedInstanceState){
+            super.onViewCreated(view, savedInstanceState);
+
+            getListView().setDivider(null);
         }
     }
 

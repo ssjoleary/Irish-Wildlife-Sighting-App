@@ -1,13 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- File created by the Android Action Bar Style Generator
+
+     Copyright (C) 2011 The Android Open Source Project
+     Copyright (C) 2012 readyState Software Ltd
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+  
+          http://www.apache.org/licenses/LICENSE-2.0
+  
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+
 <resources>
-    <style name="IWDGTheme" parent="@android:style/Theme.Holo">
-        <item name="android:actionBarStyle">@style/ActionBarIPS</item>
+
+    <style name="IWDGTheme" parent="@android:style/Theme.Holo.Light">
+        <item name="android:actionBarItemBackground">@drawable/selectable_background_iwdg</item>
+        <item name="android:popupMenuStyle">@style/PopupMenu.Iwdg</item>
+        <item name="android:dropDownListViewStyle">@style/DropDownListView.Iwdg</item>
+        <item name="android:actionBarTabStyle">@style/ActionBarTabStyle.Iwdg</item>
+        <item name="android:actionDropDownStyle">@style/DropDownNav.Iwdg</item>
+        <item name="android:actionBarStyle">@style/ActionBar.Solid.Iwdg</item>
+        <item name="android:actionModeBackground">@drawable/cab_background_top_iwdg</item>
+        <item name="android:actionModeSplitBackground">@drawable/cab_background_bottom_iwdg</item>
+        <item name="android:actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Iwdg</item>
+    </style>
+
+    <style name="ActionBar.Solid.Iwdg" parent="@android:style/Widget.Holo.Light.ActionBar.Solid">
+        <item name="android:background">@drawable/ab_solid_iwdg</item>
+        <item name="android:backgroundStacked">@drawable/ab_stacked_solid_iwdg</item>
+        <item name="android:backgroundSplit">@drawable/ab_bottom_solid_iwdg</item>
+        <item name="android:progressBarStyle">@style/ProgressBar.Iwdg</item>
+        <item name="android:indeterminateProgressStyle">@style/IndeterminateProgress</item>
+    </style>
+
+    <style name="ActionBar.Transparent.Iwdg" parent="@android:style/Widget.Holo.Light.ActionBar">
+        <item name="android:background">@drawable/ab_transparent_iwdg</item>
+        <item name="android:progressBarStyle">@style/ProgressBar.Iwdg</item>
+        <item name="android:indeterminateProgressStyle">@style/IndeterminateProgress</item>
     </style>
 
     <style name="IndeterminateProgress" parent="@android:style/Widget.ProgressBar.Small">
     </style>
 
-    <style name="ActionBarIPS" parent="@android:style/Widget.ActionBar">
-        <item name="android:indeterminateProgressStyle">@style/IndeterminateProgress</item>
+    <style name="PopupMenu.Iwdg" parent="@android:style/Widget.Holo.Light.ListPopupWindow">
+        <item name="android:popupBackground">@drawable/menu_dropdown_panel_iwdg</item>
     </style>
+
+    <style name="DropDownListView.Iwdg" parent="@android:style/Widget.Holo.Light.ListView.DropDown">
+        <item name="android:listSelector">@drawable/selectable_background_iwdg</item>
+    </style>
+
+    <style name="ActionBarTabStyle.Iwdg" parent="@android:style/Widget.Holo.Light.ActionBar.TabView">
+        <item name="android:background">@drawable/tab_indicator_ab_iwdg</item>
+    </style>
+
+    <style name="DropDownNav.Iwdg" parent="@android:style/Widget.Holo.Light.Spinner">
+        <item name="android:background">@drawable/spinner_background_ab_iwdg</item>
+        <item name="android:popupBackground">@drawable/menu_dropdown_panel_iwdg</item>
+        <item name="android:dropDownSelector">@drawable/selectable_background_iwdg</item>
+    </style>
+
+    <style name="ProgressBar.Iwdg" parent="@android:style/Widget.Holo.Light.ProgressBar.Horizontal">
+        <item name="android:progressDrawable">@drawable/progress_horizontal_iwdg</item>
+    </style>
+
+    <style name="ActionButton.CloseMode.Iwdg" parent="@android:style/Widget.Holo.Light.ActionButton.CloseMode">
+        <item name="android:background">@drawable/btn_cab_done_iwdg</item>
+    </style>
+
+    <!-- this style is only referenced in a Light.DarkActionBar based theme -->
+    <style name="Theme.Iwdg.Widget" parent="@android:style/Theme.Holo">
+        <item name="android:popupMenuStyle">@style/PopupMenu.Iwdg</item>
+        <item name="android:dropDownListViewStyle">@style/DropDownListView.Iwdg</item>
+    </style>
+
+    <style name="Dialog.Iwdg" parent="@android:style/Theme.Holo.Light.Dialog">
+        <item name="android:textColor">#576494</item>
+    </style>
+
 </resources>
