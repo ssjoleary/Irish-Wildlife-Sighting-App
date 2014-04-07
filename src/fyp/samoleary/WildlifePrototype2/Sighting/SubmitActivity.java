@@ -19,6 +19,7 @@ import com.google.android.gms.maps.model.LatLng;
 import fyp.samoleary.WildlifePrototype2.Database.WildlifeDB;
 import fyp.samoleary.WildlifePrototype2.GMap.GMapActivity;
 import fyp.samoleary.WildlifePrototype2.GMap.HttpHandler;
+import fyp.samoleary.WildlifePrototype2.GetConnectivityStatus;
 import fyp.samoleary.WildlifePrototype2.ImgurUploadTask;
 import fyp.samoleary.WildlifePrototype2.LocationUtils;
 import fyp.samoleary.WildlifePrototype2.R;
@@ -89,11 +90,14 @@ public class SubmitActivity extends Activity {
     private MyImgurUploadTask mImgurUploadTask;
     private String mImgurUrl;
 
+    private GetConnectivityStatus isConnected;
+
     protected void onCreate(Bundle savedBundleInstance) {
         super.onCreate(savedBundleInstance);
         setContentView(R.layout.submit_sighting);
 
         SubmitActivity.context = getApplicationContext();
+        isConnected = new GetConnectivityStatus();
 
         List<String> speciesList = new ArrayList<String>(Arrays.asList(getResources().getStringArray(R.array.species_array)));
         List<String> countiesList = new ArrayList<String>(Arrays.asList(getResources().getStringArray(R.array.counties_array)));
@@ -123,19 +127,22 @@ public class SubmitActivity extends Activity {
             public void onClick(View v) {
                 if(location_view.getText().toString().equals("") || animals_view.getText().toString().equals("")) {
                     Toast.makeText(getBaseContext(), "Please fill in all fields", Toast.LENGTH_LONG).show();
-                } else if(nextID != -1) {
-                    Log.d(LocationUtils.APPTAG, "SubmitActivity: onClick: success");
-                    if (mImageUri != null && mImgurUrl == null) {
-                        Log.d(LocationUtils.APPTAG, "SubmitActivity: onClick: we're in");
-                        new MyImgurUploadTask(Uri.parse(mImageUri)).execute();
+                } else if(isConnected.isConnected(context)) {
+                    if(nextID != -1) {
+                        Log.d(LocationUtils.APPTAG, "SubmitActivity: onClick: success");
+                        if (mImageUri != null && mImgurUrl == null) {
+                            Log.d(LocationUtils.APPTAG, "SubmitActivity: onClick: we're in");
+                            new MyImgurUploadTask(Uri.parse(mImageUri)).execute();
+                        } else {
+                            submitSighting();
+                        }
+                        submit_btn.setText("Loading...");
+                        submit_btn.setEnabled(false);
                     }
-                    submit_btn.setText("Loading...");
-                    submit_btn.setEnabled(false);
                 } else {
                     Log.d(LocationUtils.APPTAG, "SubmitActivity: onClick: failure: nextID: " + nextID);
-                    Toast.makeText(getBaseContext(), "Error?", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getBaseContext(), "Cannot report a sighting at this time! Check Connectivity.", Toast.LENGTH_LONG).show();
                 }
-                //TODO cannot get latest ID
             }
         });
 
@@ -349,7 +356,7 @@ public class SubmitActivity extends Activity {
 
         animals = Integer.parseInt(animals_view.getText().toString());
         if (mImgurUrl == null)
-                mImgurUrl = "image";
+            mImgurUrl = "image";
 
         return new Sighting(nextID, species, dateOut, sightingLat, sightingLong, location, animals, name, mImgurUrl);
     }
@@ -582,22 +589,22 @@ public class SubmitActivity extends Activity {
     }
 
     /**public void generateNoteOnSD(String sFileName, String sBody){
-        try
-        {
-            File root = new File(Environment.getExternalStorageDirectory(), "Documents");
-            if (!root.exists()) {
-                root.mkdirs();
-            }
-            File gpxfile = new File(root, sFileName);
-            FileWriter writer = new FileWriter(gpxfile);
-            writer.append(sBody);
-            writer.flush();
-            writer.close();
-            Toast.makeText(this, "Saved", Toast.LENGTH_SHORT).show();
-        }
-        catch(IOException e)
-        {
-            e.printStackTrace();
-        }
-    }*/
+     try
+     {
+     File root = new File(Environment.getExternalStorageDirectory(), "Documents");
+     if (!root.exists()) {
+     root.mkdirs();
+     }
+     File gpxfile = new File(root, sFileName);
+     FileWriter writer = new FileWriter(gpxfile);
+     writer.append(sBody);
+     writer.flush();
+     writer.close();
+     Toast.makeText(this, "Saved", Toast.LENGTH_SHORT).show();
+     }
+     catch(IOException e)
+     {
+     e.printStackTrace();
+     }
+     }*/
 }

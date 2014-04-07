@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.BaseExpandableListAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import fyp.samoleary.WildlifePrototype2.GetConnectivityStatus;
 import fyp.samoleary.WildlifePrototype2.R;
 
 public class ExpandableListAdapter extends BaseExpandableListAdapter {
@@ -19,6 +20,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
     private List<String> _listDataHeader; // header titles
     // child data in format of header title, child title
     private HashMap<String, List<String>> _listDataChild;
+    private GetConnectivityStatus isConnected = new GetConnectivityStatus();
 
     public ExpandableListAdapter(Context context, List<String> listDataHeader,
                                  HashMap<String, List<String>> listChildData) {
@@ -99,11 +101,14 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         lblListHeader.setText(headerTitle);
         ImageView groupView = (ImageView) convertView.findViewById(R.id.groupIcon);
         switch (groupPosition){
+            case 3:
+                groupView.setImageResource(R.drawable.ic_action_warning);
+                break;
             case 0:
-                groupView.setImageResource(R.drawable.ic_action_place);
+                groupView.setImageResource(R.drawable.ic_action_view_as_list);
                 break;
             case 1:
-                groupView.setImageResource(R.drawable.ic_action_view_as_list);
+                groupView.setImageResource(R.drawable.ic_action_place);
                 break;
             case 2:
                 groupView.setImageResource(R.drawable.ic_action_web_site);

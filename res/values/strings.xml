@@ -109,7 +109,6 @@
     </string-array>
 
     <string name="gmap_refresh">Check for New Sightings</string>
-    <string name="gmap_help">Help</string>
 
     <!-- Search Form -->
     <string name="search_species">Species</string>
@@ -153,4 +152,12 @@
     <string name="rssfeed_sightings">http://www.iwdg.ie/_customphp/iscope/rss_sightings.php</string>
     <string name="rssfeed_strandings">http://www.iwdg.ie/_customphp/iscope/rss_strandings.php</string>
     <string name="content_description_species_item_image">species_list_item_image</string>
+
+    <!-- Error Jokes -->
+    <string name="joke_one">What do whales like to chew?\n\nBlubber gum!</string>
+    <string name="joke_two">Where are whales weighed?\n\nAt a whale weigh station</string>
+    <string name="joke_three">Did you hear about the flying whale?\n\nActually its a whale of a story.</string>
+    <string name="joke_four">What do you call a baby whale?\n\nA little squirt!</string>
+    <string name="joke_error">Ensure your connected to the internet to get the latest news!\n\nBut while you\'re here...</string>
+
 </resources>

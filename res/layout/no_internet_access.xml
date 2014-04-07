@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent" xmlns:android="http://schemas.android.com/apk/res/android">
+    <ImageView android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/imageView"
+               android:layout_gravity="center" android:src="@drawable/cartoon_whale"
+               android:layout_centerVertical="true" android:layout_centerHorizontal="true"/>
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+              android:textAppearance="?android:attr/textAppearanceLarge" android:id="@+id/joke"
+              android:layout_gravity="center_horizontal|top" android:text="@string/joke_one"
+              android:layout_below="@+id/imageView" android:layout_alignRight="@+id/imageView"
+              android:textColor="#576494"/>
+    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
+              android:textAppearance="?android:attr/textAppearanceLarge" android:text="@string/joke_error"
+              android:id="@+id/textView2" android:layout_gravity="center_horizontal|bottom"
+              android:layout_above="@+id/imageView" android:layout_alignLeft="@+id/textView"
+              android:textColor="#576494"/>
+</RelativeLayout>

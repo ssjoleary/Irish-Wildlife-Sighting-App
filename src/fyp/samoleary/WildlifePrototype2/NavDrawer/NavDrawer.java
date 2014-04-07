@@ -29,6 +29,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.*;
+import fyp.samoleary.WildlifePrototype2.GetConnectivityStatus;
 import fyp.samoleary.WildlifePrototype2.LocationUtils;
 import fyp.samoleary.WildlifePrototype2.Profile;
 import fyp.samoleary.WildlifePrototype2.R;
@@ -65,11 +66,14 @@ public class NavDrawer extends FragmentActivity {
 
     private TextView imgText;
 
+    private GetConnectivityStatus isConnected;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.activity_main);
+        isConnected = new GetConnectivityStatus();
 
         try
         {
@@ -93,6 +97,8 @@ public class NavDrawer extends FragmentActivity {
         getLayoutInflater().inflate(layoutResID, actContent, true);
         super.setContentView(fullLayout);
 
+
+
         mTitle = mDrawerTitle = getTitle();
 
         //String[] navDrawerMenuItems = getResources().getStringArray(R.array.menu_items_array);
@@ -100,11 +106,10 @@ public class NavDrawer extends FragmentActivity {
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         // Get the ListView
         mDrawerList = (ExpandableListView) findViewById(R.id.left_drawer);
+
         // Preparing List Data
-        prepareListData();
-
+        prepareListDataInit();
         listAdapter = new ExpandableListAdapter(this, listDataHeader, listDataChild);
-
         View imgView = getLayoutInflater().inflate(R.layout.header, null);
         mDrawerList.addHeaderView(imgView);
 
@@ -153,6 +158,7 @@ public class NavDrawer extends FragmentActivity {
             public void onDrawerClosed(View view) {
                 getActionBar().setTitle(mTitle);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+
             }
 
             public void onDrawerOpened(View drawerView) {
@@ -162,9 +168,20 @@ public class NavDrawer extends FragmentActivity {
                 String name = settings.getString("name", "Click to set up Profile");
                 imgText.setText(name);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+
+                setUpNavDrawer();
             }
         };
         mDrawerLayout.setDrawerListener(mDrawerToggle);
+    }
+
+    private void setUpNavDrawer() {
+        // Preparing List Data
+        prepareListData();
+        listAdapter = new ExpandableListAdapter(this, listDataHeader, listDataChild);
+
+        // Setting List Adapter
+        mDrawerList.setAdapter(listAdapter);
     }
 
     public void selectGroup(int groupPosition) {
@@ -176,8 +193,8 @@ public class NavDrawer extends FragmentActivity {
         listDataChild = new HashMap<String, List<String>>();
 
         // Adding Group Header Data
-        listDataHeader.add("IWDG Data");
         listDataHeader.add("Species Guide");
+        listDataHeader.add("IWDG Data");
         listDataHeader.add("News Feed");
 
         // Adding Child Data
@@ -194,8 +211,43 @@ public class NavDrawer extends FragmentActivity {
         newsFeed.add("Latest Sightings");
         newsFeed.add("Latest Strandings");
 
-        listDataChild.put(listDataHeader.get(0), iwdgData);
-        listDataChild.put(listDataHeader.get(1), species);
+        listDataChild.put(listDataHeader.get(0), species);
+        listDataChild.put(listDataHeader.get(1), iwdgData);
+        listDataChild.put(listDataHeader.get(2), newsFeed);
+
+        if(!isConnected.isConnected(this.getApplicationContext())){
+            listDataHeader.add("No Internet Connectivity!");
+            List<String> error = new ArrayList<String>();
+            listDataChild.put(listDataHeader.get(3), error);
+        }
+
+    }
+
+    private void prepareListDataInit(){
+        listDataHeader = new ArrayList<String>();
+        listDataChild = new HashMap<String, List<String>>();
+
+        // Adding Group Header Data
+        listDataHeader.add("Species Guide");
+        listDataHeader.add("IWDG Data");
+        listDataHeader.add("News Feed");
+
+        // Adding Child Data
+        List<String> iwdgData = new ArrayList<String>();
+        iwdgData.add("View Sightings");
+        iwdgData.add("Report A Sighting");
+        iwdgData.add("Search Sightings");
+
+        List<String> species = new ArrayList<String>();
+        //species.add("Species Guide");
+
+        List<String> newsFeed = new ArrayList<String>();
+        newsFeed.add("Cetacean News");
+        newsFeed.add("Latest Sightings");
+        newsFeed.add("Latest Strandings");
+
+        listDataChild.put(listDataHeader.get(0), species);
+        listDataChild.put(listDataHeader.get(1), iwdgData);
         listDataChild.put(listDataHeader.get(2), newsFeed);
     }
 

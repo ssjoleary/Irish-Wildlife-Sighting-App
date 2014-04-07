@@ -5,12 +5,16 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.widget.TextView;
 import fyp.samoleary.WildlifePrototype2.GMap.GMapActivity;
+import fyp.samoleary.WildlifePrototype2.GetConnectivityStatus;
 import fyp.samoleary.WildlifePrototype2.LocationUtils;
 import fyp.samoleary.WildlifePrototype2.NavDrawer.NavDrawer;
 import fyp.samoleary.WildlifePrototype2.Profile;
 import fyp.samoleary.WildlifePrototype2.R;
 import fyp.samoleary.WildlifePrototype2.SpeciesGuide.SpeciesGuide;
+
+import java.util.Random;
 
 public class NewsFeedActivity extends NavDrawer {
 
@@ -20,10 +24,34 @@ public class NewsFeedActivity extends NavDrawer {
         setContentView(R.layout.rssfeed_listview);
 
         FragmentManager fragmentManager = getFragmentManager();
+        GetConnectivityStatus isConnected = new GetConnectivityStatus();
 
-        if (fragmentManager.findFragmentById(R.id.rssfeedfrag) == null) {
-            RSSFeedActivityListFrag rssFeedActivityListFrag = new RSSFeedActivityListFrag();
-            fragmentManager.beginTransaction().add(R.id.rssfeedfrag, rssFeedActivityListFrag).commit();
+        if (isConnected.isConnected(getApplicationContext())) {
+            if (fragmentManager.findFragmentById(R.id.rssfeedfrag) == null) {
+                RSSFeedActivityListFrag rssFeedActivityListFrag = new RSSFeedActivityListFrag();
+                fragmentManager.beginTransaction().add(R.id.rssfeedfrag, rssFeedActivityListFrag).commit();
+            }
+        } else {
+            setContentView(R.layout.no_internet_access);
+            TextView joke = (TextView) findViewById(R.id.joke);
+            Random r = new Random();
+            int i = r.nextInt(4 - 1 + 1) + 1;
+            switch (i){
+                case 1:
+                    joke.setText(R.string.joke_one);
+                    break;
+                case 2:
+                    joke.setText(R.string.joke_two);
+                    break;
+                case 3:
+                    joke.setText(R.string.joke_three);
+                    break;
+                case 4:
+                    joke.setText(R.string.joke_four);
+                    break;
+                default:
+                    break;
+            }
         }
     }
 
@@ -38,7 +66,17 @@ public class NewsFeedActivity extends NavDrawer {
     public void selectItem(int groupPosition, int childPosition) {
         Log.d(LocationUtils.APPTAG, groupPosition + " : " + childPosition);
         switch (groupPosition) {
-            case 0:
+           case 0:
+                switch (childPosition) {
+                    case 0:
+                        closeDrawer();
+                        gotoSpeciesGuide();
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case 1:
                 switch (childPosition) {
                     case 0:
                         closeDrawer();
@@ -54,16 +92,6 @@ public class NewsFeedActivity extends NavDrawer {
                         closeDrawer();
                         //gotoSearchActivity();
                         gotoGMapActivity(groupPosition, childPosition);
-                        break;
-                    default:
-                        break;
-                }
-                break;
-            case 1:
-                switch (childPosition) {
-                    case 0:
-                        closeDrawer();
-                        gotoSpeciesGuide();
                         break;
                     default:
                         break;
@@ -103,7 +131,7 @@ public class NewsFeedActivity extends NavDrawer {
     @Override
     public void selectGroup(int groupPosition) {
         switch (groupPosition) {
-            case 1:
+            case 0:
                 closeDrawer();
                 gotoSpeciesGuide();
                 break;

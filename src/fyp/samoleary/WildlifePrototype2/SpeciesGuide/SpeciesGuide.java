@@ -38,28 +38,28 @@ public class SpeciesGuide extends NavDrawer {
     public void selectItem(int groupPosition, int childPosition) {
         switch (groupPosition) {
             case 0:
-                switch (childPosition) {
-                    case 0:
-                        closeDrawer();
-                        //getRecentSightings();
-                        gotoGMapActivity(groupPosition, childPosition);
-                        break;
-                    case 1:
-                        closeDrawer();
-                        //createReportDialog();
-                        gotoGMapActivity(groupPosition, childPosition);
-                        break;
-                    case 2:
-                        closeDrawer();
-                        //gotoSearchActivity();
-                        gotoGMapActivity(groupPosition, childPosition);
-                        break;
-                    default:
-                        break;
-                }
+                closeDrawer();
                 break;
             case 1:
-                closeDrawer();
+                switch (childPosition) {
+                case 0:
+                    closeDrawer();
+                    //getRecentSightings();
+                    gotoGMapActivity(groupPosition, childPosition);
+                    break;
+                case 1:
+                    closeDrawer();
+                    //createReportDialog();
+                    gotoGMapActivity(groupPosition, childPosition);
+                    break;
+                case 2:
+                    closeDrawer();
+                    //gotoSearchActivity();
+                    gotoGMapActivity(groupPosition, childPosition);
+                    break;
+                default:
+                    break;
+            }
                 /*switch (childPosition) {
                     case 0:
                         closeDrawer();
@@ -102,7 +102,7 @@ public class SpeciesGuide extends NavDrawer {
     @Override
     public void selectGroup(int groupPosition) {
         switch (groupPosition) {
-            case 1:
+            case 0:
                 closeDrawer();
                 break;
             default:

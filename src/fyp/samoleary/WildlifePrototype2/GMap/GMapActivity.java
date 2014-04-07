@@ -112,12 +112,14 @@ public class GMapActivity extends NavDrawer implements
 
     //private HashMap<String, Sighting> mkrObjects;
     private HashMap<String, Marker> sightingMkr;
+    private GetConnectivityStatus isConnected;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
+        isConnected = new GetConnectivityStatus();
         setTitle(R.string.app_name);
 
         //mkrObjects = new HashMap<String, Sighting>();
@@ -181,18 +183,23 @@ public class GMapActivity extends NavDrawer implements
     }
 
     private void checkForNewSightings() {
-        new HttpHandler() {
-            @Override
-            public HttpUriRequest getHttpRequestMethod() {
-                return new HttpGet("http://fyp-irish-wildlife.herokuapp.com/sightings/getsighting/");
+        if (isConnected.isConnected(getApplicationContext())) {
+            new HttpHandler() {
+                @Override
+                public HttpUriRequest getHttpRequestMethod() {
+                    return new HttpGet("http://fyp-irish-wildlife.herokuapp.com/sightings/getsighting/");
 
-            }
-            @Override
-            public void onResponse(String result) {
-                getLatestJSONSighting(result);
-            }
-        }.execute();
-        new RssSightingAsyncTask().execute(getString(R.string.rssfeed_sightings));
+                }
+                @Override
+                public void onResponse(String result) {
+                    getLatestJSONSighting(result);
+                }
+            }.execute();
+            new RssSightingAsyncTask().execute(getString(R.string.rssfeed_sightings));
+        } else {
+            Toast.makeText(this, "Cannot check for new sightings, are you connected to the internet?", Toast.LENGTH_LONG).show();
+        }
+
     }
 
     private void getLocalSightings() {
@@ -343,8 +350,6 @@ public class GMapActivity extends NavDrawer implements
                 //getLocalSightings();
                 checkForNewSightings();
                 return true;
-            case R.id.gmap_help:
-                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -355,6 +360,10 @@ public class GMapActivity extends NavDrawer implements
         //Log.d(LocationUtils.APPTAG, groupPosition + " : " + childPosition);
         switch (groupPosition) {
             case 0:
+                closeDrawer();
+                gotoSpeciesGuide();
+                break;
+            case 1:
                 switch (childPosition) {
                     case 0:
                         closeDrawer();
@@ -373,10 +382,6 @@ public class GMapActivity extends NavDrawer implements
                     default:
                         break;
                 }
-                break;
-            case 1:
-                closeDrawer();
-                gotoSpeciesGuide();
                 /*switch (childPosition) {
                     case 0:
                         closeDrawer();
@@ -420,7 +425,7 @@ public class GMapActivity extends NavDrawer implements
     @Override
     public void selectGroup(int groupPosition) {
         switch (groupPosition) {
-            case 1:
+            case 0:
                 closeDrawer();
                 gotoSpeciesGuide();
                 break;
@@ -614,8 +619,8 @@ public class GMapActivity extends NavDrawer implements
         //Log.d(LocationUtils.APPTAG, "onResume");
         //getRecentSightings();
         getLocalSightings();
-        LatLng point = new LatLng(53.41608, -7.93396);
-        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(point, 6));
+        //LatLng point = new LatLng(53.41608, -7.93396);
+        //googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(point, 6));
 
         // If the app already has a setting for getting location updates, get it
         if (mPrefs.contains(LocationUtils.KEY_UPDATES_REQUESTED)) {
@@ -811,11 +816,18 @@ public class GMapActivity extends NavDrawer implements
             // Get the current location
             Location currentLocation = mLocationClient.getLastLocation();
 
+            if (currentLocation != null) {
+                return new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+            } else {
+                return new LatLng(0, 0);
+            }
+
+
             // Display the current location in the UI
             //mLatLng.setText(LocationUtils.getLatLng(this, currentLocation));
             //Toast.makeText(this, "You're current location:", Toast.LENGTH_SHORT).show();
             //Toast.makeText(this, LocationUtils.getLatLng(this, currentLocation), Toast.LENGTH_SHORT).show();
-            return new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+
         } else {
             Log.d(LocationUtils.APPTAG, "Google Play Services Unavailable");
             return new LatLng(0,0);

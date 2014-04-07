@@ -9,7 +9,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
+import android.view.WindowManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -80,10 +82,11 @@ public class SightingDialog extends Activity {
         String imgUri = sighting.getImgUrlString();//Uri.parse(mPrefs.getString("imgFileUri", "default"));
         Log.d(LocationUtils.APPTAG, "SightingDialog: imgUrl: " + imgUri);
         if(!imgUri.equals("image")){
-            //webView.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
+            webView.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.SINGLE_COLUMN);
+            webView.setInitialScale(25);
             webView.getSettings().setJavaScriptEnabled(true);
-            webView.getSettings().setLoadWithOverviewMode(true);
-            webView.getSettings().setUseWideViewPort(true);
+            //webView.getSettings().setLoadWithOverviewMode(true);
+            //webView.getSettings().setUseWideViewPort(true);
             webView.setWebViewClient(new DisPlayWebPageActivityClient());
             webView.loadUrl("http://i.imgur.com/" + imgUri + ".jpg");
         }
@@ -99,6 +102,7 @@ public class SightingDialog extends Activity {
             }
         }*/
     }
+
     private class DisPlayWebPageActivityClient extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
