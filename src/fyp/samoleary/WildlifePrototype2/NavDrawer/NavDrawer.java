@@ -196,6 +196,7 @@ public class NavDrawer extends FragmentActivity {
         listDataHeader.add("Species Guide");
         listDataHeader.add("IWDG Data");
         listDataHeader.add("News Feed");
+        listDataHeader.add("Hotspots");
 
         // Adding Child Data
         List<String> iwdgData = new ArrayList<String>();
@@ -211,14 +212,19 @@ public class NavDrawer extends FragmentActivity {
         newsFeed.add("Latest Sightings");
         newsFeed.add("Latest Strandings");
 
+        List<String> hotspots = new ArrayList<String>();
+        hotspots.add("View Hotspots");
+        hotspots.add("Manage Hotspots");
+
         listDataChild.put(listDataHeader.get(0), species);
         listDataChild.put(listDataHeader.get(1), iwdgData);
         listDataChild.put(listDataHeader.get(2), newsFeed);
+        listDataChild.put(listDataHeader.get(3), hotspots);
 
         if(!isConnected.isConnected(this.getApplicationContext())){
             listDataHeader.add("No Internet Connectivity!");
             List<String> error = new ArrayList<String>();
-            listDataChild.put(listDataHeader.get(3), error);
+            listDataChild.put(listDataHeader.get(listDataHeader.size() - 1), error);
         }
 
     }
@@ -231,6 +237,7 @@ public class NavDrawer extends FragmentActivity {
         listDataHeader.add("Species Guide");
         listDataHeader.add("IWDG Data");
         listDataHeader.add("News Feed");
+        listDataHeader.add("Hotspots");
 
         // Adding Child Data
         List<String> iwdgData = new ArrayList<String>();
@@ -246,9 +253,14 @@ public class NavDrawer extends FragmentActivity {
         newsFeed.add("Latest Sightings");
         newsFeed.add("Latest Strandings");
 
+        List<String> hotspots = new ArrayList<String>();
+        hotspots.add("View Hotspots");
+        hotspots.add("Manage Hotspots");
+
         listDataChild.put(listDataHeader.get(0), species);
         listDataChild.put(listDataHeader.get(1), iwdgData);
         listDataChild.put(listDataHeader.get(2), newsFeed);
+        listDataChild.put(listDataHeader.get(3), hotspots);
     }
 
     /* The click listener for ListView in the navigation drawer*/

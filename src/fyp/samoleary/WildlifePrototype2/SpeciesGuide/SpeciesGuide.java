@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import fyp.samoleary.WildlifePrototype2.GMap.GMapActivity;
+import fyp.samoleary.WildlifePrototype2.GMap.WildlifeGeofence;
 import fyp.samoleary.WildlifePrototype2.NavDrawer.NavDrawer;
 import fyp.samoleary.WildlifePrototype2.Profile;
 import fyp.samoleary.WildlifePrototype2.R;
@@ -84,6 +85,15 @@ public class SpeciesGuide extends NavDrawer {
                         break;
                 }
                 break;
+            case 3:
+                switch (childPosition) {
+                    case 0:
+                        gotoWildlifeGeofence();
+                        break;
+                    case 1:
+                        break;
+                }
+                break;
             case 10:
                 switch (childPosition) {
                     case 0:
@@ -97,6 +107,11 @@ public class SpeciesGuide extends NavDrawer {
             default:
                 break;
         }
+    }
+
+    private void gotoWildlifeGeofence() {
+        Intent intent = new Intent(this, WildlifeGeofence.class);
+        startActivity(intent);
     }
 
     @Override

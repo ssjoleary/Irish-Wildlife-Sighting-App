@@ -5,12 +5,18 @@
                 android:layout_height="fill_parent" >
 
     <fragment
-            android:id="@+id/map"
+            android:id="@+id/geofenceMap"
             android:name="com.google.android.gms.maps.MapFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             map:cameraTargetLat="53.41608"
             map:cameraTargetLng="-7.93396"
-            map:cameraZoom="6" tools:layout="@layout/main"/>
+            map:cameraZoom="6"
+            tools:layout="@layout/geofenceMap"/>
+
+    <SeekBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/hotspotSeekBar" android:layout_alignParentBottom="true" android:layout_centerHorizontal="true"/>
 
 </RelativeLayout>
