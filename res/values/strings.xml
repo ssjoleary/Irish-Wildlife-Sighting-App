@@ -159,5 +159,6 @@
     <string name="joke_three">Did you hear about the flying whale?\n\nActually its a whale of a story.</string>
     <string name="joke_four">What do you call a baby whale?\n\nA little squirt!</string>
     <string name="joke_error">Ensure your connected to the internet to get the latest news!\n\nBut while you\'re here...</string>
+    <string name="background_image">Whale 9-patch Image</string>
 
 </resources>

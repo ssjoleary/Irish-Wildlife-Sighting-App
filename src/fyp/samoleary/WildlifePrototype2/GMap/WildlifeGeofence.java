@@ -3,18 +3,40 @@ package fyp.samoleary.WildlifePrototype2.GMap;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.SeekBar;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import fyp.samoleary.WildlifePrototype2.GetConnectivityStatus;
 import fyp.samoleary.WildlifePrototype2.LocationUtils;
 import fyp.samoleary.WildlifePrototype2.R;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 public class WildlifeGeofence extends GMapActivity implements
         LocationClient.OnAddGeofencesResultListener {
+    /*
+         * Use to set an expiration time for a geofence. After this amount
+         * of time Location Services will stop tracking the geofence.
+         */
+    private static final long SECONDS_PER_HOUR = 60;
+    private static final long MILLISECONDS_PER_SECOND = 1000;
+    private static final long GEOFENCE_EXPIRATION_IN_HOURS = 12;
+    private static final long GEOFENCE_EXPIRATION_TIME =
+            GEOFENCE_EXPIRATION_IN_HOURS *
+                    SECONDS_PER_HOUR *
+                    MILLISECONDS_PER_SECOND;
 
     private GetConnectivityStatus isConnected;
     /*
@@ -31,10 +53,44 @@ public class WildlifeGeofence extends GMapActivity implements
     // Google Map
     private GoogleMap googleMap;
 
+    private SeekBar seekBar;
+    private HashMap<String, Marker> geofenceMkr;
+    // Internal List of Geofence objects
+    List<Geofence> mGeofenceList;
+    // Persistent storage for geofences
+    private SimpleGeofenceStore mGeofenceStorage;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.geofence);
+        // Instantiate a new geofence storage area
+        mGeofenceStorage = new SimpleGeofenceStore(this);
+        // Instantiate the current List of geofences
+        mGeofenceList = new ArrayList<Geofence>();
+
+        geofenceMkr = new HashMap<String, Marker>();
+
+        seekBar = (SeekBar) findViewById(R.id.hotspotSeekBar);
+        seekBar.setVisibility(View.INVISIBLE);
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                SimpleGeofence simpleGeofence = mGeofenceStorage.getGeofence(mPrefs.getString("geofenceMkrID", null));
+                simpleGeofence.setmRadius(progress);
+                Log.d(LocationUtils.APPTAG, "Progress: " + progress);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
 
         isConnected = new GetConnectivityStatus();
         // Create a new global location parameters object
@@ -72,7 +128,12 @@ public class WildlifeGeofence extends GMapActivity implements
         private final String mId;
         private final double mLatitude;
         private final double mLongitude;
-        private final float mRadius;
+
+        public void setmRadius(float mRadius) {
+            this.mRadius = mRadius;
+        }
+
+        private float mRadius;
         private long mExpirationDuration;
         private int mTransitionType;
 
@@ -324,5 +385,35 @@ public class WildlifeGeofence extends GMapActivity implements
 
         googleMap.setOnMapLongClickListener(this);
 
+    }
+
+    @Override
+    public void onMapLongClick(LatLng point) {
+        Marker mkrOld = geofenceMkr.get(mPrefs.getString("geofenceMkrID", "null"));
+        if (mkrOld==null){
+            Log.d("Placing Marker: ", "No Previous Markers Set");
+        } else {
+            mkrOld.remove();
+            geofenceMkr.remove(mPrefs.getString("geofenceMkrID", "null"));
+        }
+        googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(point, 11));
+        Marker mkr = googleMap.addMarker(new MarkerOptions()
+                .position(point)
+                .title("Adjust Seekbar")
+                .draggable(true)
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+        mkr.showInfoWindow();
+        geofenceMkr.put(mkr.getId(), mkr);
+        mEditor.putString("geofenceMkrID", mkr.getId());
+
+        SimpleGeofence myGeofence = new SimpleGeofence(
+                mkr.getId(), point.latitude, point.longitude, 100.0f,
+                GEOFENCE_EXPIRATION_TIME,
+                Geofence.GEOFENCE_TRANSITION_ENTER
+        );
+        mGeofenceStorage.setGeofence(mkr.getId(), myGeofence);
+
+        mEditor.commit();
+        seekBar.setVisibility(View.VISIBLE);
     }
 }

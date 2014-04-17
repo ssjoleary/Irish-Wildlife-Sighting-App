@@ -8,5 +8,5 @@
                android:id="@+id/imageView"
                android:src="@drawable/bg3"
                android:scaleType="fitXY"
-               android:contentDescription="Whale 9-patch Image"/>
+               android:contentDescription="@string/background_image"/>
 </RelativeLayout>

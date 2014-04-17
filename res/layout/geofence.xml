@@ -15,8 +15,11 @@
             tools:layout="@layout/geofenceMap"/>
 
     <SeekBar
-            android:layout_width="wrap_content"
+            android:max="500"
+            android:layout_width="300dp"
             android:layout_height="wrap_content"
-            android:id="@+id/hotspotSeekBar" android:layout_alignParentBottom="true" android:layout_centerHorizontal="true"/>
+            android:id="@+id/hotspotSeekBar"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"/>
 
 </RelativeLayout>

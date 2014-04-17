@@ -105,4 +105,7 @@ public class LocationUtils {
     // The prefix for flattened geofence keys
     public static final String KEY_PREFIX =
             "com.example.android.geofence.KEY";
+
+
+
 }
