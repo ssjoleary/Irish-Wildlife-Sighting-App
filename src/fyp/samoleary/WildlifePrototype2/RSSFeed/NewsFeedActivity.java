@@ -66,7 +66,7 @@ public class NewsFeedActivity extends NavDrawer {
     public void selectItem(int groupPosition, int childPosition) {
         Log.d(LocationUtils.APPTAG, groupPosition + " : " + childPosition);
         switch (groupPosition) {
-           case 0:
+            case 0:
                 switch (childPosition) {
                     case 0:
                         closeDrawer();
@@ -113,6 +113,22 @@ public class NewsFeedActivity extends NavDrawer {
                         break;
                 }
                 break;
+            case 3:
+                switch (childPosition) {
+                    case 0:
+                        closeDrawer();
+                        gotoWildlifeGeofence(groupPosition, childPosition);
+                        break;
+                    case 1:
+                        closeDrawer();
+                        gotoWildlifeGeofence(groupPosition, childPosition);
+                        break;
+                    case 2:
+                        closeDrawer();
+                        gotoWildlifeGeofence(groupPosition, childPosition);
+                        break;
+                }
+                break;
             case 10:
                 switch (childPosition) {
                     case 0:
@@ -140,7 +156,7 @@ public class NewsFeedActivity extends NavDrawer {
         }
     }
 
-    private void gotoSpeciesGuide() {
+    /*private void gotoSpeciesGuide() {
         Intent intent = new Intent(this, SpeciesGuide.class);
         startActivity(intent);
     }
@@ -150,7 +166,7 @@ public class NewsFeedActivity extends NavDrawer {
         startActivity(i);
     }
 
-    private void gotoGMapActivity(int groupPosition, int childPosition) {
+    /*private void gotoGMapActivity(int groupPosition, int childPosition) {
         Intent intent = new Intent(this, GMapActivity.class);
         intent.putExtra("groupPosition", groupPosition);
         intent.putExtra("childPosition", childPosition);
@@ -161,5 +177,5 @@ public class NewsFeedActivity extends NavDrawer {
         Intent intent = new Intent(this, NewsFeedActivity.class);
         intent.putExtra("rssUrl", rssUrl);
         startActivity(intent);
-    }
+    }*/
 }

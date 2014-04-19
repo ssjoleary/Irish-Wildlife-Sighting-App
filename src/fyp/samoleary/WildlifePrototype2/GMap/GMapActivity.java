@@ -86,7 +86,6 @@ public class GMapActivity extends NavDrawer implements
 
     // Object to display an AlertDialog
     private ConfirmSightingLocationDialog confirmSightingLocationDialog;
-    private ReportSightingDialog reportSightingDialog;
 
     // A request to connect to Location Services
     private LocationRequest mLocationRequest;
@@ -407,6 +406,22 @@ public class GMapActivity extends NavDrawer implements
                         break;
                 }
                 break;
+            case 3:
+                switch (childPosition) {
+                    case 0:
+                        closeDrawer();
+                        gotoWildlifeGeofence(groupPosition, childPosition);
+                        break;
+                    case 1:
+                        closeDrawer();
+                        gotoWildlifeGeofence(groupPosition, childPosition);
+                        break;
+                    case 2:
+                        closeDrawer();
+                        gotoWildlifeGeofence(groupPosition, childPosition);
+                        break;
+                }
+                break;
             case 10:
                 switch (childPosition) {
                     case 0:
@@ -434,27 +449,27 @@ public class GMapActivity extends NavDrawer implements
         }
     }
 
-    private void gotoNewsFeed(String rssUrl) {
+    /*private void gotoNewsFeed(String rssUrl) {
         Intent intent = new Intent(this, NewsFeedActivity.class);
         intent.putExtra("rssUrl", rssUrl);
         startActivity(intent);
-    }
+    }*/
 
     private void createReportDialog() {
-        reportSightingDialog = ReportSightingDialog.newInstance(
+        ReportSightingDialog reportSightingDialog = ReportSightingDialog.newInstance(
                 R.string.dialog_report_sighting_selected);
         reportSightingDialog.show(getSupportFragmentManager(), "dialog");
     }
 
-    private void gotoSpeciesGuide() {
+    /*private void gotoSpeciesGuide() {
         Intent intent = new Intent(this, SpeciesGuide.class);
         startActivity(intent);
-    }
+    }*/
 
-    private void gotoProfile() {
+    /*private void gotoProfile() {
         Intent i = new Intent(this, Profile.class);
         startActivity(i);
-    }
+    }*/
 
     /**
      * Method to create a map.

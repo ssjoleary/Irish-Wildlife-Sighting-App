@@ -63,13 +63,17 @@ public class WildlifeDB {
     }
 
     public String getSpecies(String id){
-        String species = "unknown";
+        String species = "unknown species";
         Cursor cursor = db.rawQuery("SELECT "+ Constants.HOTSPOTS_SPECIES+" FROM "+Constants.TABLE_NAME_HOTSPOTS +" WHERE _id="+id, null);
         if (cursor.getCount() > 0) {
             cursor.moveToFirst();
             species = cursor.getString(cursor.getColumnIndex(Constants.HOTSPOTS_SPECIES));
         }
         return species;
+    }
+
+    public Cursor getHotspotBySpecies(String species) {
+        return db.rawQuery("SELECT * FROM "+Constants.TABLE_NAME_HOTSPOTS +" WHERE " + Constants.HOTSPOTS_SPECIES +"="+species, null);
     }
 
     /**

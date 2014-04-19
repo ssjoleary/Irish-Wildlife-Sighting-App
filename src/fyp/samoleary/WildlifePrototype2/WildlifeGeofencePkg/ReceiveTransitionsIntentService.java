@@ -91,11 +91,11 @@ public class ReceiveTransitionsIntentService extends IntentService {
                 // Log the transition type and a message
                 Log.d(GeofenceUtils.APPTAG,
                         getString(
-                                R.string.geofence_transition_notification_title,
+                                R.string.enter_hotspot_title,
                                 transitionType,
                                 ids));
                 Log.d(GeofenceUtils.APPTAG,
-                        getString(R.string.geofence_transition_notification_text));
+                        getString(R.string.enter_hotspot_msg));
 
             // An invalid transition was reported
             } else {
@@ -134,11 +134,11 @@ public class ReceiveTransitionsIntentService extends IntentService {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
 
         // Set the notification contents
-        builder.setSmallIcon(R.drawable.ic_action_place)
+        builder.setSmallIcon(R.drawable.ic_launcher)
                .setContentTitle(
-                       getString(R.string.geofence_transition_notification_title,
+                       getString(R.string.enter_hotspot_title,
                                transitionType, ids))
-               .setContentText(getString(R.string.geofence_transition_notification_text))
+               .setContentText(getString(R.string.enter_hotspot_msg))
                .setContentIntent(notificationPendingIntent);
 
         // Get an instance of the Notification manager

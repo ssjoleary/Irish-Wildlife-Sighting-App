@@ -29,10 +29,10 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.*;
-import fyp.samoleary.WildlifePrototype2.GetConnectivityStatus;
+import fyp.samoleary.WildlifePrototype2.GMap.GMapActivity;import fyp.samoleary.WildlifePrototype2.GetConnectivityStatus;
 import fyp.samoleary.WildlifePrototype2.LocationUtils;
 import fyp.samoleary.WildlifePrototype2.Profile;
-import fyp.samoleary.WildlifePrototype2.R;
+import fyp.samoleary.WildlifePrototype2.R;import fyp.samoleary.WildlifePrototype2.RSSFeed.NewsFeedActivity;import fyp.samoleary.WildlifePrototype2.SpeciesGuide.SpeciesGuide;import fyp.samoleary.WildlifePrototype2.WildlifeGeofencePkg.WildlifeGeofence;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -214,7 +214,8 @@ public class NavDrawer extends FragmentActivity {
 
         List<String> hotspots = new ArrayList<String>();
         hotspots.add("View Hotspots");
-        hotspots.add("Manage Hotspots");
+        hotspots.add("Create a Hotspot");
+        hotspots.add("Search Hotspots");
 
         listDataChild.put(listDataHeader.get(0), species);
         listDataChild.put(listDataHeader.get(1), iwdgData);
@@ -255,7 +256,8 @@ public class NavDrawer extends FragmentActivity {
 
         List<String> hotspots = new ArrayList<String>();
         hotspots.add("View Hotspots");
-        hotspots.add("Manage Hotspots");
+        hotspots.add("Create a Hotspot");
+        hotspots.add("Search Hotspots");
 
         listDataChild.put(listDataHeader.get(0), species);
         listDataChild.put(listDataHeader.get(1), iwdgData);
@@ -269,11 +271,6 @@ public class NavDrawer extends FragmentActivity {
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             gotoProfile();
         }
-    }
-
-    private void gotoProfile() {
-        Intent i = new Intent(this, Profile.class);
-        startActivity(i);
     }
 
     public void selectItem(int groupPosition, int childPosition){
@@ -308,5 +305,35 @@ public class NavDrawer extends FragmentActivity {
     public void closeDrawer(){//}int position){
         //mDrawerList.setItemChecked(position, false);
         mDrawerLayout.closeDrawers();
+    }
+
+    protected void gotoGMapActivity(int groupPosition, int childPosition) {
+        Intent intent = new Intent(this, GMapActivity.class);
+        intent.putExtra("groupPosition", groupPosition);
+        intent.putExtra("childPosition", childPosition);
+        startActivity(intent);
+    }
+
+    protected void gotoWildlifeGeofence(int groupPosition, int childPosition) {
+        Intent intent = new Intent(this, WildlifeGeofence.class);
+        intent.putExtra("groupPosition", groupPosition);
+        intent.putExtra("childPosition", childPosition);
+        startActivity(intent);
+    }
+
+    protected void gotoNewsFeed(String rssUrl) {
+        Intent intent = new Intent(this, NewsFeedActivity.class);
+        intent.putExtra("rssUrl", rssUrl);
+        startActivity(intent);
+    }
+
+    protected void gotoSpeciesGuide() {
+        Intent intent = new Intent(this, SpeciesGuide.class);
+        startActivity(intent);
+    }
+
+    protected void gotoProfile() {
+        Intent i = new Intent(this, Profile.class);
+        startActivity(i);
     }
 }

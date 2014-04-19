@@ -1,13 +1,13 @@
 package fyp.samoleary.WildlifePrototype2.WildlifeGeofencePkg;
 
-import android.app.Activity;import android.app.Dialog;import android.content.*;import android.database.Cursor;import android.graphics.Color;
-import android.os.Bundle;
+import android.app.Activity;import android.app.AlertDialog;import android.app.Dialog;import android.content.*;import android.database.Cursor;import android.graphics.Color;
+import android.location.Location;import android.os.Bundle;
 import android.support.v4.app.DialogFragment;import android.support.v4.content.LocalBroadcastManager;import android.text.TextUtils;import android.text.format.DateUtils;import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
-import android.widget.Toast;import com.google.android.gms.common.ConnectionResult;import com.google.android.gms.common.GooglePlayServicesUtil;import com.google.android.gms.location.Geofence;
-import com.google.android.gms.maps.CameraUpdateFactory;
+import android.widget.Toast;import com.google.android.gms.common.ConnectionResult;import com.google.android.gms.common.GooglePlayServicesClient;import com.google.android.gms.common.GooglePlayServicesUtil;import com.google.android.gms.location.Geofence;
+import com.google.android.gms.location.LocationClient;import com.google.android.gms.location.LocationListener;import com.google.android.gms.location.LocationRequest;import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.*;
@@ -16,7 +16,10 @@ import fyp.samoleary.WildlifePrototype2.Database.Constants;import fyp.samoleary.
 import java.util.ArrayList;import java.util.Collections;import java.util.HashMap;import java.util.List;
 
 public class WildlifeGeofence extends NavDrawer implements
-        GoogleMap.OnMapLongClickListener {
+        GoogleMap.OnMapLongClickListener,
+        GooglePlayServicesClient.ConnectionCallbacks,
+        GooglePlayServicesClient.OnConnectionFailedListener,
+        LocationListener {
 
     /*
      * Use to set an expiration time for a geofence. After this amount
@@ -58,6 +61,17 @@ public class WildlifeGeofence extends NavDrawer implements
 
     // Store the list of geofences to remove
     private List<String> mGeofenceIdsToRemove;
+
+    // A request to connect to Location Services
+    private LocationRequest mLocationRequest;
+    // Stores the current instantiation of the location client in this object
+    private LocationClient mLocationClient;
+    /*
+     * Note if updates have been turned on. Starts out as "false"; is ser to "true" in the
+     * method handleRequestSuccess of LocationUpdateReceiver
+     *
+     */
+    boolean mUpdatesRequested = false;
 
     // Google Map
     private GoogleMap googleMap;
@@ -105,10 +119,27 @@ public class WildlifeGeofence extends NavDrawer implements
         // Instantiate a Geofence remover
         mGeofenceRemover = new GeofenceRemover(this);
 
+        /*
+         * Create a new location client, using the enclosing class to
+         * handle callbacks.
+         */
+        mLocationClient = new LocationClient(this, this, this);
+
         // Open Shared Preferences
         sharedPreferences = getSharedPreferences(LocationUtils.SHARED_PREFERENCES, Context.MODE_PRIVATE);
         // Get an editor
         mEditor = sharedPreferences.edit();
+
+        // Create a new global location parameters object
+        mLocationRequest = LocationRequest.create();
+        /*
+         * Set the update interval
+         */
+        mLocationRequest.setInterval(LocationUtils.UPDATE_INTERVAL_IN_MILLISECONDS);
+        // Use high accuracy
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        // Set the interval ceiling to one minute
+        mLocationRequest.setFastestInterval(LocationUtils.FAST_INTERVAL_CEILING_IN_MILLISECONDS);
 
         geofenceMkr = new HashMap<String, Marker>();
         geofenceCircles = new HashMap<String, Circle>();
@@ -152,6 +183,11 @@ public class WildlifeGeofence extends NavDrawer implements
         }
         getLocalHotspots();
         googleMap.setPadding(0,0,0,15);
+
+        Intent i = getIntent();
+        if (i.getIntExtra("groupPosition", 999) != 999){
+            selectItem(i.getIntExtra("groupPosition", 999), i.getIntExtra("childPosition", 999));
+        }
     }
 
     /*
@@ -481,6 +517,82 @@ public class WildlifeGeofence extends NavDrawer implements
         }
     }
 
+    @Override
+    public void onConnected(Bundle bundle) {
+        Log.d(LocationUtils.APPTAG, getString(R.string.connected));
+        if (mUpdatesRequested) {
+            startPeriodicUpdates();
+        }
+    }
+    @Override
+    public void onDisconnected() {
+        Log.d(LocationUtils.APPTAG, getString(R.string.disconnected));
+    }
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        /*
+         * Google Play services can resolve some errors it detects.
+         * If the error has a resolution, try sending an Intent to
+         * start a Google Play services activity that can resolve
+         * error.
+         */
+        if (connectionResult.hasResolution()) {
+            try {
+                // Start an Activity that tries to resolve the error
+                connectionResult.startResolutionForResult(this,
+                        LocationUtils.CONNECTION_FAILURE_RESOLUTION_REQUEST);
+
+                /*
+                 * Thrown if Google Play services cancelled the original
+                 * PendingIntent
+                 */
+
+            } catch (IntentSender.SendIntentException e) {
+                // Log the error
+                e.printStackTrace();
+            }
+        } else {
+            /*
+             * If no resolution is available, display a dialog to the
+             * user with the error
+             */
+            showErrorDialog(connectionResult.getErrorCode());
+        }
+    }
+
+    /**
+     * Show a dialog returned by Google Play services for the
+     * connection error code
+     *
+     * @param errorCode An error code returned from onConnectionFailed
+     */
+    private void showErrorDialog(int errorCode) {
+
+        // Get the error dialog from Google Play services
+        Dialog errorDialog = GooglePlayServicesUtil.getErrorDialog(
+                errorCode,
+                this,
+                LocationUtils.CONNECTION_FAILURE_RESOLUTION_REQUEST);
+
+        // If Google Play services can provide an error dialog
+        if (errorDialog != null) {
+
+            // Create a new DialogFragment in which to show the error dialog
+            ErrorDialogFragment errorFragment = new ErrorDialogFragment();
+
+            // Set the dialog in the DialogFragment
+            errorFragment.setDialog(errorDialog);
+
+            // Show the error dialog in the DialogFragment
+            errorFragment.show(getSupportFragmentManager(), LocationUtils.APPTAG);
+        }
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+
+    }
+
     /**
      * Define a Broadcast receiver that receives updates from connection listeners and
      * the geofence transition service.
@@ -616,10 +728,9 @@ public class WildlifeGeofence extends NavDrawer implements
             String id = markerIDs.get(marker.getId());
             wildlifeDB.open();
             String species = wildlifeDB.getSpecies(id);
-            Log.d(LocationUtils.APPTAG, "Species: " + species);
             wildlifeDB.close();
 
-            marker.setTitle(species);
+            marker.setTitle(species + " Hotspot");
             marker.showInfoWindow();
             return true;
         }
@@ -743,5 +854,230 @@ public class WildlifeGeofence extends NavDrawer implements
         }
         wildlifeDB.close();
         stopManagingCursor(cursor);
+        setProgressBarIndeterminateVisibility(false);
     }
+
+    @Override
+    public void selectItem(int groupPosition, int childPosition) {
+        //Log.d(LocationUtils.APPTAG, groupPosition + " : " + childPosition);
+        switch (groupPosition) {
+            case 0:
+                closeDrawer();
+                gotoSpeciesGuide();
+                break;
+            case 1:
+                switch (childPosition) {
+                    case 0:
+                        closeDrawer();
+                        //getRecentSightings();
+                        gotoGMapActivity(groupPosition, childPosition);
+                        break;
+                    case 1:
+                        closeDrawer();
+                        //createReportDialog();
+                        gotoGMapActivity(groupPosition, childPosition);
+                        break;
+                    case 2:
+                        closeDrawer();
+                        //gotoSearchActivity();
+                        gotoGMapActivity(groupPosition, childPosition);
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case 2:
+                switch (childPosition) {
+                    case 0:
+                        closeDrawer();
+                        gotoNewsFeed("http://www.iwdg.ie/index.php?option=com_k2&view=itemlist&task=category&id=1&Itemid=93&format=feed");
+                        break;
+                    case 1:
+                        closeDrawer();
+                        gotoNewsFeed("http://www.iwdg.ie/_customphp/iscope/rss_sightings.php");
+                        break;
+                    case 2:
+                        closeDrawer();
+                        gotoNewsFeed("http://www.iwdg.ie/_customphp/iscope/rss_strandings.php");
+                        break;
+                }
+                break;
+            case 3:
+                switch (childPosition) {
+                    case 0:
+                        closeDrawer();
+                        setProgressBarIndeterminateVisibility(true);
+                        getLocalHotspots();
+                        break;
+                    case 1:
+                        closeDrawer();
+                        createHotspotDialog();
+                        break;
+                    case 2:
+                        closeDrawer();
+                        Toast.makeText(this, "This particular functionality is on the TODO List...", Toast.LENGTH_LONG).show();
+                        break;
+                }
+                break;
+            case 10:
+                switch (childPosition) {
+                    case 0:
+                        closeDrawer();
+                        gotoProfile();
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void createHotspotDialog() {
+        CreateHotspotDialog createHotspotDialog = CreateHotspotDialog.newInstance(
+                R.string.dialog_hotspot_hotspot_selected);
+        createHotspotDialog.show(getSupportFragmentManager(), "dialog");
+    }
+
+    public static class CreateHotspotDialog extends DialogFragment {
+
+        public static CreateHotspotDialog newInstance(int title) {
+            CreateHotspotDialog frag = new CreateHotspotDialog();
+            Bundle args = new Bundle();
+            args.putInt("title", title);
+            frag.setArguments(args);
+            return frag;
+        }
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            int title = getArguments().getInt("title");
+
+            // Use the Builder class for convenient dialog construction
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+            builder.setTitle(title)
+                    .setPositiveButton(R.string.dialog_current_location, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int id) {
+                            ((WildlifeGeofence) getActivity()).doReportAtCurrentLocationClick();
+                        }
+                    })
+                    .setNeutralButton(R.string.dialog_chosen_location, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int id) {
+                            ((WildlifeGeofence) getActivity()).doReportAtChosenLocationClick();
+                        }
+                    })
+                    .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            ((WildlifeGeofence) getActivity()).doCancelReportClick();
+                        }
+                    });
+
+            // Create the AlertDialog object and return it
+            return builder.create();
+        }
+    }
+
+    private void doReportAtChosenLocationClick() {
+        Toast.makeText(WildlifeGeofence.this, "Long Press anywhere on the map to create the Hotspot", Toast.LENGTH_LONG).show();
+    }
+
+    private void doCancelReportClick() {
+
+    }
+
+    private void doReportAtCurrentLocationClick() {
+        LatLng userLocation= getLocation();
+        if (userLocation.latitude == 0 && userLocation.longitude == 0) {
+            Toast.makeText(WildlifeGeofence.this, "Unable to fetch current location, please try again!", Toast.LENGTH_LONG).show();
+        } else {
+            onMapLongClick(userLocation);
+        }
+    }
+
+    /**
+     * Invoked by the "Get Location" button.
+     *
+     * Calls getLastLocation() to get the current location
+     *
+     */
+    public LatLng getLocation() {
+
+        // If Google Play Services is available
+        if (servicesConnected()) {
+
+            // Get the current location
+            Location currentLocation = mLocationClient.getLastLocation();
+
+            if (currentLocation != null) {
+                return new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+            } else {
+                return new LatLng(0, 0);
+            }
+
+        } else {
+            Log.d(LocationUtils.APPTAG, "Google Play Services Unavailable");
+            return new LatLng(0,0);
+        }
+    }
+
+    @Override
+    public void onStop() {
+
+        // If the client is connected
+        if (mLocationClient.isConnected()) {
+            stopPeriodicUpdates();
+        }
+
+        // After disconnect() is called, the client is considered "dead".
+        mLocationClient.disconnect();
+
+        super.onStop();
+    }
+
+    /*
+     * Called when the Activity is restarted, even before it becomes visible.
+     */
+    @Override
+    public void onStart() {
+        super.onStart();
+        //Log.d(LocationUtils.APPTAG, "onStart");
+        /*
+         * Connect the client. Don't re-start any requests here;
+         * instead, wait for onResume()
+         */
+        mLocationClient.connect();
+    }
+
+    @Override
+    public void onRestart() {
+        super.onRestart();
+        //Log.d(LocationUtils.APPTAG, "onRestart");
+    }
+
+    /**
+     * In response to a request to start updates, send a request
+     * to Location Services
+     */
+    private void startPeriodicUpdates() {
+
+        mLocationClient.requestLocationUpdates(mLocationRequest, this);
+        //Toast.makeText(this, R.string.location_requested, Toast.LENGTH_SHORT).show();
+        Log.d(LocationUtils.APPTAG, getString(R.string.location_requested));
+    }
+
+    /**
+     * In response to a request to stop updates, send a request to
+     * Location Services
+     */
+    private void stopPeriodicUpdates() {
+        mLocationClient.removeLocationUpdates((LocationListener) this);
+        //Toast.makeText(this, R.string.location_updates_stopped, Toast.LENGTH_SHORT).show();
+        Log.d(LocationUtils.APPTAG, getString(R.string.location_updates_stopped));
+    }
+
 }

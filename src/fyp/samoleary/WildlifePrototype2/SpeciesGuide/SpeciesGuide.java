@@ -73,24 +73,31 @@ public class SpeciesGuide extends NavDrawer {
                 switch (childPosition) {
                     case 0:
                         closeDrawer();
-                        gotoRSSFeed("http://www.iwdg.ie/index.php?option=com_k2&view=itemlist&task=category&id=1&Itemid=93&format=feed");
+                        gotoNewsFeed("http://www.iwdg.ie/index.php?option=com_k2&view=itemlist&task=category&id=1&Itemid=93&format=feed");
                         break;
                     case 1:
                         closeDrawer();
-                        gotoRSSFeed("http://www.iwdg.ie/_customphp/iscope/rss_sightings.php");
+                        gotoNewsFeed("http://www.iwdg.ie/_customphp/iscope/rss_sightings.php");
                         break;
                     case 2:
                         closeDrawer();
-                        gotoRSSFeed("http://www.iwdg.ie/_customphp/iscope/rss_strandings.php");
+                        gotoNewsFeed("http://www.iwdg.ie/_customphp/iscope/rss_strandings.php");
                         break;
                 }
                 break;
             case 3:
                 switch (childPosition) {
                     case 0:
+                        closeDrawer();
+                        gotoWildlifeGeofence(groupPosition, childPosition);
                         break;
                     case 1:
-                        gotoWildlifeGeofence();
+                        closeDrawer();
+                        gotoWildlifeGeofence(groupPosition, childPosition);
+                        break;
+                    case 2:
+                        closeDrawer();
+                        gotoWildlifeGeofence(groupPosition, childPosition);
                         break;
                 }
                 break;
@@ -125,23 +132,23 @@ public class SpeciesGuide extends NavDrawer {
         }
     }
 
-    private void gotoGMapActivity(int groupPosition, int childPosition) {
+    /*private void gotoGMapActivity(int groupPosition, int childPosition) {
         Intent intent = new Intent(this, GMapActivity.class);
         intent.putExtra("groupPosition", groupPosition);
         intent.putExtra("childPosition", childPosition);
         startActivity(intent);
-    }
+    }*/
 
-    private void gotoProfile() {
+    /*private void gotoProfile() {
         Intent i = new Intent(this, Profile.class);
         startActivity(i);
-    }
+    }*/
 
-    private void gotoRSSFeed(String rssUrl) {
+    /*private void gotoRSSFeed(String rssUrl) {
         Intent intent = new Intent(this, NewsFeedActivity.class);
         intent.putExtra("rssUrl", rssUrl);
         startActivity(intent);
-    }
+    }*/
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
