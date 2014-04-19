@@ -14,9 +14,15 @@
             map:cameraZoom="6"
             tools:layout="@layout/geofenceMap"/>
 
+    <Button
+            android:id="@+id/submitBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"/>
     <SeekBar
-            android:max="500"
-            android:layout_width="300dp"
+            android:max="5000"
+            android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:id="@+id/hotspotSeekBar"
             android:layout_alignParentBottom="true"

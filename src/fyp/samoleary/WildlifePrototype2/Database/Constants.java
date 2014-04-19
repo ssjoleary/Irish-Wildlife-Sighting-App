@@ -1,4 +1,4 @@
-package fyp.samoleary.WildlifePrototype2;
+package fyp.samoleary.WildlifePrototype2.Database;
 
 /**
  * Created by ssjoleary on 10/03/14
@@ -20,5 +20,12 @@ public class Constants {
     public static final String SIGHTING_IMAGE = "sighting_image";
 
     public static final String TABLE_NAME_RSS_SIGHTING = "rsssightings";
+
+    public static final String TABLE_NAME_HOTSPOTS = "hotspots";
+    public static final String HOTSPOTS_ID = "_id";
+    public static final String HOTSPOTS_SPECIES = "hotspots_species";
+    public static final String HOTSPOTS_RADIUS = "hotspots_radius";
+    public static final String HOTSPOTS_LNG = "hotspots_lng";
+    public static final String HOTSPOTS_LAT = "hotspots_lat";
 
 }

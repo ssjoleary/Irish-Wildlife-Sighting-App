@@ -7,7 +7,7 @@ import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
-import fyp.samoleary.WildlifePrototype2.Database.WildlifeDB;
+import fyp.samoleary.WildlifePrototype2.Database.Constants;import fyp.samoleary.WildlifePrototype2.Database.WildlifeDB;
 import fyp.samoleary.WildlifePrototype2.GMap.HttpHandler;
 import fyp.samoleary.WildlifePrototype2.RSSFeed.RSSItem;
 import fyp.samoleary.WildlifePrototype2.RSSFeed.RSSParser;
@@ -96,7 +96,6 @@ public class SplashScreen extends Activity{
         @Override
         protected void onPreExecute() {
             wildlifeDB.open();
-            wildlifeDB.dropTable();
             //wildlifeDB.dropTableRssSighting();
             pDialog.setIndeterminate(false);
             pDialog.setCancelable(false);

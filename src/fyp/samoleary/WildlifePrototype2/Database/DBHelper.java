@@ -5,7 +5,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-import fyp.samoleary.WildlifePrototype2.Constants;
 
 /**
  * Author: Sam O'Leary
@@ -19,16 +18,13 @@ import fyp.samoleary.WildlifePrototype2.Constants;
  *      upgrades to the Database.
  */
 public class DBHelper extends SQLiteOpenHelper {
-    private static final String CREATE_TABLE="create table "+
-            Constants.TABLE_NAME+" ("+
-            Constants.SIGHTING_ID+" integer primary key autoincrement, "+
-            Constants.SIGHTING_SPECIES+" text not null, "+
-            Constants.SIGHTING_DATE+" text not null, "+
-            Constants.SIGHTING_LOCATION+" text not null,"+
-            Constants.SIGHTING_LNG+" double not null,"+
-            Constants.SIGHTING_LAT+" double not null,"+
-            Constants.SIGHTING_IMGURI+" text not null, "+
-            Constants.SIGHTING_ANIMALS+" integer not null);";
+    private static final String CREATE_TABLE_HOTSPOTS="create table "+
+            Constants.TABLE_NAME_HOTSPOTS+" ("+
+            Constants.HOTSPOTS_ID+" integer primary key autoincrement, "+
+            Constants.HOTSPOTS_SPECIES+" text not null, "+
+            Constants.HOTSPOTS_RADIUS+" double not null,"+
+            Constants.HOTSPOTS_LNG+" double not null,"+
+            Constants.HOTSPOTS_LAT+" double not null);";
 
     private static final String CREATE_TABLE_RSS_SIGHTING="create table "+
             Constants.TABLE_NAME_RSS_SIGHTING+" ("+
@@ -64,7 +60,11 @@ public class DBHelper extends SQLiteOpenHelper {
         Log.v("DBHelper onCreate", "Creating all the tables");
         try {
             db.execSQL(CREATE_TABLE_RSS_SIGHTING);
-            //db.execSQL(CREATE_TABLE);
+        } catch (SQLiteException e) {
+            Log.v("Create Table exception", e.getMessage());
+        }
+        try {
+            db.execSQL(CREATE_TABLE_HOTSPOTS);
         } catch (SQLiteException e) {
             Log.v("Create Table exception", e.getMessage());
         }
@@ -87,7 +87,7 @@ public class DBHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         Log.w("TaskDBAdapter", "Upgrading from version "+oldVersion+" to "+newVersion+", which will destroy all old data");
-        db.execSQL("drop table if exists " +Constants.TABLE_NAME);
+        db.execSQL("drop table if exists " +Constants.TABLE_NAME_HOTSPOTS);
         db.execSQL("drop table if exists " +Constants.TABLE_NAME_RSS_SIGHTING);
         onCreate(db);
     }

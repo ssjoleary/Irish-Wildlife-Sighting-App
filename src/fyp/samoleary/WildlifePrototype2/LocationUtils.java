@@ -106,6 +106,4 @@ public class LocationUtils {
     public static final String KEY_PREFIX =
             "com.example.android.geofence.KEY";
 
-
-
 }

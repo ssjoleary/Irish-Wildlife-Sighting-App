@@ -30,7 +30,7 @@ import android.support.v4.app.DialogFragment;
 import com.google.android.gms.maps.model.*;
 import com.google.maps.android.clustering.ClusterManager;
 import fyp.samoleary.WildlifePrototype2.*;
-import fyp.samoleary.WildlifePrototype2.Database.WildlifeDB;
+import fyp.samoleary.WildlifePrototype2.Database.Constants;import fyp.samoleary.WildlifePrototype2.Database.WildlifeDB;
 import fyp.samoleary.WildlifePrototype2.NavDrawer.NavDrawer;
 import fyp.samoleary.WildlifePrototype2.RSSFeed.NewsFeedActivity;
 import fyp.samoleary.WildlifePrototype2.RSSFeed.RSSItem;
@@ -770,7 +770,7 @@ public class GMapActivity extends NavDrawer implements
      *
      * @return true if Google Play services is available, otherwise false
      */
-    private boolean servicesConnected() {
+    protected boolean servicesConnected() {
 
         // Check that Google Play Services is available
         int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
@@ -1127,7 +1127,6 @@ public class GMapActivity extends NavDrawer implements
         @Override
         protected void onPreExecute() {
             wildlifeDB.open();
-            wildlifeDB.dropTable();
             //wildlifeDB.dropTableRssSighting();
             /*pDialog.setIndeterminate(false);
             pDialog.setCancelable(false);
