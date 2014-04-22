@@ -168,8 +168,8 @@ public class GMapActivity extends NavDrawer implements
 
         Intent i = getIntent();
         if (i.getStringExtra("result") == null) {
-            getRecentSightings();
-            //getLocalSightings();
+            //getRecentSightings();
+/**            getLocalSightings();*/
         } //else {
         //plotMarkers(i.getStringExtra("result"));
         //getLocalSightings();
@@ -181,7 +181,7 @@ public class GMapActivity extends NavDrawer implements
 
     }
 
-    private void checkForNewSightings() {
+    private void checkForNewSightings()  {
         if (isConnected.isConnected(getApplicationContext())) {
             new HttpHandler() {
                 @Override
@@ -194,7 +194,7 @@ public class GMapActivity extends NavDrawer implements
                     getLatestJSONSighting(result);
                 }
             }.execute();
-            new RssSightingAsyncTask().execute(getString(R.string.rssfeed_sightings));
+            //new RssSightingAsyncTask().execute(getString(R.string.rssfeed_sightings));
         } else {
             Toast.makeText(this, "Cannot check for new sightings, are you connected to the internet?", Toast.LENGTH_LONG).show();
         }
@@ -207,7 +207,7 @@ public class GMapActivity extends NavDrawer implements
 
         wildlifeDB.open();
 
-        Cursor cursor = wildlifeDB.getInfoRssSighting();
+        Cursor cursor = wildlifeDB.getInfoRssSightingLimit();
         startManagingCursor(cursor);
         if(cursor.moveToFirst()){
             do {
@@ -221,12 +221,12 @@ public class GMapActivity extends NavDrawer implements
                 String name = cursor.getString(cursor.getColumnIndex(Constants.SIGHTING_NAME));
                 String imgurl = cursor.getString(cursor.getColumnIndex(Constants.SIGHTING_IMAGE));
 
-                /*MarkerOptions mo = new MarkerOptions()
-                        .position(new LatLng(latitude, longitude))
-                        .flat(true)
-                        .snippet("Click here for details")
-                        .rotation(0)
-                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));*/
+                //MarkerOptions mo = new MarkerOptions()
+                //        .position(new LatLng(latitude, longitude))
+                //        .flat(true)
+                //        .snippet("Click here for details")
+                //        .rotation(0)
+                //        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
 
                 //Marker myMarker = googleMap.addMarker(mo);
                 Sighting mySighting = new Sighting(ID, species, sub_date, latitude, longitude, location, animals, name, imgurl);//, imgUri);
@@ -367,7 +367,6 @@ public class GMapActivity extends NavDrawer implements
                     case 0:
                         closeDrawer();
                         setProgressBarIndeterminateVisibility(true);
-                        //getRecentSightings();
                         getLocalSightings();
                         break;
                     case 1:
@@ -381,14 +380,6 @@ public class GMapActivity extends NavDrawer implements
                     default:
                         break;
                 }
-                /*switch (childPosition) {
-                    case 0:
-                        closeDrawer();
-                        gotoSpeciesGuide();
-                        break;
-                    default:
-                        break;
-                }*/
                 break;
             case 2:
                 switch (childPosition) {
@@ -449,27 +440,12 @@ public class GMapActivity extends NavDrawer implements
         }
     }
 
-    /*private void gotoNewsFeed(String rssUrl) {
-        Intent intent = new Intent(this, NewsFeedActivity.class);
-        intent.putExtra("rssUrl", rssUrl);
-        startActivity(intent);
-    }*/
-
     private void createReportDialog() {
         ReportSightingDialog reportSightingDialog = ReportSightingDialog.newInstance(
                 R.string.dialog_report_sighting_selected);
         reportSightingDialog.show(getSupportFragmentManager(), "dialog");
     }
 
-    /*private void gotoSpeciesGuide() {
-        Intent intent = new Intent(this, SpeciesGuide.class);
-        startActivity(intent);
-    }*/
-
-    /*private void gotoProfile() {
-        Intent i = new Intent(this, Profile.class);
-        startActivity(i);
-    }*/
 
     /**
      * Method to create a map.
@@ -574,7 +550,8 @@ public class GMapActivity extends NavDrawer implements
         Intent intent = new Intent(this, SearchActivity.class);
         startActivityForResult(intent, SEARCH_REQUEST);
     }
-    /*
+
+    /**
      * Called when the Activity is no longer visible at all.
      * Stop updates and disconnect.
      */
@@ -592,7 +569,7 @@ public class GMapActivity extends NavDrawer implements
         super.onStop();
     }
 
-    /*
+    /**
      * Called when the Activity is going into the background.
      * Parts of the UI may be visible, but the Activity is inactive.
      */
@@ -606,7 +583,7 @@ public class GMapActivity extends NavDrawer implements
         super.onPause();
     }
 
-    /*
+    /**
      * Called when the Activity is restarted, even before it becomes visible.
      */
     @Override
@@ -625,7 +602,8 @@ public class GMapActivity extends NavDrawer implements
         super.onRestart();
         //Log.d(LocationUtils.APPTAG, "onRestart");
     }
-    /*
+
+    /**
      * Called when the system detects that this Activity is now visible.
      */
     @Override
@@ -633,7 +611,7 @@ public class GMapActivity extends NavDrawer implements
         super.onResume();
         //Log.d(LocationUtils.APPTAG, "onResume");
         //getRecentSightings();
-        getLocalSightings();
+/**        getLocalSightings();*/
         //LatLng point = new LatLng(53.41608, -7.93396);
         //googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(point, 6));
 
@@ -672,7 +650,7 @@ public class GMapActivity extends NavDrawer implements
         }
     }
 
-    /*
+    /**
      * Handle results returned to this Activity by other Activities started with
      * startActivityForResult(). In particular, the method onConnectionFailed() in
      * LocationUpdateRemover and LocationUpdateRequester may call startResolutionForResult() to
@@ -723,10 +701,10 @@ public class GMapActivity extends NavDrawer implements
                         String result = intent.getStringExtra("result");
                         Log.d(LocationUtils.APPTAG, "Result: " + result);
                         if (result.equals("all")) {
-                            getLocalSightings();
-                        }else{
-                            plotMarkers(result);
-                        }
+/**                            getLocalSightings();*/
+                        }/**else{
+                     plotMarkers(result);
+                     }*/
                         setProgressBarIndeterminateVisibility(false);
                         break;
                     case Activity.RESULT_CANCELED:
@@ -749,7 +727,7 @@ public class GMapActivity extends NavDrawer implements
                         if (mkr != null)
                             mkr.remove();
 
-                        getLocalSightings();
+/**                        getLocalSightings();*/
 
                         /*if (mkr != null) {
                             mkr.setDraggable(false);
@@ -765,7 +743,7 @@ public class GMapActivity extends NavDrawer implements
                         if (mkr != null)
                             mkr.remove();
 
-                        getLocalSightings();
+/**                        getLocalSightings();*/
                         LatLng point = new LatLng(53.41608, -7.93396);
                         googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(point, 6));
                         break;
@@ -878,7 +856,7 @@ public class GMapActivity extends NavDrawer implements
         }
     }
 
-    /*
+    /**
      * Called by Location Services when the request to connect the client finishes successfully
      * At this point, you can request the current location or start periodic updates
      */
@@ -893,7 +871,7 @@ public class GMapActivity extends NavDrawer implements
         }
     }
 
-    /*
+    /**
      * Called by Location Services if the connection to the location client drops
      * because of an error.
      */
@@ -904,7 +882,7 @@ public class GMapActivity extends NavDrawer implements
         Log.d(LocationUtils.APPTAG, getString(R.string.disconnected));
     }
 
-    /*
+    /**
      * Called by Location Services if the attempt to
      * Location Services fails.
      */
@@ -1215,7 +1193,7 @@ public class GMapActivity extends NavDrawer implements
             // dismiss the dialog after getting all products
             //pDialog.dismiss();
             wildlifeDB.close();
-            getLocalSightings();
+/*            getLocalSightings();*/
             setProgressBarIndeterminateVisibility(false);
         }
     }

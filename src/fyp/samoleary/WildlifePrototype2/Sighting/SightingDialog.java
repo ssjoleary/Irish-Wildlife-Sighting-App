@@ -89,6 +89,8 @@ public class SightingDialog extends Activity {
             //webView.getSettings().setUseWideViewPort(true);
             webView.setWebViewClient(new DisPlayWebPageActivityClient());
             webView.loadUrl("http://i.imgur.com/" + imgUri + ".jpg");
+        } else {
+            webView.setVisibility(View.GONE);
         }
 
         /*if ((imgUri.equals("default"))) {webview.setWebViewClient(new DisPlayWebPageActivityClient());

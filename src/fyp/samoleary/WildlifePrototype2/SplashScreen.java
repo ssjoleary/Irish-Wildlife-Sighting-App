@@ -38,6 +38,14 @@ public class SplashScreen extends Activity{
         setContentView(R.layout.activity_splash);
         pDialog = new ProgressDialog(this);
         wildlifeDB = new WildlifeDB(this);
+
+        pDialog.setIndeterminate(false);
+        pDialog.setCancelable(false);
+        pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        pDialog.setMessage("Checking for recent sightings");
+        pDialog.show();
+
+
         new HttpHandler() {
             @Override
             public HttpUriRequest getHttpRequestMethod() {
@@ -50,10 +58,12 @@ public class SplashScreen extends Activity{
             }
         }.execute();
 
-        new RssSightingAsyncTask().execute(getString(R.string.rssfeed_sightings));
+        /*new RssSightingAsyncTask().execute(getString(R.string.rssfeed_sightings));*/
     }
 
     private void getLatestJSONSighting(String result) {
+        wildlifeDB.open();
+        //wildlifeDB.dropTableRssSighting();
 
         JSONArray json;
         try {
@@ -87,6 +97,12 @@ public class SplashScreen extends Activity{
             e.printStackTrace();
         }
 
+        pDialog.dismiss();
+        wildlifeDB.close();
+        Intent i = new Intent(SplashScreen.this, SpeciesGuide.class);
+
+        startActivity(i);
+        finish();
     }
 
     private class RssSightingAsyncTask extends AsyncTask<String, Void, String> {

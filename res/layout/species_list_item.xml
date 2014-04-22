@@ -3,7 +3,7 @@
               android:id="@+id/linearLayout" android:clickable="false" android:padding="15dp"
               xmlns:android="http://schemas.android.com/apk/res/android">
     <ImageView android:layout_width="match_parent" android:layout_height="wrap_content" android:id="@+id/species_Img"
-               android:src="@drawable/whale" android:adjustViewBounds="true" android:layout_weight="1"
+               android:src="@drawable/belugawhale" android:adjustViewBounds="true" android:layout_weight="1"
                android:clickable="false" android:contentDescription="@string/content_description_species_item_image"/>
 
     <LinearLayout android:orientation="vertical" android:layout_width="wrap_content" android:layout_height="wrap_content"
