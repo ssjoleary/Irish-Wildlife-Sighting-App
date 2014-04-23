@@ -1,5 +1,4 @@
-package fyp.samoleary.WildlifePrototype2;
-import android.app.Activity;
+package fyp.samoleary.WildlifePrototype2.Imgur;
 import android.content.ContentResolver;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -7,7 +6,7 @@ import android.util.Log;
 
 //import com.imgur.api3example.login.ImgurAuthorization;
 
-import org.json.JSONObject;
+import fyp.samoleary.WildlifePrototype2.LocationUtils;import org.json.JSONObject;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;

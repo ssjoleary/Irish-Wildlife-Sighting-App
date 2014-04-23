@@ -12,7 +12,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
-import android.util.Log;import fyp.samoleary.WildlifePrototype2.R;
+import android.util.Log;import fyp.samoleary.WildlifePrototype2.Database.WildlifeDB;import fyp.samoleary.WildlifePrototype2.R;
 
 import java.util.List;
 
@@ -95,7 +95,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
                                 transitionType,
                                 ids));
                 Log.d(GeofenceUtils.APPTAG,
-                        getString(R.string.enter_hotspot_msg));
+                        getString(R.string.hotspot_notification));
 
             // An invalid transition was reported
             } else {
@@ -113,6 +113,14 @@ public class ReceiveTransitionsIntentService extends IntentService {
      *
      */
     private void sendNotification(String transitionType, String ids) {
+        WildlifeDB wildlifeDB = new WildlifeDB(this);
+        wildlifeDB.open();
+        String[] speciesArray = TextUtils.split(ids, (String) GeofenceUtils.GEOFENCE_ID_DELIMITER);
+        String species = wildlifeDB.getSpecies(speciesArray[0]);
+        //String species = wildlifeDB.getSpecies(ids);
+        wildlifeDB.close();
+
+
         // Create an explicit content Intent that starts the main Activity
         Intent notificationIntent =
                 new Intent(getApplicationContext(),WildlifeGeofence.class);
@@ -138,7 +146,7 @@ public class ReceiveTransitionsIntentService extends IntentService {
                .setContentTitle(
                        getString(R.string.enter_hotspot_title,
                                transitionType, ids))
-               .setContentText(getString(R.string.enter_hotspot_msg))
+               .setContentText(species)//getString(R.string.enter_hotspot_msg))
                .setContentIntent(notificationPendingIntent);
 
         // Get an instance of the Notification manager

@@ -3,10 +3,14 @@ package fyp.samoleary.WildlifePrototype2;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import com.facebook.*;
+import com.facebook.model.GraphUser;
 import fyp.samoleary.WildlifePrototype2.Database.Constants;import fyp.samoleary.WildlifePrototype2.Database.WildlifeDB;
 import fyp.samoleary.WildlifePrototype2.GMap.HttpHandler;
 import fyp.samoleary.WildlifePrototype2.RSSFeed.RSSItem;
@@ -36,6 +40,7 @@ public class SplashScreen extends Activity{
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+
         pDialog = new ProgressDialog(this);
         wildlifeDB = new WildlifeDB(this);
 
@@ -44,8 +49,6 @@ public class SplashScreen extends Activity{
         pDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
         pDialog.setMessage("Checking for recent sightings");
         pDialog.show();
-
-
         new HttpHandler() {
             @Override
             public HttpUriRequest getHttpRequestMethod() {
@@ -57,6 +60,7 @@ public class SplashScreen extends Activity{
                 getLatestJSONSighting(result);
             }
         }.execute();
+
 
         /*new RssSightingAsyncTask().execute(getString(R.string.rssfeed_sightings));*/
     }
@@ -99,8 +103,8 @@ public class SplashScreen extends Activity{
 
         pDialog.dismiss();
         wildlifeDB.close();
-        Intent i = new Intent(SplashScreen.this, SpeciesGuide.class);
 
+        Intent i = new Intent(SplashScreen.this, SpeciesGuide.class);
         startActivity(i);
         finish();
     }

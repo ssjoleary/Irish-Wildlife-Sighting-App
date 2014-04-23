@@ -17,8 +17,8 @@
     <string name="dialog_chosen_location">A Location I\'ll Choose</string>
 
     <!-- Geofence Messages -->
-    <string name="enter_hotspot_title">You\'ve entered a Wildlife Hotspot!</string>
-    <string name="enter_hotspot_msg">Well done I guess...</string>
+    <string name="enter_hotspot_title">Hotspot Alert!</string>
+    <string name="hotspot_notification">Hotspot Notifications</string>
     <string name="dialog_hotspot_hotspot_selected">Create a Hotspot at...</string>
     <string name="add_geofences_result_success">
         Add Geofences: Success GeofenceRequestIds=%1$s
@@ -257,5 +257,11 @@
     <string name="joke_four">What do you call a baby whale?\n\nA little squirt!</string>
     <string name="joke_error">Ensure your connected to the internet to get the latest news!\n\nBut while you\'re here...</string>
     <string name="background_image">Whale 9-patch Image</string>
+
+    <!-- Facebook -->
+    <string name="login">Login</string>
+    <string name="logout">Log out of Facebook</string>
+    <string name="app_id">454897031307019</string>
+    <string name="fb_submit">Post Sighting To Facebook</string>
 
 </resources>

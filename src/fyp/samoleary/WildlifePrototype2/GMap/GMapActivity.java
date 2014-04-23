@@ -99,7 +99,7 @@ public class GMapActivity extends NavDrawer implements
     // Handle to a SharedPreferences editor
     SharedPreferences.Editor mEditor;
 
-    /*
+    /**
      * Note if updates have been turned on. Starts out as "false"; is ser to "true" in the
      * method handleRequestSuccess of LocationUpdateReceiver
      *
@@ -520,6 +520,7 @@ public class GMapActivity extends NavDrawer implements
                 return false;
             }
         });
+        googleMap.getUiSettings().setZoomControlsEnabled(false);
     }
 
     private void gotoDisplaySightingDialog(Sighting sighting) {

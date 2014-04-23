@@ -9,12 +9,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
-import fyp.samoleary.WildlifePrototype2.GMap.GMapActivity;
+import fyp.samoleary.WildlifePrototype2.FaceBook.LoginFacebookAct;
 import fyp.samoleary.WildlifePrototype2.WildlifeGeofencePkg.WildlifeGeofence;
 import fyp.samoleary.WildlifePrototype2.NavDrawer.NavDrawer;
-import fyp.samoleary.WildlifePrototype2.Profile;
 import fyp.samoleary.WildlifePrototype2.R;
-import fyp.samoleary.WildlifePrototype2.RSSFeed.NewsFeedActivity;
 
 /**
  * Created by ssjoleary on 17/03/2014

@@ -73,7 +73,7 @@ public class WildlifeDB {
     }
 
     public Cursor getHotspotBySpecies(String species) {
-        return db.rawQuery("SELECT * FROM "+Constants.TABLE_NAME_HOTSPOTS +" WHERE " + Constants.HOTSPOTS_SPECIES +"="+species, null);
+        return db.rawQuery("SELECT * FROM "+Constants.TABLE_NAME_HOTSPOTS +" WHERE " + Constants.HOTSPOTS_SPECIES +"="+"\""+species+"\"", null);
     }
 
     /**
@@ -144,11 +144,7 @@ public class WildlifeDB {
     public void dropTable(String tableName) {
         db.execSQL("DROP TABLE IF EXISTS " + tableName);
         dbHelper.onCreate(db);
-    }
-
-    public void dropTableRssSighting() {
-        db.execSQL("DROP TABLE IF EXISTS " + Constants.TABLE_NAME_RSS_SIGHTING);
-        dbHelper.onCreate(db);
         Log.d(LocationUtils.APPTAG, "Table Dropped");
     }
 }
+

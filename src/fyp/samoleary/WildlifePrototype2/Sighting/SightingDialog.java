@@ -53,14 +53,15 @@ public class SightingDialog extends Activity {
         TextView lng = (TextView) findViewById(R.id.sighting_lng);
         TextView observer = (TextView) findViewById(R.id.sighting_observer);
         WebView webView = (WebView) findViewById(R.id.webView);
-        Button okBtn = (Button) findViewById(R.id.sighting_btn);
 
+        Button okBtn = (Button) findViewById(R.id.sighting_btn);
         okBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
             }
         });
+        okBtn.setVisibility(View.GONE);
 
         Intent i = getIntent();
         Sighting sighting = (Sighting) i.getSerializableExtra(SIGHTING);

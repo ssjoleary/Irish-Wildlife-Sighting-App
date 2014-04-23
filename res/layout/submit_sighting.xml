@@ -98,26 +98,48 @@
                         android:layout_height="wrap_content"
                         android:id="@+id/submit_form_spinner_county" android:layout_weight="1"/>
             </LinearLayout>
-            <LinearLayout
+            <RelativeLayout
                     android:orientation="horizontal"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent">
+                <com.facebook.widget.LoginButton
+                        android:id="@+id/loginButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="30dp"
+                        android:layout_gravity="center"
+                        android:layout_alignParentTop="true"
+                        android:layout_toLeftOf="@+id/submit_form_btn"
+                        />
+                <Button
+                        android:id="@+id/fbSubmitButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="30dp"
+                        android:layout_gravity="center"
+                        android:layout_alignParentTop="true"
+                        android:layout_toLeftOf="@+id/submit_form_btn"
+                        android:text="@string/fb_submit"/>
                 <Button
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/submit_form_btn"
-                        android:id="@+id/submit_form_btn" android:layout_gravity="center" android:layout_weight="1"/>
+                        android:layout_marginTop="30dp"
+                        android:id="@+id/submit_form_btn" android:layout_gravity="center"
+                        android:layout_alignParentTop="true" android:layout_centerHorizontal="true"/>
                 <Button
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@string/submit_form_inclphoto"
-                        android:id="@+id/submit_form_inclphoto" android:layout_gravity="center" android:layout_weight="1"/>
-            </LinearLayout>
+                        android:layout_marginTop="30dp"
+                        android:id="@+id/submit_form_inclphoto" android:layout_gravity="center"
+                        android:layout_alignParentTop="true" android:layout_toRightOf="@+id/submit_form_btn"/>
+            </RelativeLayout>
             <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:id="@+id/imageView"
-                    android:adjustViewBounds="true"/>
+                    android:adjustViewBounds="true" android:layout_margin="30dp"/>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

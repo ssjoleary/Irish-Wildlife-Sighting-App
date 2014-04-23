@@ -20,20 +20,29 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.util.Log;
-import android.view.View;
+import android.util.Log;import android.view.MenuItem;import android.view.View;
 import android.view.Window;
 import android.widget.*;
+import com.facebook.Request;
+import com.facebook.Response;
+import com.facebook.Session;
+import com.facebook.model.GraphUser;
 import fyp.samoleary.WildlifePrototype2.GMap.GMapActivity;import fyp.samoleary.WildlifePrototype2.GetConnectivityStatus;
 import fyp.samoleary.WildlifePrototype2.LocationUtils;
 import fyp.samoleary.WildlifePrototype2.Profile;
 import fyp.samoleary.WildlifePrototype2.R;import fyp.samoleary.WildlifePrototype2.RSSFeed.NewsFeedActivity;import fyp.samoleary.WildlifePrototype2.SpeciesGuide.SpeciesGuide;import fyp.samoleary.WildlifePrototype2.WildlifeGeofencePkg.WildlifeGeofence;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -48,6 +57,10 @@ import java.util.List;
  * Description:
  */
 public class NavDrawer extends FragmentActivity {
+    private Session session;
+    private String user_ID;
+    private String profileName;
+
     protected DrawerLayout fullLayout;
     protected FrameLayout actContent;
 
@@ -65,6 +78,7 @@ public class NavDrawer extends FragmentActivity {
     private String app_ver;
 
     private TextView imgText;
+    private ImageView imageView;
 
     private GetConnectivityStatus isConnected;
 
@@ -87,6 +101,8 @@ public class NavDrawer extends FragmentActivity {
         if (savedInstanceState == null) {
             selectItem(-1, -1);
         }
+        Log.d(LocationUtils.APPTAG, "onCreate");
+
     }
 
     @Override
@@ -96,8 +112,6 @@ public class NavDrawer extends FragmentActivity {
         actContent = (FrameLayout) fullLayout.findViewById(R.id.content_frame);
         getLayoutInflater().inflate(layoutResID, actContent, true);
         super.setContentView(fullLayout);
-
-
 
         mTitle = mDrawerTitle = getTitle();
 
@@ -163,12 +177,11 @@ public class NavDrawer extends FragmentActivity {
 
             public void onDrawerOpened(View drawerView) {
                 getActionBar().setTitle(mDrawerTitle);
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
                 imgText = (TextView) findViewById(R.id.myImageViewText);
                 SharedPreferences settings = getSharedPreferences(LocationUtils.SHARED_PREFERENCES, 0);
                 String name = settings.getString("name", "Click to set up Profile");
                 imgText.setText(name);
-                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-
                 setUpNavDrawer();
             }
         };
@@ -182,6 +195,12 @@ public class NavDrawer extends FragmentActivity {
 
         // Setting List Adapter
         mDrawerList.setAdapter(listAdapter);
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // The action bar home/up action should open or close the drawer.
+        // ActionBarDrawerToggle will take care of this.
+        return mDrawerToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
     }
 
     public void selectGroup(int groupPosition) {
@@ -216,6 +235,7 @@ public class NavDrawer extends FragmentActivity {
         hotspots.add("View Hotspots");
         hotspots.add("Create a Hotspot");
         hotspots.add("Search Hotspots");
+
 
         listDataChild.put(listDataHeader.get(0), species);
         listDataChild.put(listDataHeader.get(1), iwdgData);
@@ -258,6 +278,7 @@ public class NavDrawer extends FragmentActivity {
         hotspots.add("View Hotspots");
         hotspots.add("Create a Hotspot");
         hotspots.add("Search Hotspots");
+
 
         listDataChild.put(listDataHeader.get(0), species);
         listDataChild.put(listDataHeader.get(1), iwdgData);
@@ -335,5 +356,69 @@ public class NavDrawer extends FragmentActivity {
     protected void gotoProfile() {
         Intent i = new Intent(this, Profile.class);
         startActivity(i);
+    }
+
+    private boolean isLoggedIn() {
+        session = Session.getActiveSession();
+        if (session != null && session.isOpened()) {
+            Request request = Request.newMeRequest(session, new Request.GraphUserCallback() {
+                @Override
+                public void onCompleted(GraphUser user, Response response) {
+                    // If the response is successful
+                    if (session == Session.getActiveSession()) {
+                        if (user != null) {
+                            user_ID = user.getId();//user id
+                            profileName = user.getName();//user's profile name
+                        }
+                    }
+                }
+            });
+            Request.executeBatchAsync(request);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private void setProfilePic() {
+        new AsyncTask<Void, Void, Bitmap>()
+        {
+            @Override
+            protected Bitmap doInBackground(Void... params)
+            {
+                // safety check
+                if (user_ID == null)
+                    return null;
+
+                String url = String.format(
+                        "https://graph.facebook.com/%s/picture",
+                        user_ID);
+
+                // you'll need to wrap the two method calls
+                // which follow in try-catch-finally blocks
+                // and remember to close your input stream
+
+                InputStream inputStream = null;
+                try {
+                    inputStream = new URL(url).openStream();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+
+                return bitmap;
+            }
+
+            @Override
+            protected void onPostExecute(Bitmap bitmap)
+            {
+                // safety check
+                if (bitmap != null
+                        && !isChangingConfigurations()
+                        && !isFinishing()) {
+                    imageView.setImageBitmap(bitmap);
+                }
+            }
+        }.execute();
     }
 }

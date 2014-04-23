@@ -7,20 +7,26 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.*;
+import com.facebook.*;
+import com.facebook.model.GraphUser;
+import com.facebook.widget.LoginButton;
 import com.google.android.gms.maps.model.LatLng;
 import fyp.samoleary.WildlifePrototype2.Database.WildlifeDB;
 import fyp.samoleary.WildlifePrototype2.GMap.GMapActivity;
 import fyp.samoleary.WildlifePrototype2.GMap.HttpHandler;
 import fyp.samoleary.WildlifePrototype2.GetConnectivityStatus;
-import fyp.samoleary.WildlifePrototype2.ImgurUploadTask;
+import fyp.samoleary.WildlifePrototype2.Imgur.ImgurUploadTask;
 import fyp.samoleary.WildlifePrototype2.LocationUtils;
 import fyp.samoleary.WildlifePrototype2.R;
 import org.apache.http.HttpResponse;
@@ -36,10 +42,7 @@ import org.json.JSONObject;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Author: Sam O'Leary
@@ -52,6 +55,23 @@ import java.util.List;
  * Description:
  */
 public class SubmitActivity extends Activity {
+    private static final List<String> PERMISSIONS = Arrays.asList("publish_actions");
+    private static final String PENDING_PUBLISH_KEY = "pendingPublishReauthorization";
+    private boolean pendingPublishReauthorization = false;
+    private static final String TAG = "MainFragment";
+    private Session.StatusCallback callback = new Session.StatusCallback() {
+        @Override
+        public void call(Session session, SessionState state, Exception exception) {
+            onSessionStateChange(session, state, exception);
+        }
+    };
+
+    private UiLifecycleHelper uiHelper;
+    private Session session;
+    private String user_ID;
+    private String profileName;
+    private LoginButton authButton;
+    private Button fbSubmitBtn;
 
     private Spinner speciesSpinner;
     private Spinner countySpinner;
@@ -91,6 +111,7 @@ public class SubmitActivity extends Activity {
     private String mImgurUrl;
 
     private GetConnectivityStatus isConnected;
+    private boolean publish;
 
     protected void onCreate(Bundle savedBundleInstance) {
         super.onCreate(savedBundleInstance);
@@ -98,6 +119,51 @@ public class SubmitActivity extends Activity {
 
         SubmitActivity.context = getApplicationContext();
         isConnected = new GetConnectivityStatus();
+
+        uiHelper = new UiLifecycleHelper(this, callback);
+        uiHelper.onCreate(savedBundleInstance);
+        authButton = (LoginButton) findViewById(R.id.loginButton);
+        fbSubmitBtn = (Button) findViewById(R.id.fbSubmitButton);
+        styleButton(fbSubmitBtn);
+        authButton.setVisibility(View.GONE);
+        fbSubmitBtn.setVisibility(View.GONE);
+        if(isConnected.isConnected(context)){
+            if (isLoggedIn()) {
+                authButton.setVisibility(View.GONE);
+                fbSubmitBtn.setVisibility(View.VISIBLE);
+            } else {
+                authButton.setVisibility(View.VISIBLE);
+                fbSubmitBtn.setVisibility(View.GONE);
+            }
+        }
+        publish = false;
+        fbSubmitBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(location_view.getText().toString().equals("") || animals_view.getText().toString().equals("")) {
+                    Toast.makeText(getBaseContext(), "Please fill in all fields", Toast.LENGTH_LONG).show();
+                } else if(isConnected.isConnected(context)) {
+                    if(nextID != -1) {
+                        Log.d(LocationUtils.APPTAG, "SubmitActivity: onClick: success");
+                        if (mImageUri != null && mImgurUrl == null) {
+                            Log.d(LocationUtils.APPTAG, "SubmitActivity: onClick: we're in");
+                            publish = true;
+                            new MyImgurUploadTask(Uri.parse(mImageUri)).execute();
+                        } else {
+                            publishStory();
+                            submitSighting();
+                        }
+                        submit_btn.setText("Loading...");
+                        fbSubmitBtn.setText("Loading...");
+                        submit_btn.setEnabled(false);
+                        fbSubmitBtn.setEnabled(false);
+                    }
+                } else {
+                    Log.d(LocationUtils.APPTAG, "SubmitActivity: onClick: failure: nextID: " + nextID);
+                    Toast.makeText(getBaseContext(), "Cannot report a sighting at this time! Check Connectivity.", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
 
         List<String> speciesList = new ArrayList<String>(Arrays.asList(getResources().getStringArray(R.array.species_array)));
         List<String> countiesList = new ArrayList<String>(Arrays.asList(getResources().getStringArray(R.array.counties_array)));
@@ -198,6 +264,15 @@ public class SubmitActivity extends Activity {
         mPrefs = getSharedPreferences(LocationUtils.SHARED_PREFERENCES, Context.MODE_PRIVATE);
         // Get an editor
         mEditor = mPrefs.edit();
+    }
+
+    private void styleButton(Button button) {
+        button.setTextColor(getResources().getColor(com.facebook.android.R.color.com_facebook_loginview_text_color));
+        button.setTypeface(Typeface.DEFAULT_BOLD);
+        button.setGravity(Gravity.CENTER);
+        button.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                getResources().getDimension(com.facebook.android.R.dimen.com_facebook_loginview_text_size));
+        button.setBackgroundColor(getResources().getColor(com.facebook.android.R.color.com_facebook_blue));
     }
 
     @Override
@@ -497,6 +572,7 @@ public class SubmitActivity extends Activity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
                 if (data != null) {
@@ -522,18 +598,8 @@ public class SubmitActivity extends Activity {
                 // Image capture failed, advise user
                 Toast.makeText(SubmitActivity.this, "Failed Image Capture", Toast.LENGTH_SHORT).show();
             }
-        }
-
-        if (requestCode == CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
-                // Video captured and saved to fileUri specified in the Intent
-                Toast.makeText(this, "Video saved to:\n" +
-                        data.getData(), Toast.LENGTH_LONG).show();
-            } else if (resultCode == RESULT_CANCELED) {
-                // User cancelled the video capture
-            } else {
-                // Video capture failed, advise user
-            }
+        } else {
+            uiHelper.onActivityResult(requestCode, resultCode, data);
         }
     }
 
@@ -583,28 +649,158 @@ public class SubmitActivity extends Activity {
                 }*/
             }
             submitSighting();
+            if (publish){
+                publish = false;
+                publishStory();
+            }
             /*if (isVisible())
                 getView().findViewById(R.id.choose_image_button).setEnabled(true);*/
         }
     }
 
-    /**public void generateNoteOnSD(String sFileName, String sBody){
-     try
-     {
-     File root = new File(Environment.getExternalStorageDirectory(), "Documents");
-     if (!root.exists()) {
-     root.mkdirs();
-     }
-     File gpxfile = new File(root, sFileName);
-     FileWriter writer = new FileWriter(gpxfile);
-     writer.append(sBody);
-     writer.flush();
-     writer.close();
-     Toast.makeText(this, "Saved", Toast.LENGTH_SHORT).show();
-     }
-     catch(IOException e)
-     {
-     e.printStackTrace();
-     }
-     }*/
+    private void onSessionStateChange(Session session, SessionState state, Exception exception) {
+        if (state.isOpened()) {
+            Log.i(TAG, "Logged in...");
+            authButton.setVisibility(View.GONE);
+            fbSubmitBtn.setVisibility(View.VISIBLE);
+            /*if (pendingPublishReauthorization &&
+                    state.equals(SessionState.OPENED_TOKEN_UPDATED)) {
+                pendingPublishReauthorization = false;
+                publishStory();
+            }*/
+        } else if (state.isClosed()) {
+            Log.i(TAG, "Logged out...");
+            authButton.setVisibility(View.VISIBLE);
+            fbSubmitBtn.setVisibility(View.GONE);
+        }
+    }
+
+    private boolean isLoggedIn() {
+        session = Session.getActiveSession();
+        if (session != null && session.isOpened()) {
+            Request request = Request.newMeRequest(session, new Request.GraphUserCallback() {
+                @Override
+                public void onCompleted(GraphUser user, Response response) {
+                    // If the response is successful
+                    if (session == Session.getActiveSession()) {
+                        if (user != null) {
+                            user_ID = user.getId();//user id
+                            profileName = user.getName();//user's profile name
+                        }
+                    }
+                }
+            });
+            Request.executeBatchAsync(request);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // For scenarios where the main activity is launched and user
+        // session is not null, the session state change notification
+        // may not be triggered. Trigger it if it's open/closed.
+        Session session = Session.getActiveSession();
+        if (session != null &&
+                (session.isOpened() || session.isClosed()) ) {
+            onSessionStateChange(session, session.getState(), null);
+        }
+        uiHelper.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        uiHelper.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        uiHelper.onDestroy();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(PENDING_PUBLISH_KEY, pendingPublishReauthorization);
+
+        uiHelper.onSaveInstanceState(outState);
+    }
+
+    private void publishStory() {
+        Session session = Session.getActiveSession();
+
+        if (session != null){
+
+            // Check for publish permissions
+            List<String> permissions = session.getPermissions();
+            if (!isSubsetOf(PERMISSIONS, permissions)) {
+                pendingPublishReauthorization = true;
+                Session.NewPermissionsRequest newPermissionsRequest = new Session
+                        .NewPermissionsRequest(this, PERMISSIONS);
+                session.requestNewPublishPermissions(newPermissionsRequest);
+                return;
+            }
+
+            Sighting mySighting = createSighting();
+            String imgURL;
+            if (mySighting.getImgUrlString().equals("image")){
+                imgURL = "Brl42KH";
+                Log.d(LocationUtils.APPTAG, "Link: "+"http://i.imgur.com/" + imgURL + ".jpg");
+            } else {
+                imgURL = mySighting.getImgUrlString();
+                Log.d(LocationUtils.APPTAG, "Link: "+"http://i.imgur.com/" + imgURL + ".jpg");
+            }
+
+            Bundle postParams = new Bundle();
+            postParams.putString("name", "Irish Wildlife FYP: Sightings Scheme");
+            postParams.putString("caption", "I've spotted a "+mySighting.getSpecies()+" at "+mySighting.getLocation());
+            postParams.putString("description", "Number of Animals: " + mySighting.getAnimals());
+            postParams.putString("link", "http://i.imgur.com/" + imgURL + ".jpg");
+            postParams.putString("picture", "http://i.imgur.com/" + imgURL + ".jpg");
+
+            Request.Callback callback= new Request.Callback() {
+                public void onCompleted(Response response) {
+                    JSONObject graphResponse = response
+                            .getGraphObject()
+                            .getInnerJSONObject();
+                    String postId = null;
+                    try {
+                        postId = graphResponse.getString("id");
+                    } catch (JSONException e) {
+                        Log.i(TAG,
+                                "JSON error "+ e.getMessage());
+                    }
+                    FacebookRequestError error = response.getError();
+                    if (error != null) {
+                        Toast.makeText(getApplicationContext(),
+                                error.getErrorMessage(),
+                                Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getApplicationContext(),
+                                postId,
+                                Toast.LENGTH_LONG).show();
+                    }
+                }
+            };
+
+            Request request = new Request(session, "me/feed", postParams,
+                    HttpMethod.POST, callback);
+
+            RequestAsyncTask task = new RequestAsyncTask(request);
+            task.execute();
+        }
+    }
+    private boolean isSubsetOf(Collection<String> subset, Collection<String> superset) {
+        for (String string : subset) {
+            if (!superset.contains(string)) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

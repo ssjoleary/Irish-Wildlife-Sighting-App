@@ -1,4 +1,4 @@
-package fyp.samoleary.WildlifePrototype2;
+package fyp.samoleary.WildlifePrototype2.Imgur;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
@@ -6,7 +6,7 @@ import android.util.Log;
 
 //import com.imgur.api3example.ImgurSampleApplication;
 
-import fyp.samoleary.WildlifePrototype2.Sighting.SubmitActivity;
+import fyp.samoleary.WildlifePrototype2.LocationUtils;import fyp.samoleary.WildlifePrototype2.Sighting.SubmitActivity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.message.BasicNameValuePair;

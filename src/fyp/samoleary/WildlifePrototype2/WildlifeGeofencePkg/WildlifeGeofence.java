@@ -3,17 +3,16 @@ package fyp.samoleary.WildlifePrototype2.WildlifeGeofencePkg;
 import android.app.Activity;import android.app.AlertDialog;import android.app.Dialog;import android.content.*;import android.database.Cursor;import android.graphics.Color;
 import android.location.Location;import android.os.Bundle;
 import android.support.v4.app.DialogFragment;import android.support.v4.content.LocalBroadcastManager;import android.text.TextUtils;import android.text.format.DateUtils;import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.SeekBar;
-import android.widget.Toast;import com.google.android.gms.common.ConnectionResult;import com.google.android.gms.common.GooglePlayServicesClient;import com.google.android.gms.common.GooglePlayServicesUtil;import com.google.android.gms.location.Geofence;
+import android.view.LayoutInflater;import android.view.View;
+import android.widget.*;
+import com.google.android.gms.common.ConnectionResult;import com.google.android.gms.common.GooglePlayServicesClient;import com.google.android.gms.common.GooglePlayServicesUtil;import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.LocationClient;import com.google.android.gms.location.LocationListener;import com.google.android.gms.location.LocationRequest;import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.*;
 import fyp.samoleary.WildlifePrototype2.Database.Constants;import fyp.samoleary.WildlifePrototype2.Database.WildlifeDB;import fyp.samoleary.WildlifePrototype2.GMap.GMapActivity;import fyp.samoleary.WildlifePrototype2.LocationUtils;import fyp.samoleary.WildlifePrototype2.NavDrawer.NavDrawer;import fyp.samoleary.WildlifePrototype2.R;
 
-import java.util.ArrayList;import java.util.Collections;import java.util.HashMap;import java.util.List;
+import java.util.*;
 
 public class WildlifeGeofence extends NavDrawer implements
         GoogleMap.OnMapLongClickListener,
@@ -77,6 +76,7 @@ public class WildlifeGeofence extends NavDrawer implements
     private GoogleMap googleMap;
     private SeekBar seekBar;
     private Button submitBtn;
+    private Button cancelBtn;
     private HashMap<String, Marker> geofenceMkr;
     private HashMap<String, Circle> geofenceCircles;
     private HashMap<String, String> markerIDs;
@@ -152,7 +152,17 @@ public class WildlifeGeofence extends NavDrawer implements
         submitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                onRegisterClicked(v);
+                onRegisterClicked();
+            }
+        });
+
+        cancelBtn = (Button) findViewById(R.id.cancelBtn);
+        cancelBtn.setVisibility(View.GONE);
+        cancelBtn.setText("Cancel");
+        cancelBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cancelHotspot();
             }
         });
 
@@ -188,9 +198,49 @@ public class WildlifeGeofence extends NavDrawer implements
         if (i.getIntExtra("groupPosition", 999) != 999){
             selectItem(i.getIntExtra("groupPosition", 999), i.getIntExtra("childPosition", 999));
         }
+
+        Integer checked = i.getIntExtra("isNotificationChecked", -1);
+        if (checked == 0) {
+            Toast.makeText(this, "Hotspot Notifications turned off!", Toast.LENGTH_LONG).show();
+            onUnregisterByPendingIntentClicked();
+        } else if (checked == 1){
+            Toast.makeText(this, "Hotspot Notifications turned on!", Toast.LENGTH_LONG).show();
+            reregisterGeofences();
+        }
     }
 
-    /*
+    private void reregisterGeofences() {
+        mCurrentGeofences.clear();
+        wildlifeDB.open();
+        Cursor cursor = wildlifeDB.getInfoHotspots();
+        stopManagingCursor(cursor);
+        if(cursor.moveToFirst()) {
+            do {
+                SimpleGeofence myGeofence = new SimpleGeofence(
+                        String.valueOf(cursor.getInt(cursor.getColumnIndex(Constants.HOTSPOTS_ID))),
+                        cursor.getDouble(cursor.getColumnIndex(Constants.HOTSPOTS_LAT)),
+                        cursor.getDouble(cursor.getColumnIndex(Constants.HOTSPOTS_LNG)),
+                        (float) cursor.getDouble(cursor.getColumnIndex(Constants.HOTSPOTS_RADIUS)),
+                        GEOFENCE_EXPIRATION_IN_MILLISECONDS,
+                        Geofence.GEOFENCE_TRANSITION_ENTER
+                );
+                mCurrentGeofences.add(myGeofence.toGeofence());
+            } while(cursor.moveToNext());
+        }
+        wildlifeDB.close();
+        stopManagingCursor(cursor);
+        try {
+            // Try to add geofences
+            mGeofenceRequester.addGeofences(mCurrentGeofences);
+        } catch (UnsupportedOperationException e) {
+            // Notify user that previous request hasn't finished.
+            Toast.makeText(this, R.string.add_geofences_already_requested_error,
+                    Toast.LENGTH_LONG).show();
+        }
+        setProgressBarIndeterminateVisibility(false);
+    }
+
+    /**
     * Handle results returned to this Activity by other Activities started with
     * startActivityForResult(). In particular, the method onConnectionFailed() in
     * GeofenceRemover and GeofenceRequester may call startResolutionForResult() to
@@ -258,7 +308,7 @@ public class WildlifeGeofence extends NavDrawer implements
         }
     }
 
-    /*
+    /**
      * Whenever the Activity resumes, reconnect the client to Location
      * Services and reload the last geofences that were set
      */
@@ -283,7 +333,7 @@ public class WildlifeGeofence extends NavDrawer implements
         }*/
     }
 
-    /*
+    /**
      * Save the current geofence settings in SharedPreferences.
      */
     @Override
@@ -329,9 +379,8 @@ public class WildlifeGeofence extends NavDrawer implements
     /**
      * Called when the user clicks the "Remove geofences" button
      *
-     * @param view The view that triggered this callback
      */
-    public void onUnregisterByPendingIntentClicked(View view) {
+    public void onUnregisterByPendingIntentClicked() {
         /*
          * Remove all geofences set by this app. To do this, get the
          * PendingIntent that was added when the geofences were added
@@ -379,9 +428,8 @@ public class WildlifeGeofence extends NavDrawer implements
 
     /**
      * Called when the user clicks the "Remove geofence 1" button
-     * @param view The view that triggered this callback
      */
-    public void onUnregisterGeofence1Clicked(View view) {
+    public void onUnregisterGeofenceClicked() {
         /*
          * Remove the geofence by creating a List of geofences to
          * remove and sending it to Location Services. The List
@@ -434,7 +482,7 @@ public class WildlifeGeofence extends NavDrawer implements
      * Location Services detects a geofence transition. Send the List
      * and the PendingIntent to Location Services.
      */
-    public void onRegisterClicked(View view) {
+    public void onRegisterClicked() {
 
         /*
          * Record the request as an ADD. If a connection error occurs,
@@ -502,19 +550,12 @@ public class WildlifeGeofence extends NavDrawer implements
 
         submitBtn.setVisibility(View.INVISIBLE);
         seekBar.setVisibility(View.INVISIBLE);
+        cancelBtn.setVisibility(View.INVISIBLE);
+        wildlifeDB.close();
 
-        // Start the request. Fail if there's already a request in progress
-        try {
-            wildlifeDB.insertInfoHotspots(myGeofence, "Blue Whale");
-            wildlifeDB.close();
-
-            // Try to add geofences
-            mGeofenceRequester.addGeofences(mCurrentGeofences);
-        } catch (UnsupportedOperationException e) {
-            // Notify user that previous request hasn't finished.
-            Toast.makeText(this, R.string.add_geofences_already_requested_error,
-                    Toast.LENGTH_LONG).show();
-        }
+        PickHotspotSpeciesDialog pickHotspotSpeciesDialog = PickHotspotSpeciesDialog.newInstance(
+                R.string.enter_hotspot_title);
+        pickHotspotSpeciesDialog.show(getSupportFragmentManager(), "dialog");
     }
 
     @Override
@@ -723,23 +764,25 @@ public class WildlifeGeofence extends NavDrawer implements
         googleMap.setMyLocationEnabled(true);
 
         googleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-        @Override
-        public boolean onMarkerClick(Marker marker) {
-            String id = markerIDs.get(marker.getId());
-            wildlifeDB.open();
-            String species = wildlifeDB.getSpecies(id);
-            wildlifeDB.close();
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                String id = markerIDs.get(marker.getId());
+                wildlifeDB.open();
+                String species = wildlifeDB.getSpecies(id);
+                wildlifeDB.close();
 
-            marker.setTitle(species + " Hotspot");
-            marker.showInfoWindow();
-            return true;
-        }
+                marker.setTitle(species + " Hotspot");
+                marker.setSnippet("Tap to Edit");
+                marker.showInfoWindow();
+                return true;
+            }
         });
 
         googleMap.setOnInfoWindowClickListener(new GoogleMap.OnInfoWindowClickListener() {
 
             @Override
             public void onInfoWindowClick(Marker marker) {
+
             }
         });
 
@@ -759,9 +802,23 @@ public class WildlifeGeofence extends NavDrawer implements
 
             }
         });
-
         googleMap.setOnMapLongClickListener(this);
+        googleMap.getUiSettings().setZoomControlsEnabled(false);
+    }
 
+    private void cancelHotspot() {
+        wildlifeDB.open();
+        int idInt = wildlifeDB.getMaxTableID(Constants.TABLE_NAME_HOTSPOTS);
+        String id = String.valueOf(idInt) + 1;
+        wildlifeDB.close();
+
+        Marker currentMkr = geofenceMkr.get(id);
+        currentMkr.remove();
+        myCircle.remove();
+
+        submitBtn.setVisibility(View.INVISIBLE);
+        seekBar.setVisibility(View.INVISIBLE);
+        cancelBtn.setVisibility(View.INVISIBLE);
     }
 
     @Override
@@ -809,6 +866,7 @@ public class WildlifeGeofence extends NavDrawer implements
 
         submitBtn.setVisibility(View.VISIBLE);
         seekBar.setVisibility(View.VISIBLE);
+        cancelBtn.setVisibility(View.VISIBLE);
         seekBar.setProgress(750);
     }
 
@@ -915,7 +973,7 @@ public class WildlifeGeofence extends NavDrawer implements
                         break;
                     case 2:
                         closeDrawer();
-                        Toast.makeText(this, "This particular functionality is on the TODO List...", Toast.LENGTH_LONG).show();
+                        searchHotspots();
                         break;
                 }
                 break;
@@ -932,6 +990,12 @@ public class WildlifeGeofence extends NavDrawer implements
             default:
                 break;
         }
+    }
+
+    private void searchHotspots() {
+        SearchHotspotsDialog searchHotspotsDialog = SearchHotspotsDialog.newInstance(
+                R.string.dialog_hotspot_hotspot_selected);
+        searchHotspotsDialog.show(getSupportFragmentManager(), "dialog");
     }
 
     private void createHotspotDialog() {
@@ -1039,7 +1103,7 @@ public class WildlifeGeofence extends NavDrawer implements
         super.onStop();
     }
 
-    /*
+    /**
      * Called when the Activity is restarted, even before it becomes visible.
      */
     @Override
@@ -1078,6 +1142,177 @@ public class WildlifeGeofence extends NavDrawer implements
         mLocationClient.removeLocationUpdates((LocationListener) this);
         //Toast.makeText(this, R.string.location_updates_stopped, Toast.LENGTH_SHORT).show();
         Log.d(LocationUtils.APPTAG, getString(R.string.location_updates_stopped));
+    }
+
+    public static class PickHotspotSpeciesDialog extends DialogFragment {
+
+        public static PickHotspotSpeciesDialog newInstance(int title) {
+            PickHotspotSpeciesDialog frag = new PickHotspotSpeciesDialog();
+            Bundle args = new Bundle();
+            args.putInt("title", title);
+            frag.setArguments(args);
+            return frag;
+        }
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            int title = getArguments().getInt("title");
+            List<String> speciesList = new ArrayList<String>(Arrays.asList(getResources().getStringArray(R.array.species_array)));
+            speciesList.remove(0);
+
+            // Use the Builder class for convenient dialog construction
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            LayoutInflater inflater = getActivity().getLayoutInflater();
+
+            View view = inflater.inflate(R.layout.create_hotspot_dialog, null);
+            final Spinner spinner = (Spinner) view.findViewById(R.id.hotspot_form_spinner_species);
+            ArrayAdapter<String> adapter = new  ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, speciesList);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinner.setAdapter(adapter);
+
+            builder.setView(view)
+                    .setTitle(title)
+                    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int id) {
+                            ((WildlifeGeofence) getActivity()).doCreateHotspotSpecies(spinner.getSelectedItem().toString());
+                        }
+                    })
+                    .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            ((WildlifeGeofence) getActivity()).doCancelReportClick();
+                        }
+                    });
+
+            // Create the AlertDialog object and return it
+            return builder.create();
+        }
+    }
+
+    private void doCreateHotspotSpecies(String s) {
+        wildlifeDB.open();
+        int idInt = wildlifeDB.getMaxTableID(Constants.TABLE_NAME_HOTSPOTS);
+        String id = String.valueOf(idInt) + 1;
+        SimpleGeofence myGeofence = mPrefs.getGeofence(id);
+
+        // Start the request. Fail if there's already a request in progress
+        try {
+            wildlifeDB.insertInfoHotspots(myGeofence, s);
+            wildlifeDB.close();
+
+            // Try to add geofences
+            mGeofenceRequester.addGeofences(mCurrentGeofences);
+            googleMap.clear();
+            getLocalHotspots();
+        } catch (UnsupportedOperationException e) {
+            // Notify user that previous request hasn't finished.
+            Toast.makeText(this, R.string.add_geofences_already_requested_error,
+                    Toast.LENGTH_LONG).show();
+        }
+    }
+
+    public static class SearchHotspotsDialog extends DialogFragment {
+
+        public static SearchHotspotsDialog newInstance(int title) {
+            SearchHotspotsDialog frag = new SearchHotspotsDialog();
+            Bundle args = new Bundle();
+            args.putInt("title", title);
+            frag.setArguments(args);
+            return frag;
+        }
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            int title = getArguments().getInt("title");
+            List<String> speciesList = new ArrayList<String>(Arrays.asList(getResources().getStringArray(R.array.species_array)));
+            speciesList.remove(0);
+
+            // Use the Builder class for convenient dialog construction
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            LayoutInflater inflater = getActivity().getLayoutInflater();
+
+            View view = inflater.inflate(R.layout.create_hotspot_dialog, null);
+            final Spinner spinner = (Spinner) view.findViewById(R.id.hotspot_form_spinner_species);
+            ArrayAdapter<String> adapter = new  ArrayAdapter<String>(getActivity(), android.R.layout.simple_spinner_item, speciesList);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            spinner.setAdapter(adapter);
+
+            builder.setView(view)
+                    .setTitle(title)
+                    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int id) {
+                            ((WildlifeGeofence) getActivity()).doSearchHotspots(spinner.getSelectedItem().toString());
+                        }
+                    })
+                    .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            ((WildlifeGeofence) getActivity()).doCancelReportClick();
+                        }
+                    });
+
+            // Create the AlertDialog object and return it
+            return builder.create();
+        }
+    }
+
+    private void doSearchHotspots(String s) {
+        googleMap.clear();
+        mCurrentGeofences.clear();
+
+        wildlifeDB.open();
+        //wildlifeDB.dropTable(Constants.TABLE_NAME_HOTSPOTS);
+
+        Cursor cursor = wildlifeDB.getHotspotBySpecies(s);
+        stopManagingCursor(cursor);
+        if(cursor.moveToFirst()) {
+            do {
+                SimpleGeofence myGeofence = new SimpleGeofence(
+                        String.valueOf(cursor.getInt(cursor.getColumnIndex(Constants.HOTSPOTS_ID))),
+                        cursor.getDouble(cursor.getColumnIndex(Constants.HOTSPOTS_LAT)),
+                        cursor.getDouble(cursor.getColumnIndex(Constants.HOTSPOTS_LNG)),
+                        (float) cursor.getDouble(cursor.getColumnIndex(Constants.HOTSPOTS_RADIUS)),
+                        GEOFENCE_EXPIRATION_IN_MILLISECONDS,
+                        Geofence.GEOFENCE_TRANSITION_ENTER
+                );
+
+                Circle circle = googleMap.addCircle(new CircleOptions()
+                        .center(new LatLng(cursor.getDouble(cursor.getColumnIndex(Constants.HOTSPOTS_LAT)),
+                                cursor.getDouble(cursor.getColumnIndex(Constants.HOTSPOTS_LNG))))
+                        .radius(cursor.getDouble(cursor.getColumnIndex(Constants.HOTSPOTS_RADIUS)))
+                        .fillColor(Color.parseColor("#40576494"))
+                        .strokeWidth(1.5f));
+
+                Marker marker = googleMap.addMarker(new MarkerOptions()
+                        .draggable(false)
+                        .position(new LatLng(cursor.getDouble(cursor.getColumnIndex(Constants.HOTSPOTS_LAT)),
+                                cursor.getDouble(cursor.getColumnIndex(Constants.HOTSPOTS_LNG)))));
+
+                markerIDs.put(marker.getId(), String.valueOf(cursor.getInt(cursor.getColumnIndex(Constants.HOTSPOTS_ID))));
+                geofenceCircles.put(String.valueOf(cursor.getInt(cursor.getColumnIndex(Constants.HOTSPOTS_ID))), circle);
+
+                mPrefs.setGeofence(String.valueOf(cursor.getInt(cursor.getColumnIndex(Constants.HOTSPOTS_ID))), myGeofence);
+
+                mCurrentGeofences.add(myGeofence.toGeofence());
+            } while(cursor.moveToNext());
+        }
+        wildlifeDB.close();
+        stopManagingCursor(cursor);
+        setProgressBarIndeterminateVisibility(false);
+    }
+
+    @Override
+    public void selectGroup(int groupPosition) {
+        switch (groupPosition) {
+            case 0:
+                closeDrawer();
+                gotoSpeciesGuide();
+                break;
+            default:
+                break;
+        }
     }
 
 }
