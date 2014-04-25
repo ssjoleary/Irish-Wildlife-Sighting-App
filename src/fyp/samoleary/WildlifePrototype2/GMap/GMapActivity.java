@@ -182,6 +182,7 @@ public class GMapActivity extends NavDrawer implements
     }
 
     private void checkForNewSightings()  {
+        setProgressBarIndeterminateVisibility(true);
         if (isConnected.isConnected(getApplicationContext())) {
             new HttpHandler() {
                 @Override
@@ -1220,6 +1221,7 @@ public class GMapActivity extends NavDrawer implements
         JSONArray json;
         try {
             json = new JSONArray(result);
+            wildlifeDB.open();
             for (int i = 0; i < json.length(); i++) {
                 JSONObject c;
                 try {
@@ -1245,6 +1247,10 @@ public class GMapActivity extends NavDrawer implements
                     e.printStackTrace();
                 }
             }
+            wildlifeDB.close();
+            getLocalSightings();
+            setProgressBarIndeterminateVisibility(false);
+            Toast.makeText(this, "Map Refreshed", Toast.LENGTH_LONG).show();
         } catch (JSONException e) {
             e.printStackTrace();
         }
