@@ -126,7 +126,7 @@ public class WildlifeGeofence extends NavDrawer implements
         mLocationClient = new LocationClient(this, this, this);
 
         // Open Shared Preferences
-        sharedPreferences = getSharedPreferences(LocationUtils.SHARED_PREFERENCES, Context.MODE_PRIVATE);
+        sharedPreferences = getSharedPreferences(LocationUtils.SHARED_PREFERENCES, 0);
         // Get an editor
         mEditor = sharedPreferences.edit();
 
@@ -204,7 +204,6 @@ public class WildlifeGeofence extends NavDrawer implements
             Toast.makeText(this, "Hotspot Notifications turned off!", Toast.LENGTH_LONG).show();
             onUnregisterByPendingIntentClicked();
         } else if (checked == 1){
-            Toast.makeText(this, "Hotspot Notifications turned on!", Toast.LENGTH_LONG).show();
             reregisterGeofences();
         }
     }
@@ -229,25 +228,34 @@ public class WildlifeGeofence extends NavDrawer implements
         }
         wildlifeDB.close();
         stopManagingCursor(cursor);
-        try {
-            // Try to add geofences
-            mGeofenceRequester.addGeofences(mCurrentGeofences);
-        } catch (UnsupportedOperationException e) {
-            // Notify user that previous request hasn't finished.
-            Toast.makeText(this, R.string.add_geofences_already_requested_error,
-                    Toast.LENGTH_LONG).show();
+        Log.d(LocationUtils.APPTAG, "Size: " + mCurrentGeofences.size());
+        if (mCurrentGeofences.size() != 0){
+            try {
+                // Try to add geofences
+                mGeofenceRequester.addGeofences(mCurrentGeofences);
+                mEditor.putBoolean("isNotificationChecked", true);
+                Toast.makeText(this, "Hotspot Notifications turned on!", Toast.LENGTH_LONG).show();
+            } catch (UnsupportedOperationException e) {
+                // Notify user that previous request hasn't finished.
+                Toast.makeText(this, R.string.add_geofences_already_requested_error,
+                        Toast.LENGTH_LONG).show();
+            }
+            setProgressBarIndeterminateVisibility(false);
+        } else {
+            mEditor.putBoolean("isNotificationChecked", false);
+            Toast.makeText(this, "No Hotspot Notifications available to turn on", Toast.LENGTH_LONG).show();
         }
-        setProgressBarIndeterminateVisibility(false);
+        mEditor.commit();
     }
 
     /**
-    * Handle results returned to this Activity by other Activities started with
-    * startActivityForResult(). In particular, the method onConnectionFailed() in
-    * GeofenceRemover and GeofenceRequester may call startResolutionForResult() to
-    * start an Activity that handles Google Play services problems. The result of this
-    * call returns here, to onActivityResult.
-    * calls
-    */
+     * Handle results returned to this Activity by other Activities started with
+     * startActivityForResult(). In particular, the method onConnectionFailed() in
+     * GeofenceRemover and GeofenceRequester may call startResolutionForResult() to
+     * start an Activity that handles Google Play services problems. The result of this
+     * call returns here, to onActivityResult.
+     * calls
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         // Choose what to do based on the request code

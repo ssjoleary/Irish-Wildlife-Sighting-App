@@ -243,7 +243,7 @@
     <string name="profile_telephone">Telephone</string>
     <string name="profile_email">Email</string>
     <string name="profile_member">Are you a current IWDG member?</string>
-    <string name="profile_dropTable">Clear all User Sightings?</string>
+    <string name="profile_dropTable">Clear all Sightings?</string>
     <string name="rssfeed_news">
         <![CDATA[http://www.iwdg.ie/index.php?option=com_k2&view=itemlist&task=category&id=1&Itemid=93&format=feed]]></string>
     <string name="rssfeed_sightings">http://www.iwdg.ie/_customphp/iscope/rss_sightings.php</string>

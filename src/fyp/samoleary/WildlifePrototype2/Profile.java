@@ -23,6 +23,7 @@ public class Profile extends Activity {
     private WildlifeDB wildlifeDB;
     private Button dropTable;
     private Switch turnOffBtn;
+    private SharedPreferences preferences;
     private SharedPreferences.Editor editor;
 
     private LoginButton authButton;
@@ -61,12 +62,15 @@ public class Profile extends Activity {
         wildlifeDB = new WildlifeDB(this);
         wildlifeDB.open();
 
+        preferences = getSharedPreferences(LocationUtils.SHARED_PREFERENCES, 0);
+        editor = preferences.edit();
+
         // Restore Preferences
-        SharedPreferences settings = getSharedPreferences(LocationUtils.SHARED_PREFERENCES, 0);
-        String name = settings.getString("name", "Click to set up Profile");
-        String phone = settings.getString("phone", "Phone");
-        String email = settings.getString("email", "Email");
-        isMember = settings.getBoolean("isMember", false);
+
+        String name = preferences.getString("name", "Click to set up Profile");
+        String phone = preferences.getString("phone", "Phone");
+        String email = preferences.getString("email", "Email");
+        isMember = preferences.getBoolean("isMember", false);
 
         nameText = (EditText)findViewById(R.id.profile_name);
         phoneText = (EditText) findViewById(R.id.profile_telephone);
@@ -93,16 +97,15 @@ public class Profile extends Activity {
             public void onClick(View v) {
                 wildlifeDB.dropTable(Constants.TABLE_NAME_RSS_SIGHTING);
                 wildlifeDB.close();
-                Toast.makeText(Profile.this, "User Created Sightings Deleted!", Toast.LENGTH_SHORT).show();
-                dropTable.setText("User Created Sightings Deleted!");
+                Toast.makeText(Profile.this, "All Sightings Deleted!", Toast.LENGTH_SHORT).show();
+                dropTable.setText("All Sightings Deleted!");
                 dropTable.setEnabled(false);
             }
         });
 
-        SharedPreferences preferences = getSharedPreferences(LocationUtils.SHARED_PREFERENCES, 0);
-        editor = preferences.edit();
-
-        Boolean checked = preferences.getBoolean("isNotificationChecked", true);
+        Boolean checked;
+        checked = preferences.getBoolean("isNotificationChecked", true);
+        Log.d(LocationUtils.APPTAG, "Checked: " + checked);
 
         turnOffBtn = (Switch) findViewById(R.id.turnoffBtn);
         turnOffBtn.setVisibility(View.VISIBLE);
@@ -118,7 +121,6 @@ public class Profile extends Activity {
                     isCheckedInt = 0;
                 }
                 intent.putExtra("isNotificationChecked", isCheckedInt);
-                editor.putBoolean("isNotificationChecked", isChecked);
                 startActivity(intent);
                 finish();
             }
@@ -128,8 +130,7 @@ public class Profile extends Activity {
     protected void onStop(){
         super.onStop();
 
-        SharedPreferences settings = getSharedPreferences(LocationUtils.SHARED_PREFERENCES, 0);
-        editor = settings.edit();
+        editor = preferences.edit();
         String setName;
 
         if(nameText.getText().toString().trim().equals("")) {
@@ -142,8 +143,6 @@ public class Profile extends Activity {
         editor.putString("phone", phoneText.getText().toString().trim());
         editor.putString("email", emailText.getText().toString().trim());
         editor.putBoolean("isMember", isMember);
-
-        editor.putBoolean("isNotificationChecked", turnOffBtn.isChecked());
 
         editor.commit();
     }
