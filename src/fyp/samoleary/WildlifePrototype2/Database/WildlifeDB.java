@@ -72,6 +72,19 @@ public class WildlifeDB {
         return species;
     }
 
+    public Cursor searchCounty(String county){
+        return db.rawQuery("SELECT * FROM "+Constants.TABLE_NAME_RSS_SIGHTING +" WHERE "+Constants.SIGHTING_LOCATION +" like '%" + county + "%'", null);
+    }
+
+    public Cursor searchSpecies(String species){
+        return db.rawQuery("SELECT * FROM "+Constants.TABLE_NAME_RSS_SIGHTING +" WHERE "+Constants.SIGHTING_SPECIES +" =" + species, null);
+    }
+
+    public Cursor searchCountySpecies(String county, String species){
+        return db.rawQuery("SELECT * FROM "+Constants.TABLE_NAME_RSS_SIGHTING +" WHERE "+Constants.SIGHTING_LOCATION +" like '%" + county
+                +"%' and " + Constants.SIGHTING_SPECIES + " like %" + species + "%", null);
+    }
+
     public Cursor getHotspotBySpecies(String species) {
         return db.rawQuery("SELECT * FROM "+Constants.TABLE_NAME_HOTSPOTS +" WHERE " + Constants.HOTSPOTS_SPECIES +"="+"\""+species+"\"", null);
     }

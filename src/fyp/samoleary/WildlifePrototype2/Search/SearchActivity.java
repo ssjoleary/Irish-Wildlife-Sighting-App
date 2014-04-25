@@ -85,6 +85,8 @@ public class SearchActivity extends Activity {
         cancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Intent returnIntent = new Intent();
+                setResult(11, returnIntent);
                 SearchActivity.this.finish();
             }
         });
@@ -92,15 +94,32 @@ public class SearchActivity extends Activity {
         search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (countySpinner.getItemAtPosition(countyPos).toString().equals("Any...") && speciesSpinner.getItemAtPosition(speciesPos).toString().equals("Any...")){
-                    Intent returnIntent = new Intent();
-                    returnIntent.putExtra("result", "all");
-                    setResult(RESULT_OK, returnIntent);
-                    finish();
-                }else{
-                    new HttpAsyncTask().execute("http://fyp-irish-wildlife.herokuapp.com/sightings/getspecificsighting/");
+                Intent returnIntent = new Intent();
+                //new HttpAsyncTask().execute("http://fyp-irish-wildlife.herokuapp.com/sightings/getspecificsighting/");
+                if (countySpinner.getItemAtPosition(countyPos).toString().equals("Any...")) {
+                    if (speciesSpinner.getItemAtPosition(speciesPos).toString().equals("Any...")) {
+                        setResult(10, returnIntent);
+                        finish();
+                    } else {
+                        returnIntent.putExtra("species", speciesSpinner.getItemAtPosition(speciesPos).toString());
+                        setResult(12, returnIntent);
+                        finish();
+                    }
+                } else {
+                    if (speciesSpinner.getItemAtPosition(speciesPos).toString().equals("Any...")) {
+                        returnIntent.putExtra("county", countySpinner.getItemAtPosition(countyPos).toString());
+                        setResult(13, returnIntent);
+                        finish();
+                    } else {
+                        returnIntent.putExtra("county", countySpinner.getItemAtPosition(countyPos).toString());
+                        returnIntent.putExtra("species", speciesSpinner.getItemAtPosition(speciesPos).toString());
+                        setResult(14, returnIntent);
+                        finish();
+                    }
                 }
+
             }
+
         });
     }
     public static String POST(String url, SearchParams searchActivity){

@@ -373,10 +373,12 @@ public class GMapActivity extends NavDrawer implements
                     case 1:
                         closeDrawer();
                         createReportDialog();
+                        getLocalSightings();
                         break;
                     case 2:
                         closeDrawer();
                         gotoSearchActivity();
+                        getLocalSightings();
                         break;
                     default:
                         break;
@@ -661,7 +663,8 @@ public class GMapActivity extends NavDrawer implements
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
-
+        String county;
+        String species;
         // Choose what to do based on the request code
         switch (requestCode) {
 
@@ -699,20 +702,27 @@ public class GMapActivity extends NavDrawer implements
 
             case SEARCH_REQUEST:
                 switch (resultCode) {
-                    case Activity.RESULT_OK:
-                        String result = intent.getStringExtra("result");
-                        Log.d(LocationUtils.APPTAG, "Result: " + result);
-                        if (result.equals("all")) {
-/**                            getLocalSightings();*/
-                        }/**else{
-                     plotMarkers(result);
-                     }*/
+                    case 10:
+                        getLocalSightings();
                         setProgressBarIndeterminateVisibility(false);
                         break;
-                    case Activity.RESULT_CANCELED:
+                    case 11:
                         setProgressBarIndeterminateVisibility(false);
                         Toast.makeText(this,"No result matched your query!" , Toast.LENGTH_SHORT).show();
                         Log.d(LocationUtils.APPTAG, "No result matched your query!");
+                        break;
+                    case 12:
+                        species = intent.getStringExtra("species");
+                        searchSpecies(species);
+                        break;
+                    case 13:
+                        county = intent.getStringExtra("county");
+                        searchCounty(county);
+                        break;
+                    case 14:
+                        county = intent.getStringExtra("county");
+                        species = intent.getStringExtra("species");
+                        searchSpeciesCounty(county, species);
                         break;
                 }
                 break;
@@ -729,7 +739,7 @@ public class GMapActivity extends NavDrawer implements
                         if (mkr != null)
                             mkr.remove();
 
-/**                        getLocalSightings();*/
+                        getLocalSightings();
 
                         /*if (mkr != null) {
                             mkr.setDraggable(false);
@@ -745,7 +755,7 @@ public class GMapActivity extends NavDrawer implements
                         if (mkr != null)
                             mkr.remove();
 
-/**                        getLocalSightings();*/
+                        getLocalSightings();
                         LatLng point = new LatLng(53.41608, -7.93396);
                         googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(point, 6));
                         break;
@@ -758,6 +768,51 @@ public class GMapActivity extends NavDrawer implements
 
                 break;
         }
+    }
+
+    private void searchSpeciesCounty(String county, String species) {
+        wildlifeDB.open();
+        plotSearchedMarkers(wildlifeDB.searchCountySpecies(county, species));
+        wildlifeDB.close();
+    }
+
+    private void searchCounty(String county) {
+        wildlifeDB.open();
+        plotSearchedMarkers(wildlifeDB.searchCounty(county));
+        wildlifeDB.close();
+    }
+
+    private void searchSpecies(String species) {
+        wildlifeDB.open();
+        plotSearchedMarkers(wildlifeDB.searchSpecies(species));
+        wildlifeDB.close();
+    }
+
+    private void plotSearchedMarkers(Cursor cursor) {
+        googleMap.clear();
+        mClusterManager.clearItems();
+
+        startManagingCursor(cursor);
+        if(cursor.moveToFirst()){
+            do {
+                int ID = cursor.getInt(cursor.getColumnIndex(Constants.SIGHTING_ID));
+                int animals = cursor.getInt(cursor.getColumnIndex(Constants.SIGHTING_ANIMALS));
+                String sub_date = cursor.getString(cursor.getColumnIndex(Constants.SIGHTING_DATE));
+                double latitude  = cursor.getDouble(cursor.getColumnIndex(Constants.SIGHTING_LAT));
+                double longitude = cursor.getDouble(cursor.getColumnIndex(Constants.SIGHTING_LNG));
+                String location = cursor.getString(cursor.getColumnIndex(Constants.SIGHTING_LOCATION));
+                String species = cursor.getString(cursor.getColumnIndex(Constants.SIGHTING_SPECIES));
+                String name = cursor.getString(cursor.getColumnIndex(Constants.SIGHTING_NAME));
+                String imgurl = cursor.getString(cursor.getColumnIndex(Constants.SIGHTING_IMAGE));
+
+                Sighting mySighting = new Sighting(ID, species, sub_date, latitude, longitude, location, animals, name, imgurl);//, imgUri);
+                mClusterManager.addItem(mySighting);
+
+            } while(cursor.moveToNext());
+            mClusterManager.cluster();
+        }
+        stopManagingCursor(cursor);
+        setProgressBarIndeterminateVisibility(false);
     }
 
     /**
