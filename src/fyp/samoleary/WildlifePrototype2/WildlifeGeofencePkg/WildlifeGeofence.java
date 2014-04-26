@@ -89,6 +89,8 @@ public class WildlifeGeofence extends NavDrawer implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.geofence);
 
+        Log.d(LocationUtils.APPTAG, "onCreate");
+
         // Create a new broadcast receiver to receive updates from the listeners and service
         mBroadcastReceiver = new GeofenceSampleReceiver();
 
@@ -166,31 +168,16 @@ public class WildlifeGeofence extends NavDrawer implements
             }
         });
 
-        seekBar = (SeekBar) findViewById(R.id.hotspotSeekBar);
-        seekBar.setVisibility(View.INVISIBLE);
-        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                myCircle.setRadius(progress);
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
-            }
-        });
-
         try {
             // Loading map
             initializeMapIfNeeded();
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        seekBar = (SeekBar) findViewById(R.id.hotspotSeekBar);
+        seekBar.setVisibility(View.INVISIBLE);
+
         getLocalHotspots();
         googleMap.setPadding(0,0,0,15);
 
@@ -206,6 +193,39 @@ public class WildlifeGeofence extends NavDrawer implements
         } else if (checked == 1){
             reregisterGeofences();
         }
+
+        if (savedInstanceState != null) {
+            seekBar.setProgress(savedInstanceState.getInt("seekProgress", 0));
+            Log.d(LocationUtils.APPTAG, "Progress: " + savedInstanceState.getInt("seekProgress", 0) + "LatLng: " +savedInstanceState.getDouble("lat", 0) +", "+savedInstanceState.getDouble("lng", 0));
+            onMapLongClick(new LatLng(savedInstanceState.getDouble("lat", 0), savedInstanceState.getDouble("lng", 0)));
+            myCircle.setRadius(savedInstanceState.getInt("seekProgress", 0));
+        }
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                Log.d(LocationUtils.APPTAG, "myCircle: " + myCircle);
+                myCircle.setRadius(progress);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("seekProgress", seekBar.getProgress());
+        outState.putDouble("lat", myCircle.getCenter().latitude);
+        outState.putDouble("lng", myCircle.getCenter().longitude);
+
     }
 
     private void reregisterGeofences() {
@@ -325,6 +345,10 @@ public class WildlifeGeofence extends NavDrawer implements
         super.onResume();
         // Register the broadcast receiver to receive status updates
         LocalBroadcastManager.getInstance(this).registerReceiver(mBroadcastReceiver, mIntentFilter);
+
+        //int progress = sharedPreferences.getInt("progress", 0);
+        //seekBar.setProgress(progress);
+
         /*
          * Get existing geofences from the latitude, longitude, and
          * radius values stored in SharedPreferences. If no values
@@ -347,7 +371,6 @@ public class WildlifeGeofence extends NavDrawer implements
     @Override
     protected void onPause() {
         super.onPause();
-
     }
 
     /**
@@ -831,6 +854,7 @@ public class WildlifeGeofence extends NavDrawer implements
 
     @Override
     public void onMapLongClick(LatLng point) {
+        Log.d(LocationUtils.APPTAG, "onMapLongClick");
         wildlifeDB.open();
         int idInt = wildlifeDB.getMaxTableID(Constants.TABLE_NAME_HOTSPOTS);
         String id = String.valueOf(idInt) + 1;
@@ -1099,7 +1123,6 @@ public class WildlifeGeofence extends NavDrawer implements
 
     @Override
     public void onStop() {
-
         // If the client is connected
         if (mLocationClient.isConnected()) {
             stopPeriodicUpdates();

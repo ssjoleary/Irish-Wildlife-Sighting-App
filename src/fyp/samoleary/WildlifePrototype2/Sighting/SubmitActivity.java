@@ -68,8 +68,6 @@ public class SubmitActivity extends Activity {
 
     private UiLifecycleHelper uiHelper;
     private Session session;
-    private String user_ID;
-    private String profileName;
     private LoginButton authButton;
     private Button fbSubmitBtn;
 
@@ -91,7 +89,6 @@ public class SubmitActivity extends Activity {
     private Button inclPhoto;
     private ImageView imgView;
     private static final int CAPTURE_IMAGE_ACTIVITY_REQUEST_CODE = 100;
-    private static final int CAPTURE_VIDEO_ACTIVITY_REQUEST_CODE = 200;
     public static final int MEDIA_TYPE_IMAGE = 1;
     public static final int MEDIA_TYPE_VIDEO = 2;
     private static Uri fileUri;
@@ -168,9 +165,6 @@ public class SubmitActivity extends Activity {
 
         speciesList.remove(0);
         countiesList.remove(0);
-
-        ActionBar actionBar = getActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
 
         date = new Date();
 
@@ -676,7 +670,7 @@ public class SubmitActivity extends Activity {
     private boolean isLoggedIn() {
         session = Session.getActiveSession();
         if (session != null && session.isOpened()) {
-            Request request = Request.newMeRequest(session, new Request.GraphUserCallback() {
+            /*Request request = Request.newMeRequest(session, new Request.GraphUserCallback() {
                 @Override
                 public void onCompleted(GraphUser user, Response response) {
                     // If the response is successful
@@ -688,7 +682,7 @@ public class SubmitActivity extends Activity {
                     }
                 }
             });
-            Request.executeBatchAsync(request);
+            Request.executeBatchAsync(request);*/
             return true;
         } else {
             return false;
@@ -719,6 +713,8 @@ public class SubmitActivity extends Activity {
     public void onDestroy() {
         super.onDestroy();
         uiHelper.onDestroy();
+        Intent returnIntent = new Intent();
+        setResult(RESULT_CANCELED, returnIntent);
     }
 
     @Override

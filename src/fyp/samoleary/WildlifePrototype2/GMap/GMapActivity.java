@@ -663,6 +663,7 @@ public class GMapActivity extends NavDrawer implements
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode,intent);
         String county;
         String species;
         // Choose what to do based on the request code
@@ -748,7 +749,8 @@ public class GMapActivity extends NavDrawer implements
                         }*/
                         break;
 
-                    case Activity.RESULT_CANCELED:
+                    case RESULT_CANCELED:
+                        Log.d(LocationUtils.APPTAG, "onActivityResult");
                         mkr = sightingMkr.get(mPrefs.getString("mkrID", "null"));
                         sightingMkr.remove(mPrefs.getString("mkrID", "null"));
 
