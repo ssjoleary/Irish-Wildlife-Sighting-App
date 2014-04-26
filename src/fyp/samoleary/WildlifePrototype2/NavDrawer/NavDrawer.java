@@ -172,7 +172,7 @@ public class NavDrawer extends FragmentActivity {
             public void onDrawerClosed(View view) {
                 getActionBar().setTitle(mTitle);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-
+                setUpNavDrawer();
             }
 
             public void onDrawerOpened(View drawerView) {
@@ -235,7 +235,6 @@ public class NavDrawer extends FragmentActivity {
         hotspots.add("View Hotspots");
         hotspots.add("Create a Hotspot");
         hotspots.add("Search Hotspots");
-
 
         listDataChild.put(listDataHeader.get(0), species);
         listDataChild.put(listDataHeader.get(1), iwdgData);
