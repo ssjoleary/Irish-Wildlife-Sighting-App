@@ -123,6 +123,7 @@ public class SubmitActivity extends Activity {
         uiHelper = new UiLifecycleHelper(this, callback);
         uiHelper.onCreate(savedBundleInstance);
         authButton = (LoginButton) findViewById(R.id.loginButton);
+        //authButton.setPublishPermissions(Arrays.asList("publish_actions"));
         fbSubmitBtn = (Button) findViewById(R.id.fbSubmitButton);
         styleButton(fbSubmitBtn);
         authButton.setVisibility(View.GONE);
@@ -150,13 +151,10 @@ public class SubmitActivity extends Activity {
                             publish = true;
                             new MyImgurUploadTask(Uri.parse(mImageUri)).execute();
                         } else {
-                            publishStory();
-                            submitSighting();
+                            getPermissions();
+                            //publishStory();
+                            //submitSighting();
                         }
-                        submit_btn.setText("Loading...");
-                        fbSubmitBtn.setText("Loading...");
-                        submit_btn.setEnabled(false);
-                        fbSubmitBtn.setEnabled(false);
                     }
                 } else {
                     Log.d(LocationUtils.APPTAG, "SubmitActivity: onClick: failure: nextID: " + nextID);
@@ -729,6 +727,27 @@ public class SubmitActivity extends Activity {
         outState.putBoolean(PENDING_PUBLISH_KEY, pendingPublishReauthorization);
 
         uiHelper.onSaveInstanceState(outState);
+    }
+
+    private void getPermissions(){
+        Session session = Session.getActiveSession();
+        if(session != null) {
+            // Check for publish permissions
+            List<String> permissions = session.getPermissions();
+            if (!isSubsetOf(PERMISSIONS, permissions)) {
+                pendingPublishReauthorization = true;
+                Session.NewPermissionsRequest newPermissionsRequest = new Session
+                        .NewPermissionsRequest(this, PERMISSIONS);
+                session.requestNewPublishPermissions(newPermissionsRequest);
+            } else {
+                submit_btn.setText("Loading...");
+                fbSubmitBtn.setText("Loading...");
+                submit_btn.setEnabled(false);
+                fbSubmitBtn.setEnabled(false);
+                publishStory();
+                submitSighting();
+            }
+        }
     }
 
     private void publishStory() {
