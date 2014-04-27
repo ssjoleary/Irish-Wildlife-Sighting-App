@@ -84,6 +84,7 @@ public class WildlifeGeofence extends NavDrawer implements
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor mEditor;
     private WildlifeDB wildlifeDB;
+    private Boolean justCreated = false;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -184,31 +185,38 @@ public class WildlifeGeofence extends NavDrawer implements
         Intent i = getIntent();
         if (i.getIntExtra("groupPosition", 999) != 999){
             selectItem(i.getIntExtra("groupPosition", 999), i.getIntExtra("childPosition", 999));
+            i.putExtra("groupPosition", 999);
         }
 
         Integer checked = i.getIntExtra("isNotificationChecked", -1);
         if (checked == 0) {
             Toast.makeText(this, "Hotspot Notifications turned off!", Toast.LENGTH_LONG).show();
+            mEditor.putBoolean("isNotificationChecked", false);
+            mEditor.commit();
             onUnregisterByPendingIntentClicked();
         } else if (checked == 1){
             reregisterGeofences();
         }
 
         if (savedInstanceState != null) {
-            int seekProgress = savedInstanceState.getInt("seekProgress", 0);
-            double lat = savedInstanceState.getDouble("lat", 0);
-            double lng = savedInstanceState.getDouble("lng", 0);
-            if (seekProgress != 0 && lat != 0 && lng != 0){
-                seekBar.setProgress(seekProgress);
-                onMapLongClick(new LatLng(lat,lng));
-                myCircle.setRadius(savedInstanceState.getInt("seekProgress", 0));
+            if (!savedInstanceState.getBoolean("justCreated", false)) {
+                int seekProgress = savedInstanceState.getInt("seekProgress", 0);
+                double lat = savedInstanceState.getDouble("lat", 0);
+                double lng = savedInstanceState.getDouble("lng", 0);
+                if (seekProgress != 0 && lat != 0 && lng != 0){
+                    seekBar.setProgress(seekProgress);
+                    onMapLongClick(new LatLng(lat,lng));
+                    myCircle.setRadius(savedInstanceState.getInt("seekProgress", 0));
+                }
             }
         }
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 Log.d(LocationUtils.APPTAG, "myCircle: " + myCircle);
-                myCircle.setRadius(progress);
+                if (myCircle != null) {
+                    myCircle.setRadius(progress);
+                }
             }
 
             @Override
@@ -227,6 +235,7 @@ public class WildlifeGeofence extends NavDrawer implements
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt("seekProgress", seekBar.getProgress());
+        outState.putBoolean("justCreated", justCreated);
 
 
         if (myCircle != null) {
@@ -854,6 +863,8 @@ public class WildlifeGeofence extends NavDrawer implements
         currentMkr.remove();
         myCircle.remove();
 
+        justCreated = true;
+
         submitBtn.setVisibility(View.INVISIBLE);
         seekBar.setVisibility(View.INVISIBLE);
         cancelBtn.setVisibility(View.INVISIBLE);
@@ -862,6 +873,7 @@ public class WildlifeGeofence extends NavDrawer implements
     @Override
     public void onMapLongClick(LatLng point) {
         Log.d(LocationUtils.APPTAG, "onMapLongClick");
+        justCreated = false;
         wildlifeDB.open();
         int idInt = wildlifeDB.getMaxTableID(Constants.TABLE_NAME_HOTSPOTS);
         String id = String.valueOf(idInt) + 1;
@@ -1245,7 +1257,10 @@ public class WildlifeGeofence extends NavDrawer implements
             wildlifeDB.close();
 
             // Try to add geofences
-            mGeofenceRequester.addGeofences(mCurrentGeofences);
+            if (sharedPreferences.getBoolean("isNotificationChecked", true)){
+                mGeofenceRequester.addGeofences(mCurrentGeofences);
+            }
+            justCreated = true;
             googleMap.clear();
             getLocalHotspots();
         } catch (UnsupportedOperationException e) {
