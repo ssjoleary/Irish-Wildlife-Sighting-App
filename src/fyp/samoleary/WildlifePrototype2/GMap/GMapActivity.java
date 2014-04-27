@@ -131,7 +131,7 @@ public class GMapActivity extends NavDrawer implements
     private int nextID;
     private MyImgurUploadTask mImgurUploadTask;
     private String mImgurUrl;
-    private boolean imgurDone;
+    private Boolean justCreated = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -202,14 +202,16 @@ public class GMapActivity extends NavDrawer implements
         }
 
         if (savedInstanceState!=null){
-            Double lat = savedInstanceState.getDouble("lat", 0);
-            Double lng = savedInstanceState.getDouble("lng", 0);
+            if (!savedInstanceState.getBoolean("justCreated", false)) {
+                Double lat = savedInstanceState.getDouble("lat", 0);
+                Double lng = savedInstanceState.getDouble("lng", 0);
 
-            if(lat != 0 && lng != 0){
-                onMapLongClick(new LatLng(lat, lng));
-            } else {
-                getLocalSightings();
+                if(lat != 0 && lng != 0){
+                    getLocalSightings();
+                    onMapLongClick(new LatLng(lat, lng));
+                }
             }
+            getLocalSightings();
         }
         if (mImgurUrl == null)
             mImgurUrl = "image";
@@ -228,6 +230,7 @@ public class GMapActivity extends NavDrawer implements
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        outState.putBoolean("justCreated", justCreated);
 
         if (userTouchPoint!=null){
             outState.putDouble("lat", userTouchPoint.latitude);
@@ -763,6 +766,7 @@ public class GMapActivity extends NavDrawer implements
                         if (mkr != null)
                             mkr.remove();
 
+                        justCreated = true;
                         getLocalSightings();
 
                         /*if (mkr != null) {
@@ -779,7 +783,7 @@ public class GMapActivity extends NavDrawer implements
 
                         if (mkr != null)
                             mkr.remove();
-
+                        justCreated = true;
                         getLocalSightings();
                         LatLng point = new LatLng(53.41608, -7.93396);
                         googleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(point, 6));
@@ -1113,6 +1117,7 @@ public class GMapActivity extends NavDrawer implements
         Marker mkr = sightingMkr.get(mPrefs.getString("mkrID", "null"));
         mkr.remove();
         userTouchPoint = null;
+        justCreated = true;
     }
 
     public static class ReportSightingDialog extends DialogFragment {
@@ -1175,6 +1180,7 @@ public class GMapActivity extends NavDrawer implements
     }
 
     public void dropSightingMarker(LatLng point) {
+        justCreated = false;
         Marker mkrOld = sightingMkr.get(mPrefs.getString("mkrID", "null"));
         if (mkrOld==null){
             Log.d("Placing Marker: ", "No Previous Markers Set");
