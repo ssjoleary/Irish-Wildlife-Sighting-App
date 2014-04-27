@@ -73,7 +73,8 @@
         </activity>
         <activity android:name=".SpeciesGuide.SpeciesGuide"
                   android:label="@string/app_name"
-                  android:theme="@style/IWDGTheme">
+                  android:theme="@style/IWDGTheme"
+                  android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
@@ -82,7 +83,8 @@
 
         <activity android:name=".SpeciesGuide.SpeciesGuideDialog"
                   android:label="@string/app_name"
-                  android:theme="@style/Dialog.Iwdg">
+                  android:theme="@style/Dialog.Iwdg"
+                  android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>
@@ -128,15 +130,6 @@
         <activity android:name="com.facebook.LoginActivity"
                   android:theme="@android:style/Theme.Translucent.NoTitleBar"
                   android:label="@string/app_name" />
-
-        <activity android:name=".FaceBook.LoginFacebookAct"
-                  android:label="@string/app_name"
-                  android:parentActivityName=".SpeciesGuide.SpeciesGuide">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
-                <category android:name="android.intent.category.DEFAULT"/>
-            </intent-filter>
-        </activity>
 
         <!-- Facebook App_ID -->
         <meta-data android:name="com.facebook.sdk.ApplicationId" android:value="@string/app_id"/>

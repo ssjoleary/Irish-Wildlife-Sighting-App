@@ -93,6 +93,11 @@ public class NewsFeedActivity extends NavDrawer {
                         //gotoSearchActivity();
                         gotoGMapActivity(groupPosition, childPosition);
                         break;
+                    case 3:
+                        closeDrawer();
+                        //gotoSearchActivity();
+                        gotoGMapActivity(groupPosition, childPosition);
+                        break;
                     default:
                         break;
                 }

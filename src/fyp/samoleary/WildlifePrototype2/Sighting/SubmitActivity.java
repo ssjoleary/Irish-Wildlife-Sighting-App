@@ -110,9 +110,22 @@ public class SubmitActivity extends Activity {
     private GetConnectivityStatus isConnected;
     private boolean publish;
 
+    private ArrayList<Sighting> unsubmittedSightings;
+    private SightingStore sightingStore;
+    private TextView nameView;
+    private EditText editName;
+
+
     protected void onCreate(Bundle savedBundleInstance) {
         super.onCreate(savedBundleInstance);
         setContentView(R.layout.submit_sighting);
+
+        // Open Shared Preferences
+        mPrefs = getSharedPreferences(LocationUtils.SHARED_PREFERENCES, Context.MODE_PRIVATE);
+        // Get an editor
+        mEditor = mPrefs.edit();
+        unsubmittedSightings = new ArrayList<Sighting>();
+        sightingStore = new SightingStore(this);
 
         SubmitActivity.context = getApplicationContext();
         isConnected = new GetConnectivityStatus();
@@ -135,28 +148,49 @@ public class SubmitActivity extends Activity {
             }
         }
         publish = false;
+        String name = mPrefs.getString("name", "Click to set up Profile");
+        nameView = (TextView) findViewById(R.id.submit_form_nametext);
+        nameView.setText(name);
+        editName = (EditText) findViewById(R.id.submit_form_editname);
+        editName.setVisibility(View.GONE);
+        editName.setText(name);
         fbSubmitBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(location_view.getText().toString().equals("") || animals_view.getText().toString().equals("")) {
-                    Toast.makeText(getBaseContext(), "Please fill in all fields", Toast.LENGTH_LONG).show();
-                } else if(isConnected.isConnected(context)) {
-                    if(nextID != -1) {
-                        Log.d(LocationUtils.APPTAG, "SubmitActivity: onClick: success");
-                        if (mImageUri != null && mImgurUrl == null) {
-                            Log.d(LocationUtils.APPTAG, "SubmitActivity: onClick: we're in");
-                            publish = true;
-                            new MyImgurUploadTask(Uri.parse(mImageUri)).execute();
-                        } else {
-                            getPermissions();
-                            //publishStory();
-                            //submitSighting();
-                        }
-                    }
+                String username = editName.getText().toString();
+                if (username.equals("") || username.equals("Click to set up Profile")) {
+                    Toast.makeText(getBaseContext(), "Please enter your name", Toast.LENGTH_LONG).show();
+                    nameView.setVisibility(View.GONE);
+                    editName.setVisibility(View.VISIBLE);
+                    editName.setText("");
+                    editName.setHint("Enter your name");
                 } else {
-                    Log.d(LocationUtils.APPTAG, "SubmitActivity: onClick: failure: nextID: " + nextID);
-                    Toast.makeText(getBaseContext(), "Cannot report a sighting at this time! Check Connectivity.", Toast.LENGTH_LONG).show();
+                    if(location_view.getText().toString().equals("") || animals_view.getText().toString().equals("")) {
+                        Toast.makeText(getBaseContext(), "Please fill in all fields", Toast.LENGTH_LONG).show();
+                    } else if(isConnected.isConnected(context)) {
+                        if(nextID != -1) {
+                            Log.d(LocationUtils.APPTAG, "SubmitActivity: onClick: success");
+                            if (mImageUri != null && mImgurUrl == null) {
+                                Log.d(LocationUtils.APPTAG, "SubmitActivity: onClick: we're in");
+                                publish = true;
+                                new MyImgurUploadTask(Uri.parse(mImageUri)).execute();
+                            } else {
+                                getPermissions();
+                                //publishStory();
+                                //submitSighting();
+                            }
+                        }
+                    } else {
+                        Log.d(LocationUtils.APPTAG, "SubmitActivity: onClick: failure: nextID: " + nextID);
+                        Toast.makeText(getBaseContext(), "No Connectivity! Sighting details saved.", Toast.LENGTH_LONG).show();
+                        storeUnsubmittedSighting();
+                        submit_btn.setEnabled(false);
+                        inclPhoto.setEnabled(false);
+                        fbSubmitBtn.setEnabled(false);
+                    }
                 }
+                mEditor.putString("name", editName.getText().toString());
+                mEditor.commit();
             }
         });
 
@@ -183,24 +217,41 @@ public class SubmitActivity extends Activity {
         submit_btn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(location_view.getText().toString().equals("") || animals_view.getText().toString().equals("")) {
-                    Toast.makeText(getBaseContext(), "Please fill in all fields", Toast.LENGTH_LONG).show();
-                } else if(isConnected.isConnected(context)) {
-                    if(nextID != -1) {
-                        Log.d(LocationUtils.APPTAG, "SubmitActivity: onClick: success");
-                        if (mImageUri != null && mImgurUrl == null) {
-                            Log.d(LocationUtils.APPTAG, "SubmitActivity: onClick: we're in");
-                            new MyImgurUploadTask(Uri.parse(mImageUri)).execute();
-                        } else {
-                            submitSighting();
-                        }
-                        submit_btn.setText("Loading...");
-                        submit_btn.setEnabled(false);
-                    }
+                String username = editName.getText().toString();
+                if (username.equals("") || username.equals("Click to set up Profile")) {
+                    Toast.makeText(getBaseContext(), "Please enter your name", Toast.LENGTH_LONG).show();
+                    nameView.setVisibility(View.GONE);
+                    editName.setVisibility(View.VISIBLE);
+                    editName.setText("");
+                    editName.setHint("Enter your name");
                 } else {
-                    Log.d(LocationUtils.APPTAG, "SubmitActivity: onClick: failure: nextID: " + nextID);
-                    Toast.makeText(getBaseContext(), "Cannot report a sighting at this time! Check Connectivity.", Toast.LENGTH_LONG).show();
+                    if(location_view.getText().toString().equals("") || animals_view.getText().toString().equals("")) {
+                        Toast.makeText(getBaseContext(), "Please fill in all fields", Toast.LENGTH_LONG).show();
+                    } else if(isConnected.isConnected(context)) {
+                        if(nextID != -1) {
+                            Log.d(LocationUtils.APPTAG, "SubmitActivity: onClick: success");
+                            if (mImageUri != null && mImgurUrl == null) {
+                                Log.d(LocationUtils.APPTAG, "SubmitActivity: onClick: we're in");
+                                new MyImgurUploadTask(Uri.parse(mImageUri)).execute();
+                            } else {
+                                submitSighting();
+                            }
+                            submit_btn.setText("Loading...");
+                            submit_btn.setEnabled(false);
+                            inclPhoto.setEnabled(false);
+                            fbSubmitBtn.setEnabled(false);
+                        }
+                    } else {
+                        Log.d(LocationUtils.APPTAG, "SubmitActivity: onClick: failure: nextID: " + nextID);
+                        Toast.makeText(getBaseContext(), "No connectivity! Sighting details saved.", Toast.LENGTH_LONG).show();
+                        storeUnsubmittedSighting();
+                        submit_btn.setEnabled(false);
+                        inclPhoto.setEnabled(false);
+                        fbSubmitBtn.setEnabled(false);
+                    }
                 }
+                mEditor.putString("name", editName.getText().toString());
+                mEditor.commit();
             }
         });
 
@@ -251,11 +302,12 @@ public class SubmitActivity extends Activity {
         long_view.setText(String.format("%.5f", user_coordinates.longitude));
 
         wildlifeDB = new WildlifeDB(this);
+    }
 
-        // Open Shared Preferences
-        mPrefs = getSharedPreferences(LocationUtils.SHARED_PREFERENCES, Context.MODE_PRIVATE);
-        // Get an editor
-        mEditor = mPrefs.edit();
+    private void storeUnsubmittedSighting() {
+        Log.d(LocationUtils.APPTAG, "SubmitActivity: storeUnsubmitted");
+        unsubmittedSightings.add(createSighting());
+        sightingStore.setSighting(createSighting());
     }
 
     private void styleButton(Button button) {
@@ -422,9 +474,12 @@ public class SubmitActivity extends Activity {
         location += ", " + county;
 
         animals = Integer.parseInt(animals_view.getText().toString());
-        if (mImgurUrl == null)
-            mImgurUrl = "image";
-
+        if(!isConnected.isConnected(context)) {
+            mImgurUrl = mImageUri;
+        } else {
+            if (mImgurUrl == null)
+                mImgurUrl = "image";
+        }
         return new Sighting(nextID, species, dateOut, sightingLat, sightingLong, location, animals, name, mImgurUrl);
     }
 
@@ -740,6 +795,7 @@ public class SubmitActivity extends Activity {
                 fbSubmitBtn.setText("Loading...");
                 submit_btn.setEnabled(false);
                 fbSubmitBtn.setEnabled(false);
+                inclPhoto.setEnabled(false);
                 publishStory();
                 submitSighting();
             }

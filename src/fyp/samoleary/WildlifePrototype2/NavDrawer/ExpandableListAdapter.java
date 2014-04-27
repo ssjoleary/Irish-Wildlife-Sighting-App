@@ -101,7 +101,7 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
         lblListHeader.setText(headerTitle);
         ImageView groupView = (ImageView) convertView.findViewById(R.id.groupIcon);
         switch (groupPosition){
-            case 3:
+            case 4:
                 groupView.setImageResource(R.drawable.ic_action_warning);
                 break;
             case 0:

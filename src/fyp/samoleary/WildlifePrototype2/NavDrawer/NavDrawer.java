@@ -28,8 +28,8 @@ import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.util.Log;import android.view.MenuItem;import android.view.View;
-import android.view.Window;
+import android.util.Log;
+import android.view.*;
 import android.widget.*;
 import com.facebook.Request;
 import com.facebook.Response;
@@ -197,12 +197,6 @@ public class NavDrawer extends FragmentActivity {
         mDrawerList.setAdapter(listAdapter);
     }
 
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // The action bar home/up action should open or close the drawer.
-        // ActionBarDrawerToggle will take care of this.
-        return mDrawerToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
-    }
-
     public void selectGroup(int groupPosition) {
 
     }
@@ -213,7 +207,7 @@ public class NavDrawer extends FragmentActivity {
 
         // Adding Group Header Data
         listDataHeader.add("Species Guide");
-        listDataHeader.add("IWDG Data");
+        listDataHeader.add("IWDG Sightings");
         listDataHeader.add("News Feed");
         listDataHeader.add("Hotspots");
 
@@ -222,6 +216,7 @@ public class NavDrawer extends FragmentActivity {
         iwdgData.add("View Sightings");
         iwdgData.add("Report A Sighting");
         iwdgData.add("Search Sightings");
+        iwdgData.add("Check for New Sightings");
 
         List<String> species = new ArrayList<String>();
         //species.add("Species Guide");
@@ -255,7 +250,7 @@ public class NavDrawer extends FragmentActivity {
 
         // Adding Group Header Data
         listDataHeader.add("Species Guide");
-        listDataHeader.add("IWDG Data");
+        listDataHeader.add("IWDG Sightings");
         listDataHeader.add("News Feed");
         listDataHeader.add("Hotspots");
 
@@ -264,6 +259,7 @@ public class NavDrawer extends FragmentActivity {
         iwdgData.add("View Sightings");
         iwdgData.add("Report A Sighting");
         iwdgData.add("Search Sightings");
+        iwdgData.add("Check for New Sightings");
 
         List<String> species = new ArrayList<String>();
         //species.add("Species Guide");
@@ -419,5 +415,39 @@ public class NavDrawer extends FragmentActivity {
                 }
             }
         }.execute();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.gmapcontextmenu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        // If the nav drawer is open, hide action items related to the content view
+        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
+        menu.findItem(R.id.context_menu).setVisible(!drawerOpen);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // The action bar home/up action should open or close the drawer.
+        // ActionBarDrawerToggle will take care of this.
+        if (mDrawerToggle.onOptionsItemSelected(item)) {
+            return true;
+        }
+        // Handle action buttons
+        switch(item.getItemId()) {
+            case R.id.context_menu:
+                //getRecentSightings();
+                //getLocalSightings();
+                //checkForNewSightings();
+                gotoProfile();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 }

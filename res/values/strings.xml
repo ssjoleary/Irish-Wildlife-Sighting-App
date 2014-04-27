@@ -134,7 +134,7 @@
     <string name="submit_form_date">Date:</string>
     <string name="submit_form_coordinates">Co-ordinates:</string>
     <string name="submit_form_animals">Number of Animals Seen</string>
-    <string name="submit_form_location">Location</string>
+    <string name="submit_form_location">Locale</string>
     <string name="submit_form_county">County:</string>
     <string name="submit_form_btn">Submit</string>
     <string name="submit_form_inclphoto">Incl. Photo</string>
@@ -233,12 +233,13 @@
     <!-- Sighting Dialog -->
     <string name="sighting_observer">Observer</string>
     <string name="sighting_species">Species</string>
-    <string name="sighting_location">Location</string>
+    <string name="sighting_location">Locale</string>
     <string name="sighting_animals">Animals</string>
     <string name="sighting_date">Date</string>
     <string name="sighting_coordinates">Co-ordinates</string>
 
     <!-- Profile -->
+    <string name="profile">Profile</string>
     <string name="profile_name">Name</string>
     <string name="profile_telephone">Telephone</string>
     <string name="profile_email">Email</string>
@@ -263,5 +264,11 @@
     <string name="logout">Log out of Facebook</string>
     <string name="app_id">454897031307019</string>
     <string name="fb_submit">Post Sighting To Facebook</string>
+
+    <!-- Unsubmitted Sighting Msgs -->
+    <string name="unsub_msg">Data connection available, submit previously unsubmitted Sightings?</string>
+    <string name="unsub_submit">Submit</string>
+    <string name="unsub_dontsubmit">Later</string>
+    <string name="unsub_edit">Edit before Submission</string>
 
 </resources>

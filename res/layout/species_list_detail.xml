@@ -4,7 +4,8 @@
         android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:id="@+id/linearLayout">
+        android:id="@+id/linearLayout" android:paddingLeft="15dp" android:paddingRight="15dp"
+        android:paddingBottom="15dp" android:paddingTop="15dp">
     <ScrollView
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
@@ -33,12 +34,6 @@
                         android:text="@string/guide_latin"
                         android:id="@+id/guide_latin"
                         style="?android:buttonBarButtonStyle" android:layout_gravity="left"/>
-                <Button android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/guide_sound"
-                        android:id="@+id/guide_sound"
-                        style="?android:buttonBarButtonStyle" android:layout_gravity="right"
-                        />
             </LinearLayout>
             <FrameLayout
                     android:layout_width="fill_parent"
@@ -50,11 +45,6 @@
                         android:name="com.google.android.youtube.player.YouTubePlayerSupportFragment"
                         android:id="@+id/species_detail_videoFragment"/>
             </FrameLayout>
-            <Button
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/ok"
-                    android:id="@+id/species_dialog_btn" android:layout_gravity="center"/>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

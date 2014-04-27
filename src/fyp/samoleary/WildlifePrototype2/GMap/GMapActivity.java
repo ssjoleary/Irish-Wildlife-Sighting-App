@@ -8,6 +8,7 @@ import android.content.*;
 
 import android.database.Cursor;
 import android.location.Location;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,6 +32,7 @@ import com.google.android.gms.maps.model.*;
 import com.google.maps.android.clustering.ClusterManager;
 import fyp.samoleary.WildlifePrototype2.*;
 import fyp.samoleary.WildlifePrototype2.Database.Constants;import fyp.samoleary.WildlifePrototype2.Database.WildlifeDB;
+import fyp.samoleary.WildlifePrototype2.Imgur.ImgurUploadTask;
 import fyp.samoleary.WildlifePrototype2.NavDrawer.NavDrawer;
 import fyp.samoleary.WildlifePrototype2.RSSFeed.NewsFeedActivity;
 import fyp.samoleary.WildlifePrototype2.RSSFeed.RSSItem;
@@ -38,10 +40,16 @@ import fyp.samoleary.WildlifePrototype2.RSSFeed.RSSParser;
 import fyp.samoleary.WildlifePrototype2.Search.SearchActivity;
 import fyp.samoleary.WildlifePrototype2.Sighting.Sighting;
 import fyp.samoleary.WildlifePrototype2.Sighting.SightingDialog;
+import fyp.samoleary.WildlifePrototype2.Sighting.SightingStore;
 import fyp.samoleary.WildlifePrototype2.Sighting.SubmitActivity;
 import fyp.samoleary.WildlifePrototype2.SpeciesGuide.SpeciesGuide;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -49,10 +57,16 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Author: Sam O'Leary
@@ -109,19 +123,26 @@ public class GMapActivity extends NavDrawer implements
     // Google Map
     private GoogleMap googleMap;
 
-    //private HashMap<String, Sighting> mkrObjects;
+    private HashMap<String, Sighting> mkrObjects;
     private HashMap<String, Marker> sightingMkr;
     private GetConnectivityStatus isConnected;
+
+    private SightingStore sightingStore;
+    private int nextID;
+    private MyImgurUploadTask mImgurUploadTask;
+    private String mImgurUrl;
+    private boolean imgurDone;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
+        sightingStore = new SightingStore(this);
         isConnected = new GetConnectivityStatus();
         setTitle(R.string.app_name);
 
-        //mkrObjects = new HashMap<String, Sighting>();
+        mkrObjects = new HashMap<String, Sighting>();
         sightingMkr = new HashMap<String, Marker>();
         userTouchPoint = new LatLng(0, 0);
 
@@ -177,6 +198,40 @@ public class GMapActivity extends NavDrawer implements
 
         if (i.getIntExtra("groupPosition", 999) != 999){
             selectItem(i.getIntExtra("groupPosition", 999), i.getIntExtra("childPosition", 999));
+            i.putExtra("groupPosition", 999);
+        }
+
+        if (savedInstanceState!=null){
+            Double lat = savedInstanceState.getDouble("lat", 0);
+            Double lng = savedInstanceState.getDouble("lng", 0);
+
+            if(lat != 0 && lng != 0){
+                onMapLongClick(new LatLng(lat, lng));
+            } else {
+                getLocalSightings();
+            }
+        }
+        if (mImgurUrl == null)
+            mImgurUrl = "image";
+        if(isConnected.isConnected(getApplicationContext())) {
+            Log.d(LocationUtils.APPTAG, "GMapActivity: connected");
+            if (sightingStore.getSightings() != null) {
+                Log.d(LocationUtils.APPTAG, "GMapActivity: create dialog");
+                SubmitUnsubmittedSightingsDialog submitUnsubmittedSightingsDialog = SubmitUnsubmittedSightingsDialog.newInstance(
+                        R.string.unsub_msg);
+                submitUnsubmittedSightingsDialog.show(getSupportFragmentManager(), "dialog");
+            }
+        }
+
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        if (userTouchPoint!=null){
+            outState.putDouble("lat", userTouchPoint.latitude);
+            outState.putDouble("lng", userTouchPoint.longitude);
         }
 
     }
@@ -242,48 +297,46 @@ public class GMapActivity extends NavDrawer implements
         setProgressBarIndeterminateVisibility(false);
     }
 
-    private void getRecentSightings() {
+    private int getNextID() {
+        nextID = mPrefs.getInt("ID", 0);
         new HttpHandler() {
             @Override
             public HttpUriRequest getHttpRequestMethod() {
-                setProgressBarIndeterminateVisibility(true);
+//                setProgressBarIndeterminateVisibility(true);
 
                 return new HttpGet("http://fyp-irish-wildlife.herokuapp.com/sightings/getsighting/");
 
             }
             @Override
             public void onResponse(String result) {
-                getNextID(result);
-                getLocalSightings();
-                setProgressBarIndeterminateVisibility(false);
-            }
-        }.execute();
-    }
 
-    private void getNextID(String result) {
-        int nextID = mPrefs.getInt("ID", 0);
 
-        JSONArray json;
-        try {
-            json = new JSONArray(result);
-            for (int i = 0; i < json.length(); i++) {
-                JSONObject c;
+                JSONArray json;
                 try {
-                    c = json.getJSONObject(i);
+                    json = new JSONArray(result);
+                    for (int i = 0; i < json.length(); i++) {
+                        JSONObject c;
+                        try {
+                            c = json.getJSONObject(i);
 
-                    int ID = c.getInt("pk");
-                    if(ID >= nextID){
-                        nextID = ID + 1;
+                            int ID = c.getInt("pk");
+                            if(ID >= nextID){
+                                nextID = ID + 1;
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+                mEditor.putInt("ID", nextID);
+                mEditor.commit();
+                setProgressBarIndeterminateVisibility(false);
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        mEditor.putInt("ID", nextID);
-        mEditor.commit();
+        }.execute();
+
+        return nextID;
     }
 
     private void plotMarkers(String result) {
@@ -323,39 +376,6 @@ public class GMapActivity extends NavDrawer implements
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.gmapcontextmenu, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        // If the nav drawer is open, hide action items related to the content view
-        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
-        menu.findItem(R.id.gmap_refresh).setVisible(!drawerOpen);
-        return super.onPrepareOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // The action bar home/up action should open or close the drawer.
-        // ActionBarDrawerToggle will take care of this.
-        if (mDrawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-        // Handle action buttons
-        switch(item.getItemId()) {
-            case R.id.gmap_refresh:
-                //getRecentSightings();
-                //getLocalSightings();
-                checkForNewSightings();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    @Override
     public void selectItem(int groupPosition, int childPosition) {
         //Log.d(LocationUtils.APPTAG, groupPosition + " : " + childPosition);
         switch (groupPosition) {
@@ -380,6 +400,9 @@ public class GMapActivity extends NavDrawer implements
                         gotoSearchActivity();
                         getLocalSightings();
                         break;
+                    case 3:
+                        closeDrawer();
+                        checkForNewSightings();
                     default:
                         break;
                 }
@@ -1068,12 +1091,12 @@ public class GMapActivity extends NavDrawer implements
                             ((GMapActivity)getActivity()).doPositiveClick();
                         }
                     })
-                    .setNegativeButton(R.string.dialog_no, new DialogInterface.OnClickListener() {
+                    /*.setNegativeButton(R.string.dialog_no, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int id) {
                             ((GMapActivity)getActivity()).doNegativeClick();
                         }
-                    })
+                    })*/
                     .setNeutralButton(R.string.dialog_remove_marker, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -1089,6 +1112,7 @@ public class GMapActivity extends NavDrawer implements
     private void doNeutralClick() {
         Marker mkr = sightingMkr.get(mPrefs.getString("mkrID", "null"));
         mkr.remove();
+        userTouchPoint = null;
     }
 
     public static class ReportSightingDialog extends DialogFragment {
@@ -1313,4 +1337,257 @@ public class GMapActivity extends NavDrawer implements
         }
 
     }
+
+    public static class SubmitUnsubmittedSightingsDialog extends DialogFragment {
+
+        public static SubmitUnsubmittedSightingsDialog newInstance(int title) {
+            SubmitUnsubmittedSightingsDialog frag = new SubmitUnsubmittedSightingsDialog();
+            Bundle args = new Bundle();
+            args.putInt("title", title);
+            frag.setArguments(args);
+            return frag;
+        }
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            int title = getArguments().getInt("title");
+
+            // Use the Builder class for convenient dialog construction
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+            builder.setTitle(title)
+                    .setPositiveButton(R.string.unsub_submit, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int id) {
+                            ((GMapActivity)getActivity()).doSubmitClick();
+                        }
+                    })
+                    .setNegativeButton(R.string.unsub_dontsubmit, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int id) {
+                            ((GMapActivity)getActivity()).doNotSubmitClick();
+                        }
+                    })
+                    .setNeutralButton(R.string.unsub_edit, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            ((GMapActivity)getActivity()).doEditClick();
+                        }
+                    });
+
+            // Create the AlertDialog object and return it
+            return builder.create();
+        }
+    }
+
+    private void doSubmitClick() {
+        ArrayList<Sighting> sightings = new ArrayList<Sighting>(sightingStore.getSightings());
+        for (Sighting sighting : sightings) {
+            Log.d(LocationUtils.APPTAG, "image uri: " + sighting.getImgUrlString());
+            sightingStore.clearSighting(String.valueOf(sighting.getID()));
+            sighting.setID(getNextID());
+            mkrObjects.put(String.valueOf(sighting.getID()), sighting);
+            if (!sighting.getImgUrlString().equals("image")) {
+                new MyImgurUploadTask(Uri.parse(sighting.getImgUrlString()), sighting).execute();
+            } else {
+                new HttpAsyncTask().execute("http://fyp-irish-wildlife.herokuapp.com/sightings/postsighting/", String.valueOf(sighting.getID()));
+            }
+        }
+    }
+
+    private void doNotSubmitClick() {
+
+    }
+
+    private void doEditClick() {
+
+    }
+    public static String POST(String url, Sighting sightingSubmit){
+        InputStream inputStream;
+        String result = "";
+        try {
+
+            // 1. create HttpClient
+            HttpClient httpclient = new DefaultHttpClient();
+
+            // 2. make POST request to the given URL
+            HttpPost httpPost = new HttpPost(url);
+
+            String json;
+
+            // 3. build jsonObject
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.accumulate("species", sightingSubmit.getSpecies());
+            jsonObject.accumulate("date", sightingSubmit.getDate());
+            jsonObject.accumulate("lat", sightingSubmit.getSightingLat());
+            jsonObject.accumulate("lng", sightingSubmit.getSightingLong());
+            jsonObject.accumulate("location", sightingSubmit.getLocation());
+            jsonObject.accumulate("animals", sightingSubmit.getAnimals());
+            jsonObject.accumulate("name", sightingSubmit.getName());
+            jsonObject.accumulate("imageurl", sightingSubmit.getImgUrlString());
+
+            // 4. convert JSONObject to JSON to String
+            json = jsonObject.toString();
+            // ** Alternative way to convert Person object to JSON string usin Jackson Lib
+            // ObjectMapper mapper = new ObjectMapper();
+            // json = mapper.writeValueAsString(searchActivity);
+
+            // 5. set json to StringEntity
+            StringEntity se = new StringEntity(json);
+
+            // 6. set httpPost Entity
+            httpPost.setEntity(se);
+
+            // 7. Set some headers to inform server about the type of the content
+            httpPost.setHeader("Accept", "application/json");
+            httpPost.setHeader("Content-type", "application/json");
+
+            // 8. Execute POST request to the given URL
+            HttpResponse httpResponse = httpclient.execute(httpPost);
+
+            // 9. receive response as inputStream
+            inputStream = httpResponse.getEntity().getContent();
+
+            // 10. convert inputstream to string
+            if(inputStream != null) {
+                Log.d(LocationUtils.APPTAG, "SubmitActivity: POST: inputStream != null");
+                result = convertInputStreamToString(inputStream);
+            }
+            else {
+                Log.d(LocationUtils.APPTAG, "SubmitActivity: POST: inputStream = null: did not work");
+                result = "Did not work!";
+            }
+
+        } catch (Exception e) {
+            Log.d("InputStream", e.getLocalizedMessage());
+        }
+
+        // 11. return result
+        return result;
+    }
+
+    private class HttpAsyncTask extends AsyncTask<String, Void, String> {
+        @Override
+        protected void onPreExecute() {
+            setProgressBarIndeterminateVisibility(true);
+        }
+
+        @Override
+        protected String doInBackground(String... urls) {
+            Log.d(LocationUtils.APPTAG, "GMapActivity: HttpAsyncTask: doInBackground");
+            Sighting sighting = mkrObjects.get(urls[1]);
+            return POST(urls[0], sighting);
+        }
+        // onPostExecute displays the results of the AsyncTask.
+        @Override
+        protected void onPostExecute(String result) {
+            if (showSuccess(result)) {
+
+            }
+            setProgressBarIndeterminateVisibility(false);
+            getLocalSightings();
+        }
+    }
+
+    private static String convertInputStreamToString(InputStream inputStream) throws IOException {
+        BufferedReader bufferedReader = new BufferedReader( new InputStreamReader(inputStream));
+        String line;
+        StringBuilder result = new StringBuilder();
+        while((line = bufferedReader.readLine()) != null) {
+            result.append(line);
+        }
+
+        inputStream.close();
+        Log.d(LocationUtils.APPTAG, "SubmitActivity: convertInputStreamToString: result.To.String(): " + result.toString());
+
+        return result.toString();
+
+    }
+
+    private boolean showSuccess(String result) {
+        //generateNoteOnSD("ErrorHtml", result);
+        JSONArray json;
+        try {
+            json = new JSONArray(result);
+            for (int i = 0; i < json.length(); i++) {
+                JSONObject c;
+                try {
+                    c = json.getJSONObject(i);
+
+                    String success = c.getString("success");
+                    if (success.equals("success")){
+                        Log.d(LocationUtils.APPTAG, "isSuccessful: successful");
+                        return true;
+                    } else {
+                        Log.d(LocationUtils.APPTAG, "isSuccessful: unsuccessful");
+                        return false;
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    private class MyImgurUploadTask extends ImgurUploadTask {
+        private Sighting imgurSighting;
+        public MyImgurUploadTask(Uri imageUri, Sighting sighting) {
+            super(imageUri, getContentResolver());
+            imgurSighting = sighting;
+        }
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            if (mImgurUploadTask != null) {
+                boolean cancelled = mImgurUploadTask.cancel(false);
+                if (!cancelled)
+                    this.cancel(true);
+            }
+            mImgurUploadTask = this;
+            mImgurUrl = null;
+            //getView().findViewById(R.id.choose_image_button).setEnabled(false);
+            //setImgurUploadStatus(R.string.choose_image_upload_status_uploading);
+        }
+        @Override
+        protected void onPostExecute(String imageId) {
+            super.onPostExecute(imageId);
+            mImgurUploadTask = null;
+            if (imageId != null) {
+                mImgurUrl = "" + imageId;
+                Log.d(LocationUtils.APPTAG, "imgur upload success: " + mImgurUrl);
+                //setImgurUploadStatus(R.string.choose_image_upload_status_success);
+                //if (isResumed()) {
+                //    getView().findViewById(R.id.imgur_link_layout).setVisibility(View.VISIBLE);
+                //    ((TextView) getView().findViewById(R.id.link_url)).setText(mImgurUrl);
+                //}
+            } else {
+                mImgurUrl = "image";
+                Log.d(LocationUtils.APPTAG, "imgur upload error");
+                //setImgurUploadStatus(R.string.choose_image_upload_status_failure);
+                /*if (isResumed()) {
+                    getView().findViewById(R.id.imgur_link_layout).setVisibility(View.GONE);
+                    if (isVisible()) {
+                        ((ImageView) getView().findViewById(R.id.choose_image_preview)).setImageBitmap(null);
+                        Toast.makeText(getActivity(), R.string.imgur_upload_error, Toast.LENGTH_LONG).show();
+                    }
+                }*/
+            }
+            imgurSighting.setImgUrl(mImgurUrl);
+            new HttpAsyncTask().execute("http://fyp-irish-wildlife.herokuapp.com/sightings/postsighting/", String.valueOf(imgurSighting.getID()));
+
+            /*submitSighting();
+            if (publish){
+                publish = false;
+                publishStory();
+            }
+            if (isVisible())
+                getView().findViewById(R.id.choose_image_button).setEnabled(true);*/
+        }
+    }
+
 }

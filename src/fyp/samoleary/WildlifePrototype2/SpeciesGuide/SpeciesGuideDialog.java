@@ -64,13 +64,6 @@ public class SpeciesGuideDialog extends FragmentActivity implements TextToSpeech
         int imageViewID = this.getResources().getIdentifier(values[position], "drawable", this.getPackageName());
         speciesImage.setImageBitmap(decodeSampledBitmapFromResource(getResources(), imageViewID, 50, 50));
 
-        Button okBtn = (Button) findViewById(R.id.species_dialog_btn);
-        okBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
     }
 
     private void speakOut() {

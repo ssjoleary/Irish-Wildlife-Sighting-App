@@ -195,10 +195,14 @@ public class WildlifeGeofence extends NavDrawer implements
         }
 
         if (savedInstanceState != null) {
-            seekBar.setProgress(savedInstanceState.getInt("seekProgress", 0));
-            Log.d(LocationUtils.APPTAG, "Progress: " + savedInstanceState.getInt("seekProgress", 0) + "LatLng: " +savedInstanceState.getDouble("lat", 0) +", "+savedInstanceState.getDouble("lng", 0));
-            onMapLongClick(new LatLng(savedInstanceState.getDouble("lat", 0), savedInstanceState.getDouble("lng", 0)));
-            myCircle.setRadius(savedInstanceState.getInt("seekProgress", 0));
+            int seekProgress = savedInstanceState.getInt("seekProgress", 0);
+            double lat = savedInstanceState.getDouble("lat", 0);
+            double lng = savedInstanceState.getDouble("lng", 0);
+            if (seekProgress != 0 && lat != 0 && lng != 0){
+                seekBar.setProgress(seekProgress);
+                onMapLongClick(new LatLng(lat,lng));
+                myCircle.setRadius(savedInstanceState.getInt("seekProgress", 0));
+            }
         }
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -223,9 +227,12 @@ public class WildlifeGeofence extends NavDrawer implements
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt("seekProgress", seekBar.getProgress());
-        outState.putDouble("lat", myCircle.getCenter().latitude);
-        outState.putDouble("lng", myCircle.getCenter().longitude);
 
+
+        if (myCircle != null) {
+            outState.putDouble("lat", myCircle.getCenter().latitude);
+            outState.putDouble("lng", myCircle.getCenter().longitude);
+        }
     }
 
     private void reregisterGeofences() {
@@ -972,6 +979,11 @@ public class WildlifeGeofence extends NavDrawer implements
                         //gotoSearchActivity();
                         gotoGMapActivity(groupPosition, childPosition);
                         break;
+                    case 3:
+                        closeDrawer();
+                        //gotoSearchActivity();
+                        gotoGMapActivity(groupPosition, childPosition);
+                        break;
                     default:
                         break;
                 }
@@ -1345,5 +1357,6 @@ public class WildlifeGeofence extends NavDrawer implements
                 break;
         }
     }
+
 
 }

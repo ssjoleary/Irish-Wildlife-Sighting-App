@@ -4,12 +4,8 @@ import android.app.FragmentManager;
 import android.app.ListFragment;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.ListView;
-import fyp.samoleary.WildlifePrototype2.FaceBook.LoginFacebookAct;
 import fyp.samoleary.WildlifePrototype2.WildlifeGeofencePkg.WildlifeGeofence;
 import fyp.samoleary.WildlifePrototype2.NavDrawer.NavDrawer;
 import fyp.samoleary.WildlifePrototype2.R;
@@ -41,24 +37,29 @@ public class SpeciesGuide extends NavDrawer {
                 break;
             case 1:
                 switch (childPosition) {
-                case 0:
-                    closeDrawer();
-                    //getRecentSightings();
-                    gotoGMapActivity(groupPosition, childPosition);
-                    break;
-                case 1:
-                    closeDrawer();
-                    //createReportDialog();
-                    gotoGMapActivity(groupPosition, childPosition);
-                    break;
-                case 2:
-                    closeDrawer();
-                    //gotoSearchActivity();
-                    gotoGMapActivity(groupPosition, childPosition);
-                    break;
-                default:
-                    break;
-            }
+                    case 0:
+                        closeDrawer();
+                        //getRecentSightings();
+                        gotoGMapActivity(groupPosition, childPosition);
+                        break;
+                    case 1:
+                        closeDrawer();
+                        //createReportDialog();
+                        gotoGMapActivity(groupPosition, childPosition);
+                        break;
+                    case 2:
+                        closeDrawer();
+                        //gotoSearchActivity();
+                        gotoGMapActivity(groupPosition, childPosition);
+                        break;
+                    case 3:
+                        closeDrawer();
+                        //gotoSearchActivity();
+                        gotoGMapActivity(groupPosition, childPosition);
+                        break;
+                    default:
+                        break;
+                }
                 /*switch (childPosition) {
                     case 0:
                         closeDrawer();
@@ -148,12 +149,6 @@ public class SpeciesGuide extends NavDrawer {
         startActivity(intent);
     }*/
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // The action bar home/up action should open or close the drawer.
-        // ActionBarDrawerToggle will take care of this.
-        return mDrawerToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
-    }
 
     public static class SpeciesGuideListfrag extends ListFragment {
 
@@ -176,7 +171,6 @@ public class SpeciesGuide extends NavDrawer {
         @Override
         public void onViewCreated(View view, Bundle savedInstanceState){
             super.onViewCreated(view, savedInstanceState);
-
             getListView().setDivider(null);
         }
     }

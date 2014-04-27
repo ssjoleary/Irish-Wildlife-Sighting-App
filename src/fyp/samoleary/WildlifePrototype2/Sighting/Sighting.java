@@ -99,6 +99,15 @@ public class Sighting implements Serializable, ClusterItem {
         this.animals = animals;
     }
     */
+
+    public void setID(int id) {
+        this.ID = id;
+    }
+
+    public void setImgUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
+    }
+
     public String getSpecies() {
         return species;
     }

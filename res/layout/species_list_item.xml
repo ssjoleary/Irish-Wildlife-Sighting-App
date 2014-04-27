@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:orientation="horizontal" android:layout_width="wrap_content" android:layout_height="fill_parent"
-              android:id="@+id/linearLayout" android:clickable="false" android:padding="15dp"
-              xmlns:android="http://schemas.android.com/apk/res/android">
+<LinearLayout android:orientation="horizontal" android:layout_width="wrap_content" android:layout_height="wrap_content"
+              android:id="@+id/linearLayout" android:clickable="false"
+              xmlns:android="http://schemas.android.com/apk/res/android" android:padding="15dp">
     <ImageView android:layout_width="match_parent" android:layout_height="wrap_content" android:id="@+id/species_Img"
                android:src="@drawable/belugawhale" android:adjustViewBounds="true" android:layout_weight="1"
                android:clickable="false" android:contentDescription="@string/content_description_species_item_image"/>
-
     <LinearLayout android:orientation="vertical" android:layout_width="wrap_content" android:layout_height="wrap_content"
-                  android:layout_weight="0.5" android:id="@+id/textContainer" android:weightSum="10">
+                  android:layout_weight="0.5" android:id="@+id/textContainer" android:weightSum="10"
+                  android:paddingLeft="5dp" android:paddingRight="5dp">
 
         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content"
                   android:textAppearance="?android:attr/textAppearanceMedium" android:text="@string/title_belugawhale"
@@ -19,4 +19,5 @@
                   android:id="@+id/species_snippet" android:layout_weight="5" android:layout_gravity="bottom"
                   android:textColor="#576494"/>
     </LinearLayout>
+
 </LinearLayout>
