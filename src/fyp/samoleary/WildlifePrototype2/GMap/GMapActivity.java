@@ -1368,12 +1368,12 @@ public class GMapActivity extends NavDrawer implements
                             ((GMapActivity)getActivity()).doNotSubmitClick();
                         }
                     })
-                    .setNeutralButton(R.string.unsub_edit, new DialogInterface.OnClickListener() {
+                    /*.setNeutralButton(R.string.unsub_edit, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             ((GMapActivity)getActivity()).doEditClick();
                         }
-                    });
+                    })*/;
 
             // Create the AlertDialog object and return it
             return builder.create();

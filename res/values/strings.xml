@@ -266,7 +266,7 @@
     <string name="fb_submit">Post Sighting To Facebook</string>
 
     <!-- Unsubmitted Sighting Msgs -->
-    <string name="unsub_msg">Data connection available, submit previously unsubmitted Sightings?</string>
+    <string name="unsub_msg">Internet available, submit saved Sightings?</string>
     <string name="unsub_submit">Submit</string>
     <string name="unsub_dontsubmit">Later</string>
     <string name="unsub_edit">Edit before Submission</string>

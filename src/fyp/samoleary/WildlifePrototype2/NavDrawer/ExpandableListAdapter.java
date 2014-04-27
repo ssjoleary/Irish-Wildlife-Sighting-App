@@ -113,6 +113,9 @@ public class ExpandableListAdapter extends BaseExpandableListAdapter {
             case 2:
                 groupView.setImageResource(R.drawable.ic_action_web_site);
                 break;
+            case 3:
+                groupView.setImageResource(R.drawable.ic_action_map);
+                break;
             default:
                 break;
         }
